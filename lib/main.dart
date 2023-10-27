@@ -3,6 +3,7 @@ import 'package:cineverse/firebase_options.dart';
 import 'package:cineverse/local_storage/user_data.dart';
 import 'package:cineverse/models/user_model.dart';
 import 'package:cineverse/pages/view_controller.dart';
+import 'package:cineverse/utils/constants.dart';
 import 'package:cineverse/utils/functions.dart';
 import 'package:cineverse/utils/translation.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -60,10 +61,8 @@ class MyApp extends StatelessWidget {
       title: 'Cineverse',
       translations: Translation(),
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: lightTheme,
+      darkTheme: darkTheme,
       home: const ViewController(),
     );
   }

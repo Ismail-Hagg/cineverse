@@ -16,6 +16,7 @@ class UserModel {
   Gender? gender;
   String? birthday;
   AvatarType? avatarType;
+  ThemeMode? theme;
   List<String>? movieWatchList;
   List<String>? showWatchList;
   List<String>? favs;
@@ -44,6 +45,7 @@ class UserModel {
       this.watching,
       this.favs,
       this.commentDislike,
+      this.theme,
       this.commentLike});
 
   toMap() {
@@ -62,6 +64,7 @@ class UserModel {
       'method': method.toString(),
       'gender': gender.toString(),
       'avatarType': avatarType.toString(),
+      'theme': theme.toString(),
       'birthday': birthday,
       'movieWatchList': movieWatchList!.join(','),
       'showWatchList': showWatchList!.join(','),
@@ -87,7 +90,8 @@ class UserModel {
             LoginMethod.values.firstWhere((e) => e.toString() == map['method']),
         gender: Gender.values.firstWhere((e) => e.toString() == map['gender']),
         avatarType: AvatarType.values
-            .firstWhere((e) => e.toString() == map['avatarType`']),
+            .firstWhere((e) => e.toString() == map['avatarType']),
+        theme: ThemeMode.values.firstWhere((e) => e.toString() == map['theme']),
         birthday: map['birthday'],
         phoneNumber: map['phoneNumber'],
         movieWatchList: map['movieWatchList'].split(','),

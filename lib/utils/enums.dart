@@ -4,4 +4,8 @@ enum Gender { male, female, undecided }
 
 enum LoginMethod { google, email, phone, none }
 
-enum AvatarType { local, online, file, none }
+enum AvatarType { local, online, none }
+
+enum ThemeMode { light, dark, system }
+
+enum FieldType { loginEmail, loginPass, signupEmail, signupPass, signupUser }

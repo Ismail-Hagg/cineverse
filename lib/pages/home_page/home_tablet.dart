@@ -11,7 +11,7 @@ class HomeTablet extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: GestureDetector(
-            onTap: () => controller.pray(),
+            //onTap: () => controller.pray(),
             child: Text('Tablet View ${MediaQuery.of(context).size.width}')),
       ),
     );

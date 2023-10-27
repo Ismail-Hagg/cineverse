@@ -11,7 +11,7 @@ class LoginController extends StatelessWidget {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     return width <= phoneSize
-        ? const LoginPhone()
+        ? LoginPhone()
         : width > phoneSize && width <= tabletSize
             ? const LoginTablet()
             : const LoginDesktop();
