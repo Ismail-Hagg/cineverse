@@ -4,6 +4,7 @@ import 'package:cineverse/widgets/custom_text.dart';
 import 'package:cineverse/widgets/login_input.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
 class LoginPhone extends StatelessWidget {
@@ -14,9 +15,10 @@ class LoginPhone extends StatelessWidget {
     return GestureDetector(
       onTap: () => Get.find<AuthController>().unfocusNodes(),
       child: Scaffold(
-          backgroundColor: Get.theme.colorScheme.background,
-          body: LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
+        resizeToAvoidBottomInset: false,
+        backgroundColor: Theme.of(context).colorScheme.background,
+        body: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
             double height = constraints.maxHeight;
             double width = constraints.maxWidth;
             return SizedBox(
@@ -28,7 +30,7 @@ class LoginPhone extends StatelessWidget {
                   children: [
                     Container(
                       alignment: FractionalOffset.bottomCenter,
-                      height: height * 0.3,
+                      height: height * 0.33,
                       width: width,
                       child: Image.asset(
                         'assets/images/main_logo.png',
@@ -54,7 +56,7 @@ class LoginPhone extends StatelessWidget {
                           controller.flips[FieldType.loginEmail] as bool,
                     ),
                     const SizedBox(
-                      height: 30,
+                      height: 20,
                     ),
                     LoginInput(
                       width: width * 0.85,
@@ -84,49 +86,62 @@ class LoginPhone extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(
-                      height: 25,
+                      height: 20,
                     ),
                     SizedBox(
                       width: width * 0.85,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary
-                            // shape:
-                            //     MaterialStateProperty.all<RoundedRectangleBorder>(
-                            //   RoundedRectangleBorder(
-                            //     borderRadius: BorderRadius.circular(10.0),
-                            //   ),
-                            // ),
+                      child: controller.platform == TargetPlatform.android
+                          ? ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.primary),
+                              onPressed: () => controller.themeSwich(),
+                              child: controller.loading
+                                  ? Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 4.0),
+                                      child: CircularProgressIndicator(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .background,
+                                      ),
+                                    )
+                                  : CustomText(
+                                      text: 'login'.tr,
+                                      size: width * 0.05,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .background,
+                                    ),
+                            )
+                          : CupertinoButton(
+                              padding: EdgeInsets.zero,
+                              color: Theme.of(context).colorScheme.primary,
+                              borderRadius: BorderRadius.circular(10.0),
+                              child: controller.loading
+                                  ? CupertinoActivityIndicator(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .background,
+                                    )
+                                  : CustomText(
+                                      text: 'login'.tr,
+                                      size: width * 0.05,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .background,
+                                    ),
+                              onPressed: () => controller.themeSwich(),
                             ),
-                        onPressed: () => controller.themeSwich(),
-                        // controller.emailLogin(
-                        //     context: context,
-                        //     email: controller
-                        //         .emailController.text
-                        //         .trim(),
-                        //     password: controller
-                        //         .passWordController.text
-                        //         .trim()),
-                        child: controller.loading
-                            ? CircularProgressIndicator(
-                                color: Theme.of(context).colorScheme.background,
-                              )
-                            : CustomText(
-                                text: 'login'.tr,
-                                size: width * 0.05,
-                                color: Theme.of(context).colorScheme.background,
-                              ),
-                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                          vertical: 24, horizontal: 8),
+                          vertical: 34, horizontal: 12),
                       child: Row(
                         children: [
                           Expanded(
                             child: Divider(
-                              color: Theme.of(context).colorScheme.primary,
+                              color: Theme.of(context).colorScheme.secondary,
                               thickness: 2,
                               height: 9,
                             ),
@@ -151,11 +166,66 @@ class LoginPhone extends StatelessWidget {
                         ],
                       ),
                     ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        LoginInput(
+                          socialLog: () {
+                            print('------------ social shit--------------');
+                          },
+                          height: width * 0.15,
+                          width: width * 0.15,
+                          obscure: false,
+                          isSelected: true,
+                          other: FaIcon(
+                            FontAwesomeIcons.envelope,
+                            color: Theme.of(context).colorScheme.secondary,
+                            size: width * 0.08,
+                          ),
+                        ),
+                        SizedBox(
+                          width: width * 0.1,
+                        ),
+                        LoginInput(
+                          socialLog: () {
+                            print('------------ social shit--------------');
+                          },
+                          height: width * 0.15,
+                          width: width * 0.15,
+                          obscure: false,
+                          isSelected: true,
+                          other: FaIcon(
+                            FontAwesomeIcons.google,
+                            color: Theme.of(context).colorScheme.secondary,
+                            size: width * 0.08,
+                          ),
+                        ),
+                        SizedBox(
+                          width: width * 0.1,
+                        ),
+                        LoginInput(
+                          socialLog: () {
+                            print('------------ social shit--------------');
+                          },
+                          height: width * 0.15,
+                          width: width * 0.15,
+                          obscure: false,
+                          isSelected: true,
+                          other: FaIcon(
+                            FontAwesomeIcons.phone,
+                            color: Theme.of(context).colorScheme.secondary,
+                            size: width * 0.08,
+                          ),
+                        )
+                      ],
+                    )
                   ],
                 ),
               ),
             );
-          })),
+          },
+        ),
+      ),
     );
   }
 }

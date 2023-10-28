@@ -1,5 +1,6 @@
 import 'package:cineverse/local_storage/user_data.dart';
 import 'package:cineverse/models/user_model.dart';
+import 'package:cineverse/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cineverse/utils/enums.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class AuthController extends GetxController {
   bool _passOb = true;
   bool get passOb => _passOb;
 
-  final bool _loading = false;
+  bool _loading = false;
   bool get loading => _loading;
 
   final Map<FieldType, FocusNode> _nodes = {
@@ -77,7 +78,7 @@ class AuthController extends GetxController {
     _nodes.forEach((key, value) {
       value.unfocus();
     });
-    print('unfocusing');
+
     update();
   }
 
@@ -112,6 +113,9 @@ class AuthController extends GetxController {
 
   // switch the theme
   void themeSwich() {
-    Get.changeTheme(Get.isDarkMode ? ThemeData.light() : ThemeData.dark());
+    print(Get.isDarkMode ? "Normal" : "Dark Mode");
+    _loading = !_loading;
+    Get.changeTheme(Get.isDarkMode ? lightTheme : darkTheme);
+    update();
   }
 }
