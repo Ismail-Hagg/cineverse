@@ -34,40 +34,40 @@ class LoginInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 100),
-      height: height,
-      width: width,
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(5)),
-        color: Theme.of(context).colorScheme.background,
-        boxShadow: other == null
-            ? isSelected
-                ? [
-                    BoxShadow(
-                        color: Theme.of(context).colorScheme.shadow,
-                        blurRadius: 10,
-                        offset: const Offset(3, 3),
-                        spreadRadius: 1),
-                  ]
-                : [
-                    BoxShadow(
-                        color: Theme.of(context).colorScheme.secondary,
-                        blurRadius: 0.1,
-                        offset: const Offset(1, 1),
-                        spreadRadius: 0.1),
-                  ]
-            : [
-                BoxShadow(
-                    color: Theme.of(context).colorScheme.shadow,
-                    blurRadius: 5,
-                    offset: const Offset(2, 2),
-                    spreadRadius: 0.5),
-              ],
-      ),
-      child: Center(
-        child: GestureDetector(
-          onTap: socialLog,
+    return GestureDetector(
+      onTap: socialLog,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 100),
+        height: height,
+        width: width,
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(5)),
+          color: Theme.of(context).colorScheme.background,
+          boxShadow: other == null
+              ? isSelected
+                  ? [
+                      BoxShadow(
+                          color: Theme.of(context).colorScheme.shadow,
+                          blurRadius: 10,
+                          offset: const Offset(3, 3),
+                          spreadRadius: 1),
+                    ]
+                  : [
+                      BoxShadow(
+                          color: Theme.of(context).colorScheme.shadow,
+                          blurRadius: 0.1,
+                          offset: const Offset(1, 1),
+                          spreadRadius: 0.1),
+                    ]
+              : [
+                  BoxShadow(
+                      color: Theme.of(context).colorScheme.shadow,
+                      blurRadius: 5,
+                      offset: const Offset(2, 2),
+                      spreadRadius: 0.5),
+                ],
+        ),
+        child: Center(
           child: other ??
               TextField(
                 obscureText: obscure,
