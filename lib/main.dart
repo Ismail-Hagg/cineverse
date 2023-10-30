@@ -27,6 +27,7 @@ void main() async {
 
   await DataPref().getUserData().then(
     (user) {
+      print(' user data is ${user.isError}  and ${user.errorMessage}');
       Get.put(
         AuthController(user, platform: defaultTargetPlatform),
       );

@@ -6,6 +6,6 @@ enum LoginMethod { google, email, phone, none }
 
 enum AvatarType { local, online, none }
 
-enum ThemeMode { light, dark, system }
+enum ChosenTheme { light, dark, system }
 
 enum FieldType { loginEmail, loginPass, signupEmail, signupPass, signupUser }

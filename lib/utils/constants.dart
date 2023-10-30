@@ -21,6 +21,7 @@ Color darkShadowColor = const Color.fromARGB(255, 32, 32, 32);
 ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
     colorScheme: ColorScheme.light(
+        brightness: Brightness.light,
         background: whiteColor,
         onBackground: lightGrey,
         shadow: lightShadow,
@@ -30,6 +31,7 @@ ThemeData lightTheme = ThemeData(
 ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     colorScheme: ColorScheme.dark(
+        brightness: Brightness.dark,
         background: darkBacgroundColor,
         onBackground: darkForGroundColor,
         primary: mainGold,

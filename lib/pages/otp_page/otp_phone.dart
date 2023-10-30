@@ -29,10 +29,13 @@ class OtpPhone extends StatelessWidget {
                   children: [
                     controller.platform == TargetPlatform.iOS
                         ? CupertinoButton(
+                            //color: Theme.of(context).colorScheme.primary,
+                            onPressed: () => Get.back(),
                             child: const Icon(CupertinoIcons.back),
-                            onPressed: () => Get.back())
+                          )
                         : IconButton(
                             onPressed: () => Get.back(),
+                            color: Theme.of(context).colorScheme.primary,
                             splashRadius: 15,
                             icon: const Icon(Icons.arrow_back))
                   ],
@@ -76,7 +79,10 @@ class OtpPhone extends StatelessWidget {
                       onCodeChanged: (code) {
                         if (code!.length == 6) {
                           FocusScope.of(context).requestFocus(FocusNode());
-                          controller.themeSwich();
+                          controller.otpVerify(
+                              otp: code,
+                              verificationId: verificationId,
+                              context: context);
                         }
                       },
                     ),
@@ -85,18 +91,23 @@ class OtpPhone extends StatelessWidget {
                 SizedBox(
                   height: height * 0.07,
                 ),
-                GetBuilder<AuthController>(
-                  init: Get.find<AuthController>(),
-                  builder: (build) => build.loading
-                      ? build.platform == TargetPlatform.iOS
-                          ? CupertinoActivityIndicator(
-                              color: Theme.of(context).colorScheme.secondary,
-                              radius: 18,
-                            )
-                          : CircularProgressIndicator(
-                              color: Theme.of(context).colorScheme.secondary,
-                            )
-                      : Container(),
+                Expanded(
+                  child: GetBuilder<AuthController>(
+                    init: Get.find<AuthController>(),
+                    builder: (build) => controller.loading
+                        ? build.platform == TargetPlatform.iOS
+                            ? CupertinoActivityIndicator(
+                                color: Theme.of(context).colorScheme.secondary,
+                                radius: 18,
+                              )
+                            : Center(
+                                child: CircularProgressIndicator(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                ),
+                              )
+                        : Container(),
+                  ),
                 )
               ],
             ),

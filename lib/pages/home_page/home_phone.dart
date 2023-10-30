@@ -1,4 +1,6 @@
+import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class HomePhone extends StatelessWidget {
   const HomePhone({super.key});
@@ -8,17 +10,9 @@ class HomePhone extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: GestureDetector(
-            onTap: () {
-              List<String> lst = [];
-              var thing = lst.join(',');
-              print(thing);
-              print(thing.runtimeType);
-
-              var back = thing.split(',');
-              print(back);
-              print(back.runtimeType);
-            },
-            child: Text('Phone View ${MediaQuery.of(context).size.width}')),
+            onTap: () => Get.find<AuthController>().signOut(),
+            child: Text(
+                'Phone View ${MediaQuery.of(context).size.width} ${Get.find<AuthController>().userModel.isError}')),
       ),
     );
   }

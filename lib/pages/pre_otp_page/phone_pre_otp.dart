@@ -7,8 +7,6 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
-import '../../utils/constants.dart';
-
 class PreOtpPhone extends StatelessWidget {
   const PreOtpPhone({super.key});
 
@@ -31,7 +29,7 @@ class PreOtpPhone extends StatelessWidget {
                 onPressed: () => Get.back(),
                 icon: Icon(
                   Icons.arrow_back,
-                  color: blackColor,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
       ),
@@ -58,9 +56,9 @@ class PreOtpPhone extends StatelessWidget {
                     keyboardType: TextInputType.number,
                     hintText: 'enterphone'.tr,
                     initialValue: PhoneNumber(
-                        isoCode: 'SA',
-                        phoneNumber: controller.userModel.phoneNumber,
-                        dialCode: '+966'),
+                      isoCode: 'SA',
+                      phoneNumber: controller.userModel.phoneNumber,
+                    ),
                     inputBorder: InputBorder.none,
                     cursorColor: Colors.transparent,
                     autoValidateMode: AutovalidateMode.disabled,
@@ -69,9 +67,9 @@ class PreOtpPhone extends StatelessWidget {
                         useEmoji: true,
                         leadingPadding: 18,
                         setSelectorButtonAsPrefixIcon: true),
-                    onInputChanged: (val) {
-                      print('==== $val ====');
-                    },
+                    onInputChanged: (val) => controller.moedelPhone(
+                        phone: val.phoneNumber.toString(),
+                        country: val.isoCode.toString()),
                   ),
                 ),
                 Expanded(child: Container()),
@@ -110,11 +108,8 @@ class PreOtpPhone extends StatelessWidget {
                                         align: TextAlign.left,
                                         size: width * 0.05,
                                       ),
-                                onPressed: () {
-                                  Get.to(() => const OtpController(
-                                        verificationId: '',
-                                      ));
-                                }
+                                onPressed: () =>
+                                    controller.phoneLogin(context: context)
                                 // build.phoneLogin(context: context),
                                 )
                             : ElevatedButton(
@@ -126,7 +121,8 @@ class PreOtpPhone extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                onPressed: () {},
+                                onPressed: () =>
+                                    controller.phoneLogin(context: context),
                                 child: build.loading
                                     ? CircularProgressIndicator(
                                         color: Theme.of(context)

@@ -1,4 +1,3 @@
-import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/utils/enums.dart';
 import 'package:cineverse/widgets/custom_text.dart';
@@ -7,8 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-
-import 'package:sms_autofill/sms_autofill.dart';
 
 class LoginPhone extends StatelessWidget {
   const LoginPhone({super.key});

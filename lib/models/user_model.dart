@@ -16,7 +16,7 @@ class UserModel {
   Gender? gender;
   String? birthday;
   AvatarType? avatarType;
-  ThemeMode? theme;
+  ChosenTheme? theme;
   List<String>? movieWatchList;
   List<String>? showWatchList;
   List<String>? favs;
@@ -91,7 +91,8 @@ class UserModel {
         gender: Gender.values.firstWhere((e) => e.toString() == map['gender']),
         avatarType: AvatarType.values
             .firstWhere((e) => e.toString() == map['avatarType']),
-        theme: ThemeMode.values.firstWhere((e) => e.toString() == map['theme']),
+        theme:
+            ChosenTheme.values.firstWhere((e) => e.toString() == map['theme']),
         birthday: map['birthday'],
         phoneNumber: map['phoneNumber'],
         movieWatchList: map['movieWatchList'].split(','),
