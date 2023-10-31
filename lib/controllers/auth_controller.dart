@@ -19,13 +19,15 @@ import '../utils/functions.dart';
 
 class AuthController extends GetxController {
   final TargetPlatform platform;
-  UserModel _userModel;
-  AuthController(this._userModel, {required this.platform});
+  final UserModel _userModelStart;
+  AuthController(this._userModelStart, {required this.platform});
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final Rxn<User> _user = Rxn<User>();
 
   User? get user => _user.value;
+
+  UserModel _userModel = UserModel();
   UserModel get userModel => _userModel;
 
   Map<FieldType, FocusNode> get nodes => _nodes;
@@ -40,6 +42,9 @@ class AuthController extends GetxController {
 
   String _phoneCountry = '';
   String get phoneCountry => _phoneCountry;
+
+  final TextEditingController _otpController = TextEditingController();
+  TextEditingController get otpController => _otpController;
 
   final Map<FieldType, FocusNode> _nodes = {
     FieldType.loginEmail: FocusNode(),
@@ -69,8 +74,9 @@ class AuthController extends GetxController {
   void onInit() {
     super.onInit();
     _user.bindStream(_auth.authStateChanges());
-    print(_userModel.toMap);
+    _userModel = _userModelStart;
     setListeners();
+    //_auth.setSettings(appVerificationDisabledForTesting: true);
   }
 
   @override
@@ -85,6 +91,7 @@ class AuthController extends GetxController {
       value.dispose();
       _txtControllers[key]!.dispose();
     });
+    _otpController.dispose();
   }
 
   // unfocus all the focus nodes
@@ -117,6 +124,18 @@ class AuthController extends GetxController {
     });
   }
 
+  // when otp field is changed
+  void onPtpChanged(
+      {required String? code,
+      required BuildContext context,
+      required String verificationId}) {
+    _otpController.text = code.toString();
+    if (code!.length == 6) {
+      FocusScope.of(context).unfocus();
+      otpVerify(otp: code, verificationId: verificationId, context: context);
+    }
+  }
+
   // update the user model
   void userUpdate({required UserModel user}) {
     _userModel = user;
@@ -124,6 +143,8 @@ class AuthController extends GetxController {
         .setUser(_userModel)
         .then((value) => print("Operation is ===> $value"));
   }
+
+  // when click back from otp page
 
   // switch the theme
   void themeSwich() {
@@ -153,6 +174,7 @@ class AuthController extends GetxController {
         // start the loading animation
         _loading = true;
         update();
+        _userModel.phoneNumber = value.toString();
 
         // phone number was chosen so excute phone login and go to otp page
         phoneAuth(phoneNumber: value.toString(), context: context);
@@ -220,76 +242,9 @@ class AuthController extends GetxController {
     try {
       await _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
-        verificationCompleted: (credential) async {
-          print('==== nigga we made it ====');
-          // await _auth.signInWithCredential(credential).then((user) async {
-          //   await userExists(userId: user.user!.uid).then((value) async {
-          //     if (value) {
-          //       // old user , data already converted in the userExist function just save it locally , go to controller
-
-          //       await saveUserDataLocally(model: _userModel)
-          //           .then((saved) async {
-          //         if (saved) {
-          //           _loading = false;
-          //           Get.offAll(() => const ViewController());
-          //         } else {
-          //           _loading = false;
-          //           update();
-          //           await showOkAlertDialog(
-          //             context: context,
-          //             title: 'error'.tr,
-          //             message: 'firelogin'.tr,
-          //           );
-          //           Get.back();
-          //         }
-          //       });
-          //     } else {
-          //       // new user , set the login state to info and the id and then save locally then stop loading and go to controller
-          //       _userModel = UserModel(
-          //           userName: '',
-          //           email: '',
-          //           onlinePicPath: '',
-          //           localPicPath: '',
-          //           userId: user.user!.uid,
-          //           language: languageDev(),
-          //           isError: false,
-          //           messagingToken: '',
-          //           state: LogState.info,
-          //           gender: Gender.undecided,
-          //           phoneNumber: _userModel.phoneNumber,
-          //           birthday: '',
-          //           errorMessage: '',
-          //           method: LoginMethod.phone,
-          //           avatarType: AvatarType.none,
-          //           movieWatchList: [],
-          //           showWatchList: [],
-          //           favs: [],
-          //           watching: [],
-          //           theme: ChosenTheme.system,
-          //           commentDislike: [],
-          //           commentLike: []);
-          //       await saveUserDataLocally(model: _userModel)
-          //           .then((saved) async {
-          //         if (saved) {
-          //           _loading = false;
-          //           Get.offAll(() => const ViewController());
-          //         } else {
-          //           _loading = false;
-          //           update();
-          //           await showOkAlertDialog(
-          //             context: context,
-          //             title: 'error'.tr,
-          //             message: 'firelogin'.tr,
-          //           );
-          //           Get.back();
-          //         }
-          //       });
-          //     }
-          //   });
-          // });
-        },
+        verificationCompleted: (credential) async {},
         verificationFailed: (e) async {
-          print('==== $e');
+          print('== $e ==');
           _loading = false;
           update();
           await showOkAlertDialog(
@@ -305,7 +260,7 @@ class AuthController extends GetxController {
         codeAutoRetrievalTimeout: (verificationId) {},
       );
     } on FirebaseAuthException catch (e) {
-      print('====== jank ========');
+      print('=== ${e.code} ===');
       // ignore: use_build_context_synchronously
       await showOkAlertDialog(
         context: context,
@@ -327,25 +282,18 @@ class AuthController extends GetxController {
           verificationId: verificationId, smsCode: otp);
 
       await _auth.signInWithCredential(creds).then((user) async {
-        print('== iddss => ${user.user!.uid}');
         await userExists(userId: user.user!.uid).then((value) async {
-          print('=== values $value');
           if (value) {
-            print('== old user ==');
             // old user , data already converted in the userExist function just save it locally , go to controller
             await FirebaseServices()
                 .getCurrentUser(userId: user.user!.uid)
                 .then(
               (value) async {
-                print(value.data());
-                print('== testicals');
                 _userModel =
                     UserModel.fromMap(value.data() as Map<String, dynamic>);
                 await saveUserDataLocally(model: _userModel)
                     .then((saved) async {
-                  print('=== savageee');
                   if (saved) {
-                    print('=== savageee oonn');
                     _loading = false;
                     Get.offAll(() => const ViewController());
                   } else {
@@ -362,9 +310,7 @@ class AuthController extends GetxController {
               },
             );
           } else {
-            print('== new user ==');
             // new user , set the login state to info and the id and then save locally then stop loading and go to controller
-            print('== set objec');
             _userModel = UserModel(
                 userName: '',
                 email: '',
@@ -389,17 +335,13 @@ class AuthController extends GetxController {
                 commentDislike: [],
                 commentLike: []);
             await saveUserDataLocally(model: _userModel).then((saved) async {
-              await DataPref().getUserData().then((value) {
-                print(value.toMap());
-                print(_userModel.toMap());
-              });
               if (saved) {
-                print('== saveddd');
                 _loading = false;
                 Get.offAll(() => const ViewController());
               } else {
                 _loading = false;
                 update();
+                // ignore: use_build_context_synchronously
                 await showOkAlertDialog(
                   context: context,
                   title: 'error'.tr,
@@ -407,15 +349,20 @@ class AuthController extends GetxController {
                 );
                 Get.back();
               }
-            });
+            }).onError((error, stackTrace) {});
           }
-        }).onError((error, stackTrace) {
-          print('== error $error');
-        });
+        }).onError((error, stackTrace) {});
       });
     } catch (e) {
       // wrong otp
-      print('====$e===');
+      _loading = false;
+      update();
+      // ignore: use_build_context_synchronously
+      await showOkAlertDialog(
+        context: context,
+        title: 'error'.tr,
+        message: 'wrongotp'.tr,
+      );
     }
   }
 
@@ -441,7 +388,7 @@ class AuthController extends GetxController {
     try {
       return await DataPref().setUser(model);
     } catch (e) {
-      print('======$e====');
+      print('======>>>$e<<<====');
       return false;
     }
   }

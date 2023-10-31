@@ -34,6 +34,7 @@ class Translation extends Translations {
           'fireverification': 'invalid verification code',
           'ok': 'ok',
           'hello': 'Hello',
+          'wrongotp': 'Wrong Code'
         },
         'ar_SA': {
           'email': 'العنوان الالكتروني',
@@ -65,7 +66,8 @@ class Translation extends Translations {
           'enterphone': ' ادخل رقم الجوال ',
           'fireverification': 'رقم التحقق غير صحيح',
           'ok': 'حسنا',
-          'hello': 'مرحبا'
+          'hello': 'مرحبا',
+          'wrongotp': "الرمز خاطئ"
         }
       };
 }

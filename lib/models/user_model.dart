@@ -95,12 +95,16 @@ class UserModel {
             ChosenTheme.values.firstWhere((e) => e.toString() == map['theme']),
         birthday: map['birthday'],
         phoneNumber: map['phoneNumber'],
-        movieWatchList: map['movieWatchList'].split(','),
-        showWatchList: map['showWatchList'].split(','),
-        favs: map['favs'].split(','),
-        watching: map['points'].split(','),
-        commentLike: map['commentLike'].split(','),
-        commentDislike: map['commentDislike'].split(','),
+        movieWatchList:
+            map['movieWatchList'] != [] ? map['movieWatchList'].split(',') : [],
+        showWatchList:
+            map['showWatchList'] != [] ? map['showWatchList'].split(',') : [],
+        favs: map['favs'] != [] ? map['favs'].split(',') : [],
+        watching: map['watching'] != [] ? map['watching'].split(',') : [],
+        commentLike:
+            map['commentLike'] != [] ? map['commentLike'].split(',') : [],
+        commentDislike:
+            map['commentDislike'] != [] ? map['commentDislike'].split(',') : [],
         errorMessage: map['errorMessage']);
   }
 }

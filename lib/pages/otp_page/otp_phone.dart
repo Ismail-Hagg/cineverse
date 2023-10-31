@@ -66,6 +66,7 @@ class OtpPhone extends StatelessWidget {
                     height: width * 0.3,
                     width: width,
                     child: PinFieldAutoFill(
+                      controller: controller.otpController,
                       autoFocus: true,
                       decoration: UnderlineDecoration(
                         textStyle: TextStyle(
@@ -74,17 +75,12 @@ class OtpPhone extends StatelessWidget {
                         colorBuilder: FixedColorBuilder(
                             Theme.of(context).colorScheme.secondary),
                       ),
-                      currentCode: '',
+                      currentCode: controller.otpController.text,
                       onCodeSubmitted: (code) {},
-                      onCodeChanged: (code) {
-                        if (code!.length == 6) {
-                          FocusScope.of(context).requestFocus(FocusNode());
-                          controller.otpVerify(
-                              otp: code,
-                              verificationId: verificationId,
-                              context: context);
-                        }
-                      },
+                      onCodeChanged: (code) => controller.onPtpChanged(
+                          code: code,
+                          context: context,
+                          verificationId: verificationId),
                     ),
                   ),
                 ),
