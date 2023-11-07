@@ -1,17 +1,21 @@
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:cineverse/local_storage/user_data.dart';
 import 'package:cineverse/models/user_model.dart';
+import 'package:cineverse/pages/info_page/info_controller.dart';
 import 'package:cineverse/pages/otp_page/otp_controller.dart';
 import 'package:cineverse/pages/pre_otp_page/pre_otp_controller.dart';
 import 'package:cineverse/pages/view_controller.dart';
 import 'package:cineverse/services/firebase_service.dart';
 import 'package:cineverse/utils/constants.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cineverse/utils/enums.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:intl/intl.dart';
 import 'package:phone_number/phone_number.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 
@@ -51,7 +55,8 @@ class AuthController extends GetxController {
     FieldType.loginPass: FocusNode(),
     FieldType.signupEmail: FocusNode(),
     FieldType.signupPass: FocusNode(),
-    FieldType.signupUser: FocusNode()
+    FieldType.signupUser: FocusNode(),
+    FieldType.signupBirth: FocusNode()
   };
 
   final Map<FieldType, bool> _flips = {
@@ -59,7 +64,8 @@ class AuthController extends GetxController {
     FieldType.loginPass: false,
     FieldType.signupEmail: false,
     FieldType.signupPass: false,
-    FieldType.signupUser: false
+    FieldType.signupUser: false,
+    FieldType.signupBirth: false
   };
 
   final Map<FieldType, TextEditingController> _txtControllers = {
@@ -67,7 +73,8 @@ class AuthController extends GetxController {
     FieldType.loginPass: TextEditingController(),
     FieldType.signupEmail: TextEditingController(),
     FieldType.signupPass: TextEditingController(),
-    FieldType.signupUser: TextEditingController()
+    FieldType.signupUser: TextEditingController(),
+    FieldType.signupBirth: TextEditingController()
   };
 
   @override
@@ -76,7 +83,7 @@ class AuthController extends GetxController {
     _user.bindStream(_auth.authStateChanges());
     _userModel = _userModelStart;
     setListeners();
-    //_auth.setSettings(appVerificationDisabledForTesting: true);
+    _auth.setLanguageCode(_userModel.language!.substring(0, 2));
   }
 
   @override
@@ -137,14 +144,12 @@ class AuthController extends GetxController {
   }
 
   // update the user model
-  void userUpdate({required UserModel user}) {
+  void userUpdate({required UserModel user}) async {
     _userModel = user;
-    DataPref()
+    await DataPref()
         .setUser(_userModel)
         .then((value) => print("Operation is ===> $value"));
   }
-
-  // when click back from otp page
 
   // switch the theme
   void themeSwich() {
@@ -244,7 +249,6 @@ class AuthController extends GetxController {
         phoneNumber: phoneNumber,
         verificationCompleted: (credential) async {},
         verificationFailed: (e) async {
-          print('== $e ==');
           _loading = false;
           update();
           await showOkAlertDialog(
@@ -260,7 +264,6 @@ class AuthController extends GetxController {
         codeAutoRetrievalTimeout: (verificationId) {},
       );
     } on FirebaseAuthException catch (e) {
-      print('=== ${e.code} ===');
       // ignore: use_build_context_synchronously
       await showOkAlertDialog(
         context: context,
@@ -284,7 +287,7 @@ class AuthController extends GetxController {
       await _auth.signInWithCredential(creds).then((user) async {
         await userExists(userId: user.user!.uid).then((value) async {
           if (value) {
-            // old user , data already converted in the userExist function just save it locally , go to controller
+            // old user
             await FirebaseServices()
                 .getCurrentUser(userId: user.user!.uid)
                 .then(
@@ -349,9 +352,27 @@ class AuthController extends GetxController {
                 );
                 Get.back();
               }
-            }).onError((error, stackTrace) {});
+            }).onError((error, stackTrace) async {
+              _loading = false;
+              update();
+              Get.back();
+              await showOkAlertDialog(
+                context: context,
+                title: 'error'.tr,
+                message: 'firelogin'.tr,
+              );
+            });
           }
-        }).onError((error, stackTrace) {});
+        }).onError((error, stackTrace) async {
+          _loading = false;
+          update();
+          Get.back();
+          await showOkAlertDialog(
+            context: context,
+            title: 'error'.tr,
+            message: 'firelogin'.tr,
+          );
+        });
       });
     } catch (e) {
       // wrong otp
@@ -377,9 +398,6 @@ class AuthController extends GetxController {
   // check if the user exists
   Future<bool> userExists({required String userId}) async {
     var thing = await FirebaseServices().getCurrentUser(userId: userId);
-    // if (thing.exists) {
-    //   _userModel = UserModel.fromMap(thing.data() as Map<String, dynamic>);
-    // }
     return thing.exists;
   }
 
@@ -393,9 +411,296 @@ class AuthController extends GetxController {
     }
   }
 
+  // google sign in method
+  void googleSignIn({required BuildContext context}) async {
+    _loading = true;
+    update();
+    await GoogleSignIn().signIn().then(
+      (value) async {
+        if (value != null) {
+          try {
+            final GoogleSignInAuthentication gAuth = await value.authentication;
+
+            final credential = GoogleAuthProvider.credential(
+                accessToken: gAuth.accessToken, idToken: gAuth.idToken);
+            await _auth.signInWithCredential(credential).then(
+              (user) async {
+                await userExists(userId: user.user!.uid).then(
+                  (val) async {
+                    if (val) {
+                      // old user
+                      await FirebaseServices()
+                          .getCurrentUser(userId: user.user!.uid)
+                          .then(
+                        (value) async {
+                          _userModel = UserModel.fromMap(
+                              value.data() as Map<String, dynamic>);
+                          await saveUserDataLocally(model: _userModel)
+                              .then((saved) async {
+                            if (saved) {
+                              _loading = false;
+                              Get.offAll(() => const ViewController());
+                            } else {
+                              _loading = false;
+                              update();
+                              await showOkAlertDialog(
+                                context: context,
+                                title: 'error'.tr,
+                                message: 'firelogin'.tr,
+                              );
+                              Get.back();
+                            }
+                          });
+                        },
+                      );
+                    } else {
+                      // new user
+
+                      _userModel = UserModel(
+                          userName: user.user!.displayName ?? '',
+                          email: user.user!.email ?? '',
+                          onlinePicPath: user.user!.photoURL ?? '',
+                          localPicPath: '',
+                          userId: user.user!.uid,
+                          language: languageDev(),
+                          isError: false,
+                          messagingToken: '',
+                          state: LogState.info,
+                          gender: Gender.undecided,
+                          phoneNumber: user.user!.phoneNumber ?? '',
+                          birthday: '',
+                          errorMessage: '',
+                          method: LoginMethod.google,
+                          avatarType: AvatarType.online,
+                          movieWatchList: [],
+                          showWatchList: [],
+                          favs: [],
+                          watching: [],
+                          theme: ChosenTheme.system,
+                          commentDislike: [],
+                          commentLike: []);
+                      await saveUserDataLocally(model: _userModel)
+                          .then((saved) async {
+                        if (saved) {
+                          _loading = false;
+                          Get.offAll(() => const ViewController());
+                        } else {
+                          _loading = false;
+                          update();
+                          // ignore: use_build_context_synchronously
+                          await showOkAlertDialog(
+                            context: context,
+                            title: 'error'.tr,
+                            message: 'firelogin'.tr,
+                          );
+                          Get.back();
+                        }
+                      }).onError((error, stackTrace) async {
+                        _loading = false;
+                        update();
+                        Get.back();
+                        await showOkAlertDialog(
+                          context: context,
+                          title: 'error'.tr,
+                          message: 'firelogin'.tr,
+                        );
+                      });
+                    }
+                  },
+                );
+              },
+            );
+          } on FirebaseAuthException catch (e) {
+            _loading = false;
+            update();
+            // ignore: use_build_context_synchronously
+            await showOkAlertDialog(
+              context: context,
+              title: 'error'.tr,
+              message: getMessageFromErrorCode(errorMessage: e.code),
+            );
+          } catch (e) {
+            _loading = false;
+            update();
+            // ignore: use_build_context_synchronously
+            await showOkAlertDialog(
+              context: context,
+              title: 'error'.tr,
+              message: getMessageFromErrorCode(errorMessage: e.toString()),
+            );
+          }
+        } else {
+          _loading = false;
+          update();
+        }
+      },
+    );
+  }
+
+  // login with email and password
+  void emailLogin({required BuildContext context}) async {
+    String email = _txtControllers[FieldType.loginEmail]!.text;
+    String password = _txtControllers[FieldType.loginPass]!.text;
+    if (email.trim() != '' && password.trim() != '') {
+      unfocusNodes();
+      _loading = true;
+      update();
+
+      try {
+        await _auth
+            .signInWithEmailAndPassword(email: email, password: password)
+            .then((user) async {
+          FirebaseServices()
+              .getCurrentUser(userId: user.user!.uid.toString())
+              .then((value) {
+            _userModel =
+                UserModel.fromMap(value.data() as Map<String, dynamic>);
+            saveUserDataLocally(model: _userModel).then((done) async {
+              if (done) {
+                _loading = false;
+                Get.offAll(() => const ViewController());
+              } else {
+                _loading = false;
+                update();
+                await showOkAlertDialog(
+                  context: context,
+                  title: 'error'.tr,
+                  message: 'firelogin'.tr,
+                );
+              }
+            });
+          });
+        });
+      } on FirebaseAuthException catch (e) {
+        _loading = false;
+        update();
+        print('=====>>> ${e.code}');
+        // ignore: use_build_context_synchronously
+        await showOkAlertDialog(
+          context: context,
+          title: 'error'.tr,
+          message: getMessageFromErrorCode(errorMessage: e.code),
+        );
+      } catch (e) {
+        _loading = false;
+        update();
+        print('=====>>> $e');
+        // ignore: use_build_context_synchronously
+        await showOkAlertDialog(
+          context: context,
+          title: 'error'.tr,
+          message: getMessageFromErrorCode(errorMessage: e.toString()),
+        );
+      }
+    }
+  }
+
+  // go to info page for email new account
+  void goToEmail() {
+    _userModel = UserModel(
+        userName: '',
+        email: '',
+        onlinePicPath: '',
+        localPicPath: '',
+        userId: '',
+        language: languageDev(),
+        isError: false,
+        messagingToken: '',
+        state: LogState.info,
+        gender: Gender.undecided,
+        phoneNumber: '',
+        birthday: '',
+        errorMessage: '',
+        method: LoginMethod.email,
+        avatarType: AvatarType.none,
+        movieWatchList: [],
+        showWatchList: [],
+        favs: [],
+        watching: [],
+        theme: ChosenTheme.system,
+        commentDislike: [],
+        commentLike: []);
+
+    Get.to(() => const InfoController());
+  }
+
+  // back from info page
+  void infoBack() {
+    if (_userModel.method == LoginMethod.email) {
+      _userModel.state = LogState.none;
+      _userModel.method = LoginMethod.none;
+      Get.back();
+    } else {
+      signOut();
+    }
+  }
+
+  // select pic from device
+  void selectPic({required bool save}) async {
+    await FilePicker.platform.pickFiles(
+        allowMultiple: false,
+        type: FileType.custom,
+        allowedExtensions: ['png', 'jpg', 'jpeg']).then((value) async {
+      if (value != null) {
+        _userModel.localPicPath = value.files.single.path.toString();
+        _userModel.avatarType = AvatarType.local;
+        if (save) {
+          await saveUserDataLocally(model: _userModel);
+        }
+        update();
+      }
+    });
+  }
+
+  // delete selected picture
+  void deletePic({required bool save}) async {
+    _userModel.localPicPath = '';
+    _userModel.avatarType = AvatarType.none;
+    if (save) {
+      await saveUserDataLocally(model: _userModel);
+    }
+    update();
+  }
+
   // upload user data to firestore
   Future<void> uploadUser({required UserModel model}) async {
     await FirebaseServices().addUsers(model);
+  }
+
+  // date picker platform
+  void datePicker({
+    required BuildContext context,
+    required Widget iosDate,
+  }) async {
+    if (platform == TargetPlatform.iOS) {
+      showCupertinoModalPopup(
+          context: context,
+          builder: (BuildContext context) {
+            return iosDate;
+          });
+    } else {
+      final DateTime? dateTime = await showDatePicker(
+          context: context,
+          initialDate: DateTime.now(),
+          firstDate: DateTime(1950),
+          lastDate: DateTime(3000));
+      if (dateTime != null) {
+        setBirth(birth: dateTime, clear: false);
+      }
+    }
+  }
+
+  // set birth date in user model
+  void setBirth({required DateTime birth, required bool clear}) {
+    if (clear) {
+      _userModel.birthday = '';
+      _txtControllers[FieldType.signupBirth]!.clear();
+    } else {
+      String time = DateFormat('yyyy-MM-dd').format(birth);
+      _userModel.birthday = time;
+      _txtControllers[FieldType.signupBirth]!.text = time;
+    }
+    update();
   }
 
   // // uploading image to firebase storage

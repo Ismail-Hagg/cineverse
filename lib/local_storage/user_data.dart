@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cineverse/models/user_model.dart';
+import 'package:cineverse/utils/functions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/constants.dart';
 
@@ -21,6 +22,7 @@ class DataPref {
     } catch (e) {
       model.isError = true;
       model.errorMessage = e.toString();
+      model.language = languageDev();
       return model;
     }
   }

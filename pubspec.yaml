@@ -45,6 +45,8 @@ dependencies:
   google_sign_in: ^6.1.5
   cloud_firestore: ^4.12.1
   phone_number: ^2.0.1
+  file_picker: ^6.1.1
+  intl: ^0.18.1
 
 dev_dependencies:
   flutter_test:

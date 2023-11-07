@@ -8,4 +8,11 @@ enum AvatarType { local, online, none }
 
 enum ChosenTheme { light, dark, system }
 
-enum FieldType { loginEmail, loginPass, signupEmail, signupPass, signupUser }
+enum FieldType {
+  loginEmail,
+  loginPass,
+  signupEmail,
+  signupPass,
+  signupUser,
+  signupBirth
+}

@@ -50,26 +50,29 @@ class PreOtpPhone extends StatelessWidget {
                   width: width * 0.9,
                   obscure: false,
                   isSelected: true,
-                  other: InternationalPhoneNumberInput(
-                    autoFocus: true,
-                    keyboardAction: TextInputAction.next,
-                    keyboardType: TextInputType.number,
-                    hintText: 'enterphone'.tr,
-                    initialValue: PhoneNumber(
-                      isoCode: 'SA',
-                      phoneNumber: controller.userModel.phoneNumber,
+                  other: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: InternationalPhoneNumberInput(
+                      autoFocus: true,
+                      keyboardAction: TextInputAction.next,
+                      keyboardType: TextInputType.number,
+                      hintText: 'enterphone'.tr,
+                      initialValue: PhoneNumber(
+                        isoCode: 'SA',
+                        phoneNumber: controller.userModel.phoneNumber,
+                      ),
+                      inputBorder: InputBorder.none,
+                      cursorColor: Colors.transparent,
+                      autoValidateMode: AutovalidateMode.disabled,
+                      selectorConfig: const SelectorConfig(
+                          selectorType: PhoneInputSelectorType.DIALOG,
+                          useEmoji: true,
+                          leadingPadding: 18,
+                          setSelectorButtonAsPrefixIcon: true),
+                      onInputChanged: (val) => controller.moedelPhone(
+                          phone: val.phoneNumber.toString(),
+                          country: val.isoCode.toString()),
                     ),
-                    inputBorder: InputBorder.none,
-                    cursorColor: Colors.transparent,
-                    autoValidateMode: AutovalidateMode.disabled,
-                    selectorConfig: const SelectorConfig(
-                        selectorType: PhoneInputSelectorType.DIALOG,
-                        useEmoji: true,
-                        leadingPadding: 18,
-                        setSelectorButtonAsPrefixIcon: true),
-                    onInputChanged: (val) => controller.moedelPhone(
-                        phone: val.phoneNumber.toString(),
-                        country: val.isoCode.toString()),
                   ),
                 ),
                 Expanded(child: Container()),

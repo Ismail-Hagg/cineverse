@@ -32,23 +32,12 @@ void main() async {
       );
       runApp(
         MyApp(
-          language: language(user: user),
+          language: Locale(
+              user.language!.substring(0, 2), user.language!.substring(3, 5)),
         ),
       );
     },
   );
-}
-
-Locale language({required UserModel user}) {
-  return user.isError == true || user.language == ''
-      ? Locale(
-          languageDev().substring(0, 2),
-          languageDev().substring(3, 5),
-        )
-      : Locale(
-          user.language.toString().substring(0, 2),
-          user.language.toString().substring(3, 5),
-        );
 }
 
 class MyApp extends StatelessWidget {

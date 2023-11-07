@@ -34,6 +34,8 @@ String getMessageFromErrorCode({required String errorMessage}) {
       return "fireemail".tr;
     case 'invalid-verification-code':
       return 'fireverification'.tr;
+    case 'INVALID_LOGIN_CREDENTIALS':
+      return 'invalidcred'.tr;
     default:
       return "firelogin".tr;
   }

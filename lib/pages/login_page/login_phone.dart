@@ -15,15 +15,14 @@ class LoginPhone extends StatelessWidget {
     return GestureDetector(
       onTap: () => Get.find<AuthController>().unfocusNodes(),
       child: Scaffold(
-        // resizeToAvoidBottomInset: false,
         backgroundColor: Theme.of(context).colorScheme.background,
         body: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
             double height = constraints.maxHeight;
             double width = constraints.maxWidth;
             return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
               child: SizedBox(
-                // height: height,
                 width: width,
                 child: GetBuilder<AuthController>(
                   init: Get.find<AuthController>(),
@@ -70,7 +69,7 @@ class LoginPhone extends StatelessWidget {
                         controller:
                             controller.txtControllers[FieldType.loginPass]
                                 as TextEditingController,
-                        leadingIcon: const Icon(Icons.email),
+                        leadingIcon: const Icon(FontAwesomeIcons.lock),
                         obscure: controller.passOb,
                         type: TextInputType.text,
                         isSelected:
@@ -101,7 +100,8 @@ class LoginPhone extends StatelessWidget {
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor:
                                         Theme.of(context).colorScheme.primary),
-                                onPressed: () => controller.themeSwich(),
+                                onPressed: () =>
+                                    controller.emailLogin(context: context),
                                 child: controller.loading
                                     ? Padding(
                                         padding: const EdgeInsets.symmetric(
@@ -137,7 +137,8 @@ class LoginPhone extends StatelessWidget {
                                             .colorScheme
                                             .background,
                                       ),
-                                onPressed: () => controller.themeSwich(),
+                                onPressed: () =>
+                                    controller.emailLogin(context: context),
                               ),
                       ),
                       Padding(
@@ -177,9 +178,7 @@ class LoginPhone extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           LoginInput(
-                            socialLog: () {
-                              print('------------ social shit--------------');
-                            },
+                            socialLog: () => controller.goToEmail(),
                             height: width * 0.15,
                             width: width * 0.15,
                             obscure: false,
@@ -195,7 +194,7 @@ class LoginPhone extends StatelessWidget {
                           ),
                           LoginInput(
                             socialLog: () =>
-                                controller.phoneLoginStart(context: context),
+                                controller.googleSignIn(context: context),
                             height: width * 0.15,
                             width: width * 0.15,
                             obscure: false,

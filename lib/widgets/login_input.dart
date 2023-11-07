@@ -15,22 +15,31 @@ class LoginInput extends StatelessWidget {
   final Color? suffexColor;
   final Widget? other;
   final Function()? socialLog;
-  const LoginInput(
-      {super.key,
-      required this.height,
-      required this.width,
-      this.focusNode,
-      this.hintText,
-      this.controller,
-      this.leadingIcon,
-      required this.obscure,
-      this.suffex,
-      this.type,
-      this.action,
-      required this.isSelected,
-      this.suffexColor,
-      this.other,
-      this.socialLog});
+  final bool? otherShadow;
+  final bool? readOnly;
+  final Function()? onTap;
+  final String? hintNoLable;
+  const LoginInput({
+    super.key,
+    required this.height,
+    required this.width,
+    this.focusNode,
+    this.hintText,
+    this.controller,
+    this.leadingIcon,
+    required this.obscure,
+    this.suffex,
+    this.type,
+    this.action,
+    required this.isSelected,
+    this.suffexColor,
+    this.other,
+    this.socialLog,
+    this.otherShadow,
+    this.readOnly,
+    this.onTap,
+    this.hintNoLable,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -59,17 +68,27 @@ class LoginInput extends StatelessWidget {
                           offset: const Offset(1, 1),
                           spreadRadius: 0.1),
                     ]
-              : [
-                  BoxShadow(
-                      color: Theme.of(context).colorScheme.shadow,
-                      blurRadius: 5,
-                      offset: const Offset(2, 2),
-                      spreadRadius: 0.5),
-                ],
+              : otherShadow == true
+                  ? [
+                      BoxShadow(
+                          color: Theme.of(context).colorScheme.shadow,
+                          blurRadius: 5,
+                          offset: const Offset(2, 2),
+                          spreadRadius: 0.5),
+                    ]
+                  : [
+                      BoxShadow(
+                          color: Theme.of(context).colorScheme.shadow,
+                          blurRadius: 0.1,
+                          offset: const Offset(1, 1),
+                          spreadRadius: 0.1),
+                    ],
         ),
         child: Center(
           child: other ??
               TextField(
+                onTap: onTap,
+                readOnly: readOnly ?? false,
                 obscureText: obscure,
                 textInputAction: action,
                 keyboardType: type,
@@ -77,12 +96,15 @@ class LoginInput extends StatelessWidget {
                 controller: controller,
                 showCursor: false,
                 decoration: InputDecoration(
+                    hintText: hintNoLable,
                     prefixIcon: leadingIcon,
-                    prefixIconColor: Theme.of(context).colorScheme.secondary,
+                    prefixIconColor: isSelected
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.secondary,
                     suffixIcon: suffex,
                     suffixIconColor: suffexColor,
                     border: InputBorder.none,
-                    hintText: hintText),
+                    labelText: hintText),
               ),
         ),
       ),

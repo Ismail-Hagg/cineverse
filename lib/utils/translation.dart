@@ -34,7 +34,8 @@ class Translation extends Translations {
           'fireverification': 'invalid verification code',
           'ok': 'ok',
           'hello': 'Hello',
-          'wrongotp': 'Wrong Code'
+          'wrongotp': 'Wrong Code',
+          'invalidcred': 'Invalid Login Credentials',
         },
         'ar_SA': {
           'email': 'العنوان الالكتروني',
@@ -67,7 +68,8 @@ class Translation extends Translations {
           'fireverification': 'رقم التحقق غير صحيح',
           'ok': 'حسنا',
           'hello': 'مرحبا',
-          'wrongotp': "الرمز خاطئ"
+          'wrongotp': "الرمز خاطئ",
+          'invalidcred': 'بيانات تسجيل دخول خاطئة'
         }
       };
 }
