@@ -146,9 +146,7 @@ class AuthController extends GetxController {
   // update the user model
   void userUpdate({required UserModel user}) async {
     _userModel = user;
-    await DataPref()
-        .setUser(_userModel)
-        .then((value) => print("Operation is ===> $value"));
+    await DataPref().setUser(_userModel);
   }
 
   // switch the theme
@@ -169,6 +167,9 @@ class AuthController extends GetxController {
     await _auth.signOut();
     await DataPref().deleteUser();
     update();
+    _txtControllers.forEach((key, value) {
+      value.clear();
+    });
   }
 
   // phone login  start
@@ -406,7 +407,6 @@ class AuthController extends GetxController {
     try {
       return await DataPref().setUser(model);
     } catch (e) {
-      print('======>>>$e<<<====');
       return false;
     }
   }
@@ -483,6 +483,10 @@ class AuthController extends GetxController {
                           .then((saved) async {
                         if (saved) {
                           _loading = false;
+                          _txtControllers[FieldType.signupUser]!.text =
+                              _userModel.userName.toString();
+                          _txtControllers[FieldType.signupEmail]!.text =
+                              _userModel.email.toString();
                           Get.offAll(() => const ViewController());
                         } else {
                           _loading = false;
@@ -558,6 +562,7 @@ class AuthController extends GetxController {
             saveUserDataLocally(model: _userModel).then((done) async {
               if (done) {
                 _loading = false;
+                update();
                 Get.offAll(() => const ViewController());
               } else {
                 _loading = false;
@@ -574,7 +579,6 @@ class AuthController extends GetxController {
       } on FirebaseAuthException catch (e) {
         _loading = false;
         update();
-        print('=====>>> ${e.code}');
         // ignore: use_build_context_synchronously
         await showOkAlertDialog(
           context: context,
@@ -584,7 +588,6 @@ class AuthController extends GetxController {
       } catch (e) {
         _loading = false;
         update();
-        print('=====>>> $e');
         // ignore: use_build_context_synchronously
         await showOkAlertDialog(
           context: context,
@@ -662,6 +665,184 @@ class AuthController extends GetxController {
     update();
   }
 
+  // finish logging in from info page
+  void afterInfo({required BuildContext context}) async {
+    String email = _txtControllers[FieldType.signupEmail]!.text;
+    String user = _txtControllers[FieldType.signupUser]!.text;
+    String birth = _userModel.birthday.toString();
+    Gender gender = _userModel.gender as Gender;
+
+    switch (_userModel.method) {
+      case LoginMethod.email:
+        emailSignup(context: context);
+        break;
+
+      case LoginMethod.google:
+        _loading = true;
+        update();
+        if (email.trim() != '' &&
+            user.trim() != '' &&
+            birth != '' &&
+            gender != Gender.undecided) {
+          _userModel.userName = user;
+          _userModel.birthday = birth;
+          _userModel.email = email;
+          _userModel.gender = gender;
+          _userModel.state = LogState.full;
+          await saveUserDataLocally(model: _userModel).then((saved) async {
+            // data saves , redirect to home page and updoad user data to backend
+            _loading = false;
+            update();
+            Get.offAll(() => const ViewController());
+            await uploadUser(model: _userModel);
+          });
+        } else {
+          _loading = false;
+          update();
+          await showOkAlertDialog(
+            context: context,
+            title: 'error'.tr,
+            message: 'complete'.tr,
+          );
+        }
+        break;
+
+      case LoginMethod.phone:
+        _loading = true;
+        update();
+        if (user.trim() != '' && birth != '' && gender != Gender.undecided) {
+          _userModel.userName = user;
+          _userModel.birthday = birth;
+          _userModel.gender = gender;
+          _userModel.state = LogState.full;
+          await saveUserDataLocally(model: _userModel).then((saved) async {
+            // data saves , redirect to home page and updoad user data to backend
+            _loading = false;
+            update();
+            Get.offAll(() => const ViewController());
+            await uploadUser(model: _userModel);
+          });
+        } else {
+          _loading = false;
+          update();
+          // ignore: use_build_context_synchronously
+          await showOkAlertDialog(
+            context: context,
+            title: 'error'.tr,
+            message: 'complete'.tr,
+          );
+        }
+        break;
+      default:
+    }
+  }
+
+  // login with email and password
+  void emailSignup({
+    required BuildContext context,
+  }) async {
+    String email = _txtControllers[FieldType.signupEmail]!.text;
+    String password = _txtControllers[FieldType.signupPass]!.text;
+    String localUser = _txtControllers[FieldType.signupUser]!.text;
+    String birth = _userModel.birthday.toString();
+    Gender gender = _userModel.gender as Gender;
+
+    if (email.trim() != '' &&
+        password.trim() != '' &&
+        localUser.trim() != '' &&
+        birth.trim() != '' &&
+        gender != Gender.undecided) {
+      _loading = true;
+      update();
+      unfocusNodes();
+      try {
+        await _auth
+            .createUserWithEmailAndPassword(email: email, password: password)
+            .then(
+          (user) async {
+            // new user
+
+            _userModel = UserModel(
+                userName: localUser.trim(),
+                email: user.user!.email ?? '',
+                onlinePicPath: user.user!.photoURL ?? '',
+                localPicPath: _userModel.localPicPath,
+                userId: user.user!.uid,
+                language: languageDev(),
+                isError: false,
+                messagingToken: '',
+                state: LogState.full,
+                gender: _userModel.gender,
+                phoneNumber: user.user!.phoneNumber ?? '',
+                birthday: _userModel.birthday,
+                errorMessage: '',
+                method: LoginMethod.email,
+                avatarType: _userModel.avatarType,
+                movieWatchList: [],
+                showWatchList: [],
+                favs: [],
+                watching: [],
+                theme: ChosenTheme.system,
+                commentDislike: [],
+                commentLike: []);
+            await saveUserDataLocally(model: _userModel).then((saved) async {
+              if (saved) {
+                _loading = false;
+                update();
+                Get.offAll(() => const ViewController());
+                await uploadUser(model: _userModel);
+              } else {
+                _loading = false;
+                update();
+                // ignore: use_build_context_synchronously
+                await showOkAlertDialog(
+                  context: context,
+                  title: 'error'.tr,
+                  message: 'firelogin'.tr,
+                );
+              }
+            }).onError((error, stackTrace) async {
+              _loading = false;
+              update();
+              Get.back();
+              await showOkAlertDialog(
+                context: context,
+                title: 'error'.tr,
+                message: 'firelogin'.tr,
+              );
+            });
+          },
+        );
+      } on FirebaseAuthException catch (e) {
+        _loading = false;
+        update();
+        // ignore: use_build_context_synchronously
+        await showOkAlertDialog(
+          context: context,
+          title: 'error'.tr,
+          message: getMessageFromErrorCode(errorMessage: e.code),
+        );
+      } catch (e) {
+        _loading = false;
+        update();
+        // ignore: use_build_context_synchronously
+        await showOkAlertDialog(
+          context: context,
+          title: 'error'.tr,
+          message: getMessageFromErrorCode(errorMessage: e.toString()),
+        );
+      }
+    } else {
+      _loading = false;
+      update();
+      await showOkAlertDialog(
+        context: context,
+        title: 'error'.tr,
+        message: 'complete'.tr,
+      );
+    }
+  }
+
   // upload user data to firestore
   Future<void> uploadUser({required UserModel model}) async {
     await FirebaseServices().addUsers(model);
@@ -700,6 +881,12 @@ class AuthController extends GetxController {
       _userModel.birthday = time;
       _txtControllers[FieldType.signupBirth]!.text = time;
     }
+    update();
+  }
+
+  // set gender in model
+  void setGender({required Gender gender}) {
+    _userModel.gender = gender;
     update();
   }
 

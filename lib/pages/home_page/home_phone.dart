@@ -11,8 +11,7 @@ class HomePhone extends StatelessWidget {
       body: Center(
         child: GestureDetector(
             onTap: () => Get.find<AuthController>().signOut(),
-            child: Text(
-                'Phone View ${MediaQuery.of(context).size.width} ${Get.find<AuthController>().userModel.isError}')),
+            child: Text(' ${Get.find<AuthController>().userModel.toMap()}')),
       ),
     );
   }

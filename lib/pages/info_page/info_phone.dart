@@ -1,5 +1,4 @@
 import 'package:cineverse/controllers/auth_controller.dart';
-import 'package:cineverse/utils/constants.dart';
 import 'package:cineverse/utils/enums.dart';
 import 'package:cineverse/widgets/avatar_widget.dart';
 import 'package:cineverse/widgets/custom_text.dart';
@@ -132,7 +131,7 @@ class InfoPhone extends StatelessWidget {
                                   as TextEditingController,
                           leadingIcon: const Icon(FontAwesomeIcons.user),
                           obscure: false,
-                          type: TextInputType.emailAddress,
+                          type: TextInputType.text,
                           isSelected:
                               controller.flips[FieldType.signupUser] as bool,
                         ),
@@ -236,22 +235,29 @@ class InfoPhone extends StatelessWidget {
                           hintNoLable: 'gender'.tr,
                           leadingIcon: const Icon(FontAwesomeIcons.user),
                           obscure: false,
-                          isSelected:
-                              controller.flips[FieldType.signupPass] as bool,
+                          isSelected: false,
                           readOnly: true,
-                          suffex: Container(
-                            color: Colors.red.withOpacity(0.4),
-                            width: width * 0.5,
+                          suffex: SizedBox(
+                            width: width * 0.6,
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12.0),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: width * 0.02),
                                   child: GestureDetector(
-                                    onTap: () => {},
-                                    // build.setGender(gender: Gender.male),
+                                    onTap: () =>
+                                        control.setGender(gender: Gender.male),
                                     child: Chip(
+                                      backgroundColor:
+                                          control.userModel.gender ==
+                                                  Gender.male
+                                              ? Theme.of(context)
+                                                  .colorScheme
+                                                  .primary
+                                              : Theme.of(context)
+                                                  .colorScheme
+                                                  .background,
                                       shadowColor:
                                           Theme.of(context).colorScheme.shadow,
                                       elevation: control.userModel.gender ==
@@ -261,45 +267,68 @@ class InfoPhone extends StatelessWidget {
                                       side: BorderSide(
                                           color: control.userModel.gender ==
                                                   Gender.male
-                                              ? Colors.red
-                                              : Colors.red.withOpacity(0.5)),
+                                              ? Theme.of(context)
+                                                  .colorScheme
+                                                  .primary
+                                              : Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary),
                                       padding: const EdgeInsets.all(12.0),
                                       label: CustomText(
-                                        text: 'male'.tr,
-                                        color: control.userModel.gender ==
-                                                Gender.male
-                                            ? blackColor
-                                            : blackColor.withOpacity(0.5),
-                                      ),
+                                          text: 'male'.tr,
+                                          color: control.userModel.gender ==
+                                                  Gender.male
+                                              ? Theme.of(context)
+                                                  .colorScheme
+                                                  .background
+                                              : Theme.of(context)
+                                                  .colorScheme
+                                                  .primary),
                                     ),
                                   ),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12.0),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: width * 0.02),
                                   child: GestureDetector(
-                                    onTap: () => {},
-                                    // build.setGender(gender: Gender.male),
+                                    onTap: () => control.setGender(
+                                        gender: Gender.female),
                                     child: Chip(
+                                      backgroundColor:
+                                          control.userModel.gender ==
+                                                  Gender.female
+                                              ? Theme.of(context)
+                                                  .colorScheme
+                                                  .primary
+                                              : Theme.of(context)
+                                                  .colorScheme
+                                                  .background,
                                       shadowColor:
                                           Theme.of(context).colorScheme.shadow,
                                       elevation: control.userModel.gender ==
-                                              Gender.male
+                                              Gender.female
                                           ? 5
                                           : 0,
                                       side: BorderSide(
                                           color: control.userModel.gender ==
-                                                  Gender.male
-                                              ? Colors.red
-                                              : Colors.red.withOpacity(0.5)),
+                                                  Gender.female
+                                              ? Theme.of(context)
+                                                  .colorScheme
+                                                  .primary
+                                              : Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary),
                                       padding: const EdgeInsets.all(12.0),
                                       label: CustomText(
-                                        text: 'male'.tr,
-                                        color: control.userModel.gender ==
-                                                Gender.male
-                                            ? blackColor
-                                            : blackColor.withOpacity(0.5),
-                                      ),
+                                          text: 'female'.tr,
+                                          color: control.userModel.gender ==
+                                                  Gender.female
+                                              ? Theme.of(context)
+                                                  .colorScheme
+                                                  .background
+                                              : Theme.of(context)
+                                                  .colorScheme
+                                                  .primary),
                                     ),
                                   ),
                                 ),
@@ -307,7 +336,60 @@ class InfoPhone extends StatelessWidget {
                             ),
                           ),
                         ),
-                      )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 18),
+                        child: SizedBox(
+                          width: width,
+                          child: control.platform == TargetPlatform.android
+                              ? ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                                  onPressed: () =>
+                                      control.afterInfo(context: context),
+                                  child: controller.loading
+                                      ? Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 4.0),
+                                          child: CircularProgressIndicator(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .background,
+                                          ),
+                                        )
+                                      : CustomText(
+                                          text: 'signup'.tr,
+                                          size: width * 0.05,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .background,
+                                        ),
+                                )
+                              : CupertinoButton(
+                                  padding: EdgeInsets.zero,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  child: control.loading
+                                      ? CupertinoActivityIndicator(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .background,
+                                        )
+                                      : CustomText(
+                                          text: 'signup'.tr,
+                                          size: width * 0.05,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .background,
+                                        ),
+                                  onPressed: () =>
+                                      control.afterInfo(context: context),
+                                ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
