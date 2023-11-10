@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class LoginInput extends StatelessWidget {
   final double height;
   final double width;
+  final double? textSize;
   final FocusNode? focusNode;
   final bool isSelected;
   final String? hintText;
@@ -39,6 +40,7 @@ class LoginInput extends StatelessWidget {
     this.readOnly,
     this.onTap,
     this.hintNoLable,
+    this.textSize,
   });
 
   @override
@@ -96,7 +98,10 @@ class LoginInput extends StatelessWidget {
                 controller: controller,
                 showCursor: false,
                 decoration: InputDecoration(
+                    alignLabelWithHint: true,
                     hintText: hintNoLable,
+                    hintStyle: TextStyle(
+                        overflow: TextOverflow.ellipsis, fontSize: textSize),
                     prefixIcon: leadingIcon,
                     prefixIconColor: isSelected
                         ? Theme.of(context).colorScheme.primary

@@ -3,6 +3,7 @@ import 'package:cineverse/utils/enums.dart';
 import 'package:cineverse/widgets/avatar_widget.dart';
 import 'package:cineverse/widgets/custom_text.dart';
 import 'package:cineverse/widgets/login_input.dart';
+import 'package:cineverse/widgets/square_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -31,24 +32,16 @@ class InfoPhone extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          controller.platform == TargetPlatform.iOS
-                              ? CupertinoButton(
-                                  child: Icon(
-                                    CupertinoIcons.back,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                                  onPressed: () => controller.infoBack(),
-                                )
-                              : IconButton(
-                                  splashRadius: 15,
-                                  onPressed: () => controller.infoBack(),
-                                  icon: Icon(
-                                    Icons.arrow_back,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                                )
+                          SquareButton(
+                            function: () => controller.infoBack(),
+                            width: width * 0.1,
+                            height: width * 0.1,
+                            color: Theme.of(context).colorScheme.primary,
+                            icon: controller.platform == TargetPlatform.iOS
+                                ? CupertinoIcons.back
+                                : Icons.arrow_back,
+                            iconColor: Theme.of(context).colorScheme.background,
+                          )
                         ],
                       ),
                       Stack(children: [
@@ -72,7 +65,7 @@ class InfoPhone extends StatelessWidget {
                                         ? control.userModel.onlinePicPath
                                         : '',
                             borderColor: Theme.of(context).colorScheme.primary,
-                            isIos: controller.platform != TargetPlatform.iOS,
+                            isIos: controller.platform == TargetPlatform.iOS,
                             iconAndroid: FontAwesomeIcons.user,
                             iconIos: CupertinoIcons.person,
                             backgroundColor:

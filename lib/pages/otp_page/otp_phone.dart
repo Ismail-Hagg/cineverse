@@ -1,5 +1,6 @@
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/widgets/custom_text.dart';
+import 'package:cineverse/widgets/square_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -27,17 +28,27 @@ class OtpPhone extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    controller.platform == TargetPlatform.iOS
-                        ? CupertinoButton(
-                            //color: Theme.of(context).colorScheme.primary,
-                            onPressed: () => Get.back(),
-                            child: const Icon(CupertinoIcons.back),
-                          )
-                        : IconButton(
-                            onPressed: () => Get.back(),
-                            color: Theme.of(context).colorScheme.primary,
-                            splashRadius: 15,
-                            icon: const Icon(Icons.arrow_back))
+                    // controller.platform == TargetPlatform.iOS
+                    //     ? CupertinoButton(
+                    //         //color: Theme.of(context).colorScheme.primary,
+                    //         onPressed: () => Get.back(),
+                    //         child: const Icon(CupertinoIcons.back),
+                    //       )
+                    //     : IconButton(
+                    //         onPressed: () => Get.back(),
+                    //         color: Theme.of(context).colorScheme.primary,
+                    //         splashRadius: 15,
+                    //         icon: const Icon(Icons.arrow_back))
+                    SquareButton(
+                      function: () => Get.back(),
+                      width: width * 0.1,
+                      height: width * 0.1,
+                      color: Theme.of(context).colorScheme.primary,
+                      icon: controller.platform == TargetPlatform.iOS
+                          ? CupertinoIcons.back
+                          : Icons.arrow_back,
+                      iconColor: Theme.of(context).colorScheme.background,
+                    )
                   ],
                 ),
                 SizedBox(

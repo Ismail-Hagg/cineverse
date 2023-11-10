@@ -8,6 +8,8 @@ enum AvatarType { local, online, none }
 
 enum ChosenTheme { light, dark, system }
 
+enum ApiType { rest, graphql }
+
 enum FieldType {
   loginEmail,
   loginPass,

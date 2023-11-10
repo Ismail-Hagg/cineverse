@@ -435,6 +435,10 @@ class AuthController extends GetxController {
                         (value) async {
                           _userModel = UserModel.fromMap(
                               value.data() as Map<String, dynamic>);
+                          if (_userModel.avatarType == AvatarType.online &&
+                              _userModel.onlinePicPath != user.user!.photoURL) {
+                            _userModel.onlinePicPath = user.user!.photoURL;
+                          }
                           await saveUserDataLocally(model: _userModel)
                               .then((saved) async {
                             if (saved) {

@@ -36,6 +36,13 @@ class Translation extends Translations {
           'hello': 'Hello',
           'wrongotp': 'Wrong Code',
           'invalidcred': 'Invalid Login Credentials',
+          'watchList': 'WatchList',
+          'home': 'Home',
+          'favourite': 'Favorites',
+          'keeping': 'Episode Keeping',
+          'chats': 'Chats',
+          'profile': 'Profile',
+          'search': 'Search for a movie or a show or a person',
         },
         'ar_SA': {
           'email': 'العنوان الالكتروني',
@@ -69,7 +76,14 @@ class Translation extends Translations {
           'ok': 'حسنا',
           'hello': 'مرحبا',
           'wrongotp': "الرمز خاطئ",
-          'invalidcred': 'بيانات تسجيل دخول خاطئة'
+          'invalidcred': 'بيانات تسجيل دخول خاطئة',
+          'watchList': 'قائمة المشاهده',
+          'home': 'الرئيسيه',
+          'favourite': 'المفضله',
+          'keeping': 'متابعة الحلقات',
+          'chats': 'المحادثات',
+          'profile': 'الحساب',
+          'search': 'ابحث عن فلم او مسلسل او شخص',
         }
       };
 }
