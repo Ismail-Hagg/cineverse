@@ -28,18 +28,8 @@ class OtpPhone extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    // controller.platform == TargetPlatform.iOS
-                    //     ? CupertinoButton(
-                    //         //color: Theme.of(context).colorScheme.primary,
-                    //         onPressed: () => Get.back(),
-                    //         child: const Icon(CupertinoIcons.back),
-                    //       )
-                    //     : IconButton(
-                    //         onPressed: () => Get.back(),
-                    //         color: Theme.of(context).colorScheme.primary,
-                    //         splashRadius: 15,
-                    //         icon: const Icon(Icons.arrow_back))
                     SquareButton(
+                      isFilled: false,
                       function: () => Get.back(),
                       width: width * 0.1,
                       height: width * 0.1,

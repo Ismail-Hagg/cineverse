@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class SquareButton extends StatelessWidget {
   final double? padding;
@@ -8,6 +10,7 @@ class SquareButton extends StatelessWidget {
   final Color color;
   final IconData icon;
   final Color iconColor;
+  final bool isFilled;
 
   const SquareButton(
       {super.key,
@@ -17,7 +20,8 @@ class SquareButton extends StatelessWidget {
       required this.width,
       required this.color,
       required this.icon,
-      required this.iconColor});
+      required this.iconColor,
+      required this.isFilled});
 
   @override
   Widget build(BuildContext context) {
@@ -29,11 +33,15 @@ class SquareButton extends StatelessWidget {
           width: width,
           height: height,
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10), color: color),
+              border: Border.all(color: color),
+              borderRadius: BorderRadius.circular(10),
+              color:
+                  isFilled ? color : Theme.of(context).colorScheme.background),
           child: Center(
             child: Icon(
               icon,
-              color: iconColor,
+              color:
+                  isFilled ? iconColor : Theme.of(context).colorScheme.primary,
             ),
           ),
         ),

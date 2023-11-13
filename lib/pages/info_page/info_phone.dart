@@ -33,6 +33,7 @@ class InfoPhone extends StatelessWidget {
                       Row(
                         children: [
                           SquareButton(
+                            isFilled: false,
                             function: () => controller.infoBack(),
                             width: width * 0.1,
                             height: width * 0.1,

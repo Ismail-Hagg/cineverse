@@ -34,10 +34,11 @@ class NotificationWidget extends StatelessWidget {
             left: left,
             bottom: bottom,
             child: Container(
-                height: height,
-                width: width,
-                decoration: BoxDecoration(
-                    color: notificationColor, shape: BoxShape.circle)),
+              height: height,
+              width: width,
+              decoration: BoxDecoration(
+                  color: notificationColor, shape: BoxShape.circle),
+            ),
           )
         ]
       ],

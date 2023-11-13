@@ -43,6 +43,13 @@ class Translation extends Translations {
           'chats': 'Chats',
           'profile': 'Profile',
           'search': 'Search for a movie or a show or a person',
+          'more': 'more',
+          'trend': 'Trending',
+          'upcoming': 'Upcoming Movies',
+          'popularMovies': 'Popular Movies',
+          'popularShows': 'Popular Shows',
+          'topMovies': 'Top Rated Movies',
+          'topShowa': 'Top Rated Shows',
         },
         'ar_SA': {
           'email': 'العنوان الالكتروني',
@@ -84,6 +91,13 @@ class Translation extends Translations {
           'chats': 'المحادثات',
           'profile': 'الحساب',
           'search': 'ابحث عن فلم او مسلسل او شخص',
+          'more': 'المزيد',
+          'trend': 'شائع',
+          'upcoming': 'الأفلام القادمة',
+          'popularMovies': 'افلام شائعه',
+          'popularShows': 'مسلسلات شائعه',
+          'topMovies': 'الأفلام الأعلى تقيما',
+          'topShowa': 'المسلسلات الأعلى تقيما',
         }
       };
 }

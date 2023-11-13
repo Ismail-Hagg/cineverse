@@ -98,7 +98,6 @@ class LoginInput extends StatelessWidget {
                 controller: controller,
                 showCursor: false,
                 decoration: InputDecoration(
-                    alignLabelWithHint: true,
                     hintText: hintNoLable,
                     hintStyle: TextStyle(
                         overflow: TextOverflow.ellipsis, fontSize: textSize),

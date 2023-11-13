@@ -27,7 +27,7 @@ class PreOtpPhone extends StatelessWidget {
                   Row(
                     children: [
                       SquareButton(
-                        //padding: 0,
+                        isFilled: false,
                         function: () => Get.back(),
                         width: width * 0.1,
                         height: width * 0.1,

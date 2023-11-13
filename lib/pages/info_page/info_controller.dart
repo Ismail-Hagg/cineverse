@@ -1,3 +1,4 @@
+import 'package:cineverse/pages/info_page/info_desktop.dart';
 import 'package:cineverse/pages/info_page/info_phone.dart';
 import 'package:cineverse/pages/info_page/info_tablet.dart';
 import 'package:cineverse/utils/constants.dart';
@@ -13,6 +14,6 @@ class InfoController extends StatelessWidget {
         ? const InfoPhone()
         : width > phoneSize && width <= tabletSize
             ? const InfoTablet()
-            : const InfoTablet();
+            : const InfoDesktop();
   }
 }
