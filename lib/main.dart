@@ -31,6 +31,13 @@ void main() async {
       Get.put(
         AuthController(user, platform: defaultTargetPlatform),
       );
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarIconBrightness: user.theme == ChosenTheme.light
+              ? Brightness.dark
+              : Brightness.light,
+        ),
+      );
       runApp(
         MyApp(
           theme: user.theme ?? ChosenTheme.system,

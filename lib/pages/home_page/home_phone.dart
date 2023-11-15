@@ -22,7 +22,7 @@ class HomePhone extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    final HomeController controller = Get.put(HomeController());
+    Get.put(HomeController());
     final AuthController authController = Get.find<AuthController>();
 
     return Scaffold(
@@ -128,16 +128,6 @@ class HomeTap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> imgList = [
-      'https://i.pinimg.com/originals/62/2d/48/622d4881be7d13fcd925a880bf439806.jpg',
-      'https://www.themoviedb.org/t/p/w1280/e7Jvsry47JJQruuezjU2X1Z6J77.jpg',
-      'https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6ff92caffcdd63681a35134a6770ed3b&auto=format&fit=crop&w=1951&q=80',
-      'https://images.unsplash.com/photo-1522205408450-add114ad53fe?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=368f45b0888aeb0b7b08e3a1084d3ede&auto=format&fit=crop&w=1950&q=80',
-      'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=94a1e718d89ca60a6337a6008341ca50&auto=format&fit=crop&w=1950&q=80',
-      'https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=89719a0d55dd05e2deae4120227e6efc&auto=format&fit=crop&w=1953&q=80',
-      'https://images.unsplash.com/photo-1508704019882-f9cf40e475b4?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=8c6e5e3aba713b17aa1fe71ab4f0ae5b&auto=format&fit=crop&w=1352&q=80',
-      'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80'
-    ];
     final AuthController authController = Get.find<AuthController>();
     final HomeController controller = Get.find<HomeController>();
     return LayoutBuilder(
@@ -171,7 +161,7 @@ class HomeTap extends StatelessWidget {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () => controller.apiCall(),
+                          onTap: () => controller.switching(),
                           child: NotificationWidget(
                             isNotify: true,
                             mainWidget: Icon(
@@ -195,71 +185,72 @@ class HomeTap extends StatelessWidget {
                     more: true,
                     titleSize: 18,
                     isIos: authController.platform == TargetPlatform.iOS,
-                    mainWidget: CarouselSlider(
-                      options: CarouselOptions(
-                        autoPlay: true,
-                        aspectRatio: 2.0,
-                        enlargeCenterPage: true,
-                      ),
-                      items: imgList
-                          .map((item) => ImageNetWork(
-                                shadow: false,
-                                link: item,
-                                width: width,
-                                height: (width * 0.4) * 1.3,
-                              ))
-                          .toList(),
-                    ),
-                  ),
-                  // upcoming movies
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ContentScrolling(
-                      isIos: authController.platform == TargetPlatform.iOS,
-                      title: 'upcoming'.tr,
-                      weight: FontWeight.bold,
-                      titleSize: 18,
-                      more: true,
-                      mainWidget: SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: List.generate(
-                            60,
-                            (index) => Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: ImageNetWork(
-                                link: imgList[0],
-                                height: (width * 0.4) * 1.3,
-                                width: width * 0.35,
-                              ),
-                            ),
+                    mainWidget: GetBuilder<HomeController>(
+                      init: Get.find<HomeController>(),
+                      builder: (trend) => CarouselSlider(
+                        options: CarouselOptions(
+                          autoPlay: trend.loading == 0 &&
+                              trend.trendings.isError == false,
+                          aspectRatio: 2.0,
+                          enlargeCenterPage: true,
+                        ),
+                        items: List.generate(
+                          trend.loading == 1
+                              ? 10
+                              : trend.trendings.isError == false
+                                  ? trend.trendings.results!.length
+                                  : 10,
+                          (index) => Padding(
+                            padding: const EdgeInsets.all(0.0),
+                            child: trend.loading == 1 ||
+                                    trend.trendings.isError == true
+                                ? MovieWidget(
+                                    borderColor: Colors.transparent,
+                                    width: width,
+                                    height: (width * 0.4) * 1.3,
+                                    link: '',
+                                    provider: Image.asset('name').image,
+                                    shimmer: true,
+                                    shadow: false)
+                                : ImageNetWork(
+                                    shadow: false,
+                                    link: imagebase +
+                                        trend.trendings.results![index]
+                                            .posterPath
+                                            .toString(),
+                                    width: width,
+                                    height: (width * 0.4) * 1.3,
+                                  ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                  // popular movies
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ContentScrolling(
-                      isIos: authController.platform == TargetPlatform.iOS,
-                      title: 'popularMovies'.tr,
-                      weight: FontWeight.bold,
-                      titleSize: 18,
-                      more: true,
-                      mainWidget: SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
+                  // upcoming movies
+                  ContentScrolling(
+                    isIos: authController.platform == TargetPlatform.iOS,
+                    title: 'upcoming'.tr,
+                    weight: FontWeight.bold,
+                    titleSize: 18,
+                    more: true,
+                    mainWidget: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      child: GetBuilder<HomeController>(
+                        init: Get.find<HomeController>(),
+                        builder: (upcoming) => Row(
                           children: List.generate(
-                            controller.loading == 1
+                            upcoming.loading == 1
                                 ? 10
-                                : controller.links.length,
+                                : upcoming.upcomingMovies.isError == false
+                                    ? upcoming.upcomingMovies.results!.length
+                                    : 10,
                             (index) => Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: controller.loading == 1
+                              child: upcoming.loading == 1 ||
+                                      upcoming.upcomingMovies.isError == true
                                   ? MovieWidget(
+                                      borderColor: Colors.transparent,
                                       width: width * 0.35,
                                       height: (width * 0.4) * 1.3,
                                       link: '',
@@ -267,8 +258,55 @@ class HomeTap extends StatelessWidget {
                                       shimmer: true,
                                       shadow: false)
                                   : ImageNetWork(
-                                      link:
-                                          'https://www.themoviedb.org/t/p/w1280/${controller.links[index]}',
+                                      link: imagebase +
+                                          upcoming.upcomingMovies
+                                              .results![index].posterPath
+                                              .toString(),
+                                      height: (width * 0.4) * 1.3,
+                                      width: width * 0.35,
+                                    ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  // popular movies
+                  ContentScrolling(
+                    isIos: authController.platform == TargetPlatform.iOS,
+                    title: 'popularMovies'.tr,
+                    weight: FontWeight.bold,
+                    titleSize: 18,
+                    more: true,
+                    mainWidget: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      child: GetBuilder<HomeController>(
+                        init: Get.find<HomeController>(),
+                        builder: (builder) => Row(
+                          children: List.generate(
+                            builder.loading == 1
+                                ? 10
+                                : builder.popularMovies.isError == false
+                                    ? builder.popularMovies.results!.length
+                                    : 10,
+                            (index) => Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: builder.loading == 1 ||
+                                      builder.popularMovies.isError == true
+                                  ? MovieWidget(
+                                      borderColor: Colors.transparent,
+                                      width: width * 0.35,
+                                      height: (width * 0.4) * 1.3,
+                                      link: '',
+                                      provider: Image.asset('name').image,
+                                      shimmer: true,
+                                      shadow: false)
+                                  : ImageNetWork(
+                                      link: imagebase +
+                                          builder.popularMovies.results![index]
+                                              .posterPath
+                                              .toString(),
                                       height: (width * 0.4) * 1.3,
                                       width: width * 0.35,
                                     ),
@@ -279,27 +317,44 @@ class HomeTap extends StatelessWidget {
                     ),
                   ),
                   // popular shows
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ContentScrolling(
-                      isIos: authController.platform == TargetPlatform.iOS,
-                      title: 'popularShows'.tr,
-                      weight: FontWeight.bold,
-                      titleSize: 18,
-                      more: true,
-                      mainWidget: SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
+                  ContentScrolling(
+                    isIos: authController.platform == TargetPlatform.iOS,
+                    title: 'popularShows'.tr,
+                    weight: FontWeight.bold,
+                    titleSize: 18,
+                    more: true,
+                    mainWidget: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      child: GetBuilder<HomeController>(
+                        init: Get.find<HomeController>(),
+                        builder: (popShow) => Row(
                           children: List.generate(
-                            60,
+                            popShow.loading == 1
+                                ? 10
+                                : popShow.popularShows.isError == false
+                                    ? popShow.popularShows.results!.length
+                                    : 10,
                             (index) => Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: ImageNetWork(
-                                link: imgList[0],
-                                height: (width * 0.4) * 1.3,
-                                width: width * 0.35,
-                              ),
+                              child: popShow.loading == 1 ||
+                                      popShow.popularShows.isError == true
+                                  ? MovieWidget(
+                                      borderColor: Colors.transparent,
+                                      width: width * 0.35,
+                                      height: (width * 0.4) * 1.3,
+                                      link: '',
+                                      provider: Image.asset('name').image,
+                                      shimmer: true,
+                                      shadow: false)
+                                  : ImageNetWork(
+                                      link: imagebase +
+                                          popShow.popularShows.results![index]
+                                              .posterPath
+                                              .toString(),
+                                      height: (width * 0.4) * 1.3,
+                                      width: width * 0.35,
+                                    ),
                             ),
                           ),
                         ),
@@ -307,27 +362,44 @@ class HomeTap extends StatelessWidget {
                     ),
                   ),
                   // top rated movies
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ContentScrolling(
-                      isIos: authController.platform == TargetPlatform.iOS,
-                      title: 'topMovies'.tr,
-                      weight: FontWeight.bold,
-                      titleSize: 18,
-                      more: true,
-                      mainWidget: SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
+                  ContentScrolling(
+                    isIos: authController.platform == TargetPlatform.iOS,
+                    title: 'topMovies'.tr,
+                    weight: FontWeight.bold,
+                    titleSize: 18,
+                    more: true,
+                    mainWidget: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      child: GetBuilder<HomeController>(
+                        init: Get.find<HomeController>(),
+                        builder: (topMovie) => Row(
                           children: List.generate(
-                            60,
+                            topMovie.loading == 1
+                                ? 10
+                                : topMovie.topMovies.isError == false
+                                    ? topMovie.topMovies.results!.length
+                                    : 10,
                             (index) => Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: ImageNetWork(
-                                link: imgList[0],
-                                height: (width * 0.4) * 1.3,
-                                width: width * 0.35,
-                              ),
+                              child: topMovie.loading == 1 ||
+                                      topMovie.topMovies.isError == true
+                                  ? MovieWidget(
+                                      borderColor: Colors.transparent,
+                                      width: width * 0.35,
+                                      height: (width * 0.4) * 1.3,
+                                      link: '',
+                                      provider: Image.asset('name').image,
+                                      shimmer: true,
+                                      shadow: false)
+                                  : ImageNetWork(
+                                      link: imagebase +
+                                          topMovie.topMovies.results![index]
+                                              .posterPath
+                                              .toString(),
+                                      height: (width * 0.4) * 1.3,
+                                      width: width * 0.35,
+                                    ),
                             ),
                           ),
                         ),
@@ -335,27 +407,44 @@ class HomeTap extends StatelessWidget {
                     ),
                   ),
                   // top rated shows
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ContentScrolling(
-                      isIos: authController.platform == TargetPlatform.iOS,
-                      title: 'topShowa'.tr,
-                      weight: FontWeight.bold,
-                      titleSize: 18,
-                      more: true,
-                      mainWidget: SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
+                  ContentScrolling(
+                    isIos: authController.platform == TargetPlatform.iOS,
+                    title: 'topShowa'.tr,
+                    weight: FontWeight.bold,
+                    titleSize: 18,
+                    more: true,
+                    mainWidget: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      child: GetBuilder<HomeController>(
+                        init: Get.find<HomeController>(),
+                        builder: (topShow) => Row(
                           children: List.generate(
-                            60,
+                            topShow.loading == 1
+                                ? 10
+                                : topShow.topShows.isError == false
+                                    ? topShow.topShows.results!.length
+                                    : 10,
                             (index) => Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: ImageNetWork(
-                                height: (width * 0.4) * 1.3,
-                                width: width * 0.35,
-                                link: imgList[3],
-                              ),
+                              child: topShow.loading == 1 ||
+                                      topShow.topShows.isError == true
+                                  ? MovieWidget(
+                                      borderColor: Colors.transparent,
+                                      width: width * 0.35,
+                                      height: (width * 0.4) * 1.3,
+                                      link: '',
+                                      provider: Image.asset('name').image,
+                                      shimmer: true,
+                                      shadow: false)
+                                  : ImageNetWork(
+                                      link: imagebase +
+                                          topShow.topShows.results![index]
+                                              .posterPath
+                                              .toString(),
+                                      height: (width * 0.4) * 1.3,
+                                      width: width * 0.35,
+                                    ),
                             ),
                           ),
                         ),

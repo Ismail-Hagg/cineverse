@@ -144,21 +144,42 @@ class AuthController extends GetxController {
   }
 
   // update the user model
-  void userUpdate({required UserModel user}) async {
-    _userModel = user;
-    await DataPref().setUser(_userModel);
+  void userUpdate(
+      {required String userId, required Map<String, dynamic> map}) async {
+    await FirebaseServices().userUpdate(userId: userId, map: map);
   }
 
   // switch the theme
-  void themeSwich() {
-    Get.changeTheme(Get.isDarkMode ? lightTheme : darkTheme);
+  void themeSwich() async {
+    if (Get.isDarkMode) {
+      _userModel.theme = ChosenTheme.light;
+      Get.changeTheme(lightTheme);
+      SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(
+          statusBarIconBrightness: Brightness.dark,
+        ),
+      );
+      await saveUserDataLocally(model: _userModel).then((value) {
+        userUpdate(
+            userId: _userModel.userId.toString(),
+            map: {'theme': _userModel.theme.toString()});
+      });
+    } else {
+      _userModel.theme = ChosenTheme.dark;
+      Get.changeTheme(darkTheme);
+      SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(
+          statusBarIconBrightness: Brightness.light,
+        ),
+      );
+      await saveUserDataLocally(model: _userModel).then((value) {
+        userUpdate(
+            userId: _userModel.userId.toString(),
+            map: {'theme': _userModel.theme.toString()});
+      });
+    }
 
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        statusBarIconBrightness:
-            Get.isDarkMode ? Brightness.dark : Brightness.light,
-      ),
-    );
+    update();
   }
 
   // logout
@@ -443,6 +464,9 @@ class AuthController extends GetxController {
                               .then((saved) async {
                             if (saved) {
                               _loading = false;
+                              // update the theme
+                              themeDecide(
+                                  theme: _userModel.theme as ChosenTheme);
                               Get.offAll(() => const ViewController());
                             } else {
                               _loading = false;
@@ -894,6 +918,20 @@ class AuthController extends GetxController {
     update();
   }
 
+  // change theme on login
+  void themeDecide({required ChosenTheme theme}) {
+    final bool localThemeDark = Get.isDarkMode;
+    final bool userTheme = theme == ChosenTheme.dark;
+    if (localThemeDark != userTheme) {
+      Get.changeTheme(userTheme ? darkTheme : lightTheme);
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarIconBrightness:
+              userTheme ? Brightness.light : Brightness.dark,
+        ),
+      );
+    }
+  }
   // // uploading image to firebase storage
   // Future<String> uploadeImage(
   //     {required String id,

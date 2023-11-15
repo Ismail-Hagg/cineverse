@@ -9,7 +9,9 @@ class ImageNetWork extends StatelessWidget {
   final bool? shadow;
   final bool? shimmer;
   final Color? border;
+  final BoxFit? fit;
   final Function()? function;
+  final bool? circle;
   const ImageNetWork(
       {super.key,
       required this.link,
@@ -18,7 +20,9 @@ class ImageNetWork extends StatelessWidget {
       required this.height,
       this.shadow,
       this.shimmer,
-      this.border});
+      this.border,
+      this.fit,
+      this.circle});
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +32,11 @@ class ImageNetWork extends StatelessWidget {
         imageUrl: link,
         imageBuilder: (context, imageProvider) {
           return MovieWidget(
+            circle: circle,
             borderColor: border,
             shadow: shadow ?? true,
             shimmer: shimmer ?? false,
-            fit: BoxFit.cover,
+            fit: fit ?? BoxFit.cover,
             provider: imageProvider,
             height: height,
             width: width,
@@ -40,6 +45,7 @@ class ImageNetWork extends StatelessWidget {
         },
         placeholder: (context, url) {
           return MovieWidget(
+            circle: circle,
             shadow: false,
             shimmer: true,
             provider: Image.asset('assets/images/no_image.png').image,
@@ -50,6 +56,7 @@ class ImageNetWork extends StatelessWidget {
         },
         errorWidget: (context, url, error) {
           return MovieWidget(
+            circle: circle,
             shadow: false,
             shimmer: false,
             fit: BoxFit.contain,

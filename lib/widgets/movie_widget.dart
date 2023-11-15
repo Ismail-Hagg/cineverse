@@ -10,6 +10,7 @@ class MovieWidget extends StatelessWidget {
   final bool shadow;
   final BoxFit? fit;
   final Color? borderColor;
+  final bool? circle;
 
   const MovieWidget(
       {super.key,
@@ -20,7 +21,8 @@ class MovieWidget extends StatelessWidget {
       required this.shimmer,
       required this.shadow,
       this.fit,
-      this.borderColor});
+      this.borderColor,
+      this.circle});
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +35,11 @@ class MovieWidget extends StatelessWidget {
               width: width,
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.secondary,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: circle == true ? null : BorderRadius.circular(10),
+                shape: circle == true ? BoxShape.circle : BoxShape.rectangle,
                 border: Border.all(
-                    color: Theme.of(context).colorScheme.primary, width: 1.5),
+                    color: borderColor ?? Theme.of(context).colorScheme.primary,
+                    width: 1.5),
               ),
             ),
           )
@@ -44,7 +48,8 @@ class MovieWidget extends StatelessWidget {
             width: width,
             decoration: BoxDecoration(
               image: DecorationImage(image: provider, fit: fit ?? BoxFit.cover),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: circle == true ? null : BorderRadius.circular(10),
+              shape: circle == true ? BoxShape.circle : BoxShape.rectangle,
               border: Border.all(
                   color: borderColor ?? Theme.of(context).colorScheme.primary,
                   width: 1.5),
