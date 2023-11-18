@@ -50,6 +50,12 @@ class Translation extends Translations {
           'popularShows': 'Popular Shows',
           'topMovies': 'Top Rated Movies',
           'topShowa': 'Top Rated Shows',
+          'story': 'Storyline',
+          'cast': 'Cast',
+          'overview': 'Overview',
+          'episodes': 'Episodes',
+          'comments': 'Comments',
+          'recommendations': 'Recommendation',
         },
         'ar_SA': {
           'email': 'العنوان الالكتروني',
@@ -98,6 +104,12 @@ class Translation extends Translations {
           'popularShows': 'مسلسلات شائعه',
           'topMovies': 'الأفلام الأعلى تقيما',
           'topShowa': 'المسلسلات الأعلى تقيما',
+          'story': 'القصة',
+          'cast': 'الممثلين',
+          'overview': 'نظرة عامة',
+          'episodes': 'الحلقات',
+          'comments': 'التعليقات',
+          'recommendations': 'التوصيات',
         }
       };
 }

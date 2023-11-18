@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import '../models/user_model.dart';
 
@@ -21,5 +24,21 @@ class FirebaseServices {
   Future<void> userUpdate(
       {required String userId, required Map<String, dynamic> map}) async {
     _ref.doc(userId).update(map);
+  }
+
+  // uploading image to firebase storage
+  Future<String> uploadUserImage(
+      {required String userId, required String file}) async {
+    try {
+      UploadTask? uploadTask;
+      final String path = '$userId/images/profile';
+      final ref = FirebaseStorage.instance.ref().child(path);
+      uploadTask = ref.putFile(File(file));
+      final snapshot = await uploadTask.whenComplete(() {});
+      return await snapshot.ref.getDownloadURL();
+    } catch (e) {
+      print('=====>> $e');
+      return '';
+    }
   }
 }

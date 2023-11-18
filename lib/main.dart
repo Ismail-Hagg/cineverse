@@ -1,11 +1,9 @@
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/firebase_options.dart';
 import 'package:cineverse/local_storage/user_data.dart';
-import 'package:cineverse/models/user_model.dart';
 import 'package:cineverse/pages/view_controller.dart';
 import 'package:cineverse/utils/constants.dart';
 import 'package:cineverse/utils/enums.dart';
-import 'package:cineverse/utils/functions.dart';
 import 'package:cineverse/utils/translation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';

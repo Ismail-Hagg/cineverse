@@ -1,4 +1,5 @@
 // set initial language according to device
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 String languageDev() {
@@ -39,4 +40,21 @@ String getMessageFromErrorCode({required String errorMessage}) {
     default:
       return "firelogin".tr;
   }
+}
+
+// formatt movie length
+String getTimeString(int value) {
+  final int hour = value ~/ 60;
+  final int minutes = value % 60;
+  return '${hour.toString().padLeft(2, "0")}:${minutes.toString().padLeft(2, "0")}';
+}
+
+// excede max lines
+bool maxLines(
+    {required String text, required double width, required int maxLines}) {
+  final span = TextSpan(text: text);
+  final tp = TextPainter(
+      text: span, maxLines: maxLines, textDirection: TextDirection.ltr);
+  tp.layout(maxWidth: width);
+  return tp.didExceedMaxLines;
 }

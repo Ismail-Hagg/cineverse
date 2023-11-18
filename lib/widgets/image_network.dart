@@ -56,6 +56,7 @@ class ImageNetWork extends StatelessWidget {
         },
         errorWidget: (context, url, error) {
           return MovieWidget(
+            borderColor: border,
             circle: circle,
             shadow: false,
             shimmer: false,

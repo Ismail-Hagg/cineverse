@@ -11,6 +11,7 @@ class SquareButton extends StatelessWidget {
   final IconData icon;
   final Color iconColor;
   final bool isFilled;
+  final bool? clear;
 
   const SquareButton(
       {super.key,
@@ -21,7 +22,8 @@ class SquareButton extends StatelessWidget {
       required this.color,
       required this.icon,
       required this.iconColor,
-      required this.isFilled});
+      required this.isFilled,
+      this.clear});
 
   @override
   Widget build(BuildContext context) {
@@ -35,13 +37,17 @@ class SquareButton extends StatelessWidget {
           decoration: BoxDecoration(
               border: Border.all(color: color),
               borderRadius: BorderRadius.circular(10),
-              color:
-                  isFilled ? color : Theme.of(context).colorScheme.background),
+              color: isFilled
+                  ? color
+                  : clear == true
+                      ? Colors.transparent
+                      : Theme.of(context).colorScheme.background),
           child: Center(
             child: Icon(
               icon,
-              color:
-                  isFilled ? iconColor : Theme.of(context).colorScheme.primary,
+              color: isFilled || clear == true
+                  ? iconColor
+                  : Theme.of(context).colorScheme.primary,
             ),
           ),
         ),

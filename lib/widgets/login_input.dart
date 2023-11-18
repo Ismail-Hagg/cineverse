@@ -20,6 +20,7 @@ class LoginInput extends StatelessWidget {
   final bool? readOnly;
   final Function()? onTap;
   final String? hintNoLable;
+  final bool? isSearch;
   const LoginInput({
     super.key,
     required this.height,
@@ -41,6 +42,7 @@ class LoginInput extends StatelessWidget {
     this.onTap,
     this.hintNoLable,
     this.textSize,
+    this.isSearch,
   });
 
   @override
@@ -66,9 +68,9 @@ class LoginInput extends StatelessWidget {
                   : [
                       BoxShadow(
                           color: Theme.of(context).colorScheme.shadow,
-                          blurRadius: 0.1,
+                          blurRadius: isSearch == true ? 0.7 : 0.1,
                           offset: const Offset(1, 1),
-                          spreadRadius: 0.1),
+                          spreadRadius: isSearch == true ? 0.7 : 0.1),
                     ]
               : otherShadow == true
                   ? [

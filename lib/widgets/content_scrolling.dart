@@ -8,9 +8,12 @@ class ContentScrolling extends StatelessWidget {
   final String title;
   final double titleSize;
   final bool more;
+  final Widget? otherMore;
+  final bool? other;
   final FontWeight? weight;
   final double? moreSize;
   final Widget mainWidget;
+  final double? padding;
 
   const ContentScrolling(
       {super.key,
@@ -20,7 +23,10 @@ class ContentScrolling extends StatelessWidget {
       required this.more,
       this.weight,
       this.moreSize,
-      required this.mainWidget});
+      required this.mainWidget,
+      this.otherMore,
+      this.other,
+      this.padding});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +36,7 @@ class ContentScrolling extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(padding ?? 8.0),
               child: CustomText(
                 text: title,
                 weight: weight,
@@ -53,7 +59,8 @@ class ContentScrolling extends StatelessWidget {
                       onPressed: () {},
                       child: CustomText(text: 'more'.tr, size: moreSize),
                     )
-            ]
+            ],
+            if (other == true) ...[otherMore as Widget]
           ],
         ),
         mainWidget

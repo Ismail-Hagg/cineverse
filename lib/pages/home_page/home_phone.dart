@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
+import 'package:cineverse/pages/detale_page/detale_controller.dart';
 import 'package:cineverse/utils/constants.dart';
 import 'package:cineverse/utils/enums.dart';
 import 'package:cineverse/widgets/avatar_widget.dart';
@@ -22,7 +23,7 @@ class HomePhone extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    Get.put(HomeController());
+
     final AuthController authController = Get.find<AuthController>();
 
     return Scaffold(
@@ -129,10 +130,10 @@ class HomeTap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthController authController = Get.find<AuthController>();
-    final HomeController controller = Get.find<HomeController>();
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         double width = constraints.maxWidth;
+        double height = constraints.maxHeight;
         return SafeArea(
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
@@ -147,6 +148,7 @@ class HomeTap extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         LoginInput(
+                          isSearch: true,
                           textSize: 15,
                           onTap: () => authController.themeSwich(),
                           height: width * 0.115,
@@ -161,7 +163,7 @@ class HomeTap extends StatelessWidget {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () => controller.switching(),
+                          onTap: () => authController.signOut(),
                           child: NotificationWidget(
                             isNotify: true,
                             mainWidget: Icon(
@@ -258,6 +260,9 @@ class HomeTap extends StatelessWidget {
                                       shimmer: true,
                                       shadow: false)
                                   : ImageNetWork(
+                                      function: () => upcoming.navToDetale(
+                                          res: upcoming
+                                              .upcomingMovies.results![index]),
                                       link: imagebase +
                                           upcoming.upcomingMovies
                                               .results![index].posterPath

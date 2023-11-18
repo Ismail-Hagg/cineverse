@@ -1,20 +1,29 @@
+import 'dart:io';
+
 import 'package:cineverse/controllers/auth_controller.dart';
+import 'package:cineverse/models/cast_model.dart';
+import 'package:cineverse/models/movie_detales_model.dart';
+import 'package:cineverse/models/result_details_model.dart';
 import 'package:cineverse/models/result_model.dart';
+import 'package:cineverse/models/trailer_model.dart';
 import 'package:cineverse/models/user_model.dart';
 import 'package:cineverse/pages/chats_page/chat_controller.dart';
+import 'package:cineverse/pages/detale_page/detale_controller.dart';
 import 'package:cineverse/pages/episode_keeping_page/keeping_controller.dart';
 import 'package:cineverse/pages/favorites_page/favourites_controller.dart';
 import 'package:cineverse/pages/home_page/home_phone.dart';
 import 'package:cineverse/pages/profile_page/profile_controller.dart';
 import 'package:cineverse/pages/watchlist_page/watchlist_controller.dart';
+import 'package:cineverse/services/firebase_service.dart';
 import 'package:cineverse/services/home_page_service.dart';
 import 'package:cineverse/utils/enums.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../utils/constants.dart';
+import 'movie_detale_controller.dart';
 
 class HomeController extends GetxController {
-  final UserModel _userModel = Get.find<AuthController>().userModel;
+  UserModel _userModel = UserModel();
   UserModel get userModel => _userModel;
 
   int _pageIndex = 0;
@@ -54,8 +63,6 @@ class HomeController extends GetxController {
 
   final List<String> _urls = [trending, upcoming, pop, popularTv, top, topTv];
   List<String> get urls => _urls;
-  List<ResultModel> _lists = [];
-  List<ResultModel> get lists => _lists;
 
   final List<String> _translation = [
     'trend'.tr,
@@ -71,14 +78,8 @@ class HomeController extends GetxController {
   void onInit() {
     // TODO: implement onInit
     super.onInit();
-    _lists = [
-      _trendings,
-      _upcomingMovies,
-      _popularMovies,
-      _popularShows,
-      _topMovies,
-      _topShows
-    ];
+    _userModel = Get.find<AuthController>().userModel;
+
     apiCall();
   }
 
@@ -88,20 +89,69 @@ class HomeController extends GetxController {
     update();
   }
 
-  void switching() async {
-    print('theme is ${_userModel.theme}');
+  void swigtching() async {
     if (_userModel.theme == ChosenTheme.light) {
       _userModel.theme = ChosenTheme.dark;
-      print('turning dark theme on');
     } else {
       _userModel.theme = ChosenTheme.light;
-      print('turning light theme on');
     }
-    print(_userModel.theme);
 
-    await Get.find<AuthController>()
-        .saveUserDataLocally(model: _userModel)
-        .then((value) => print('done and done'));
+    await Get.find<AuthController>().saveUserDataLocally(model: _userModel);
+  }
+
+  // upload image to firebase
+  void imageUplad() async {
+    checking(
+        type: _userModel.avatarType as AvatarType,
+        pic: _userModel.localPicPath.toString());
+    if (_userModel.avatarType == AvatarType.local &&
+        _userModel.onlinePicPath == '') {
+      await FirebaseServices()
+          .uploadUserImage(
+        userId: _userModel.userId.toString(),
+        file: _userModel.localPicPath.toString(),
+      )
+          .then(
+        (value) async {
+          _userModel.onlinePicPath = value;
+          Get.find<AuthController>()
+              .saveUserDataLocally(model: _userModel)
+              .then(
+                (value) => Get.find<AuthController>().userUpdate(
+                  userId: _userModel.userId.toString(),
+                  map: {
+                    'onlinePicPath': _userModel.onlinePicPath.toString(),
+                  },
+                ),
+              );
+        },
+      ).onError((error, stackTrace) {
+        print('=== $error');
+      });
+    }
+  }
+
+  // check if the profile pic is in the phone
+  void checking({required AvatarType type, required String pic}) async {
+    if (type == AvatarType.local) {
+      await File(pic).exists().then(
+        (value) async {
+          if (!value) {
+            _userModel.avatarType = AvatarType.online;
+            await Get.find<AuthController>()
+                .saveUserDataLocally(model: _userModel)
+                .then(
+              (value) async {
+                await FirebaseServices().userUpdate(
+                    userId: _userModel.userId.toString(),
+                    map: {'avatarType': _userModel.avatarType.toString()});
+              },
+            );
+          }
+        },
+      );
+      update();
+    }
   }
 
   // call api
@@ -138,5 +188,45 @@ class HomeController extends GetxController {
     }
     _loading = 0;
     update();
+    imageUplad();
+  }
+
+  // navigate to the detale page
+  void navToDetale({required ResultsDetail res}) {
+    if (res.mediaType == 'person') {
+      // navigate to cast member pagex
+      // navToCast(
+      //     name: res.title.toString(),
+      //     link: imagebase + res.posterPath.toString(),
+      //     id: res.id.toString(),
+      //     language: Get.find<HomeController>().userModel.language.toString(),
+      //     isShow: false);
+    } else {
+      MovieDetaleModel movieDetales = MovieDetaleModel(
+          cast: CastModel(isError: true),
+          recomendation:ResultModel() ,
+          isError: false,
+          trailer: TrailerModel(isError: true),
+          id: res.id,
+          posterPath: res.posterPath,
+          overview: res.overview,
+          voteAverage: double.parse(res.voteAverage.toString()),
+          title: res.title,
+          isShow: res.isShow,
+          runtime: 0,
+          genres: null,
+          releaseDate: res.releaseDate,
+          originCountry: '');
+
+      Get.create(
+        () => (MovieDetaleController()),
+        //',
+        permanent: true,
+      );
+      Get.to(() => const DetalePageController(),
+          transition: Transition.native,
+          preventDuplicates: false,
+          arguments: movieDetales);
+    }
   }
 }

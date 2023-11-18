@@ -320,6 +320,8 @@ class AuthController extends GetxController {
                     .then((saved) async {
                   if (saved) {
                     _loading = false;
+                    // update the theme
+                    themeDecide(theme: _userModel.theme as ChosenTheme);
                     Get.offAll(() => const ViewController());
                   } else {
                     _loading = false;
@@ -590,6 +592,8 @@ class AuthController extends GetxController {
             saveUserDataLocally(model: _userModel).then((done) async {
               if (done) {
                 _loading = false;
+                // update the theme
+                themeDecide(theme: _userModel.theme as ChosenTheme);
                 update();
                 Get.offAll(() => const ViewController());
               } else {
@@ -932,16 +936,4 @@ class AuthController extends GetxController {
       );
     }
   }
-  // // uploading image to firebase storage
-  // Future<String> uploadeImage(
-  //     {required String id,
-  //     required String file,
-  //     required String fileName}) async {
-  //   UploadTask? uploadTask;
-  //   final String path = '$id/$fileName';
-  //   final ref = FirebaseStorage.instance.ref().child(path);
-  //   uploadTask = ref.putFile(File(file));
-  //   final snapshot = await uploadTask.whenComplete(() => {});
-  //   return await snapshot.ref.getDownloadURL();
-  // }
 }
