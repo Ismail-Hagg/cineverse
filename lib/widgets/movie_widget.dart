@@ -34,7 +34,7 @@ class MovieWidget extends StatelessWidget {
               height: height,
               width: width,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary,
+                color: Theme.of(context).colorScheme.onBackground,
                 borderRadius: circle == true ? null : BorderRadius.circular(10),
                 shape: circle == true ? BoxShape.circle : BoxShape.rectangle,
                 border: Border.all(

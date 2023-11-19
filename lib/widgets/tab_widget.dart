@@ -40,7 +40,7 @@ class TabWidget extends StatelessWidget {
                               ? Theme.of(context).colorScheme.primary
                               : Theme.of(context)
                                   .colorScheme
-                                  .shadow
+                                  .primary
                                   .withOpacity(0.4),
                           text: title,
                         ),
@@ -51,7 +51,10 @@ class TabWidget extends StatelessWidget {
                     height: height * 0.05,
                     color: selected
                         ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.shadow.withOpacity(0.4),
+                        : Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withOpacity(0.4),
                   )
                 ],
               ),

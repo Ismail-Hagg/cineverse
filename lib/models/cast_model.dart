@@ -45,7 +45,9 @@ class Cast {
     id = json['id'];
     name = json['name'];
     profilePath = json['profile_path'];
-    character = json['character'];
+    character = json['character'] == '' || json['character'] == ''
+        ? ''
+        : json['character'];
     creditId = json['credit_id'];
   }
 

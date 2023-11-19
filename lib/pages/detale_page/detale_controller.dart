@@ -16,7 +16,7 @@ class DetalePageController extends StatelessWidget {
     final MovieDetaleController controller = Get.put(MovieDetaleController());
     double width = MediaQuery.of(context).size.width;
     return width <= phoneSize
-        ? DetalePagePhone()
+        ? const DetalePagePhone()
         : width > phoneSize && width <= tabletSize
             ? const DetalePageTablet()
             : const DetalePageDesktop();

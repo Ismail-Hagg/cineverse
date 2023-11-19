@@ -1,11 +1,17 @@
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:cineverse/controllers/auth_controller.dart';
+import 'package:cineverse/models/image_model.dart';
 import 'package:cineverse/models/movie_detales_model.dart';
 import 'package:cineverse/models/user_model.dart';
 import 'package:cineverse/services/cast_service.dart';
+import 'package:cineverse/services/firebase_service.dart';
+import 'package:cineverse/services/image_service.dart';
 import 'package:cineverse/services/movie_detale_service.dart';
 import 'package:cineverse/services/recommendation_service.dart';
 import 'package:cineverse/services/trailer_service.dart';
 import 'package:cineverse/utils/constants.dart';
+import 'package:cineverse/utils/enums.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -16,8 +22,17 @@ class MovieDetaleController extends GetxController
   late MovieDetaleModel _detales;
   MovieDetaleModel get detales => _detales;
 
+  final AuthController _authController = Get.find<AuthController>();
+  AuthController get authController => _authController;
+
+  ImagesModel _imageModel = ImagesModel();
+  ImagesModel get imageModel => _imageModel;
+
   int _loading = 0;
   int get loading => _loading;
+
+  int _imagesCounter = 0;
+  int get imagesCounter => _imagesCounter;
 
   int _tabs = 1;
   int get tabs => _tabs;
@@ -30,9 +45,8 @@ class MovieDetaleController extends GetxController
 
   @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
-    _userModel = Get.find<AuthController>().userModel;
+    _userModel = _authController.userModel;
     _controller = AnimationController(
         duration: const Duration(milliseconds: 400), vsync: this);
     _detales = Get.arguments ?? MovieDetaleModel(isError: true);
@@ -42,7 +56,6 @@ class MovieDetaleController extends GetxController
 
   @override
   void onClose() {
-    // TODO: implement onInit
     super.onClose();
     _controller.dispose();
   }
@@ -66,6 +79,7 @@ class MovieDetaleController extends GetxController
             if (value.isError == false) {
               _detales = value;
             }
+            _detales.isError = value.isError;
           });
           break;
         case 1:
@@ -122,5 +136,130 @@ class MovieDetaleController extends GetxController
   void tabChange({required int tab}) {
     _tabs = tab;
     update();
+  }
+
+  // call api to get images
+  void getImages(
+      {required double height,
+      required double width,
+      required bool isActor,
+      required String id,
+      required Widget content,
+      required bool isIos}) async {
+    if (_loading == 0) {
+      _imageModel = ImagesModel();
+      _imagesCounter = 1;
+      update();
+      Get.dialog(content);
+      ImagesService()
+          .getImages(
+              media: isActor
+                  ? 'person'
+                  : _detales.isShow == true
+                      ? 'tv'
+                      : 'movie',
+              id: id,
+              lang: _userModel.language
+                  .toString()
+                  .substring(0, _userModel.language.toString().indexOf('_')))
+          .then((val) {
+        _imageModel = val;
+        _imagesCounter = 0;
+        update();
+      });
+    }
+  }
+
+  // upload favorites and or watchlist to firebase
+  void watchFav({required FirebaseUserPaths path, required bool upload}) async {
+    await FirebaseServices()
+        .watchFav(
+            userId: _userModel.userId.toString(),
+            path: path,
+            model: _detales,
+            upload: upload)
+        .then((_) {
+      _authController.userUpdate(
+          userId: _userModel.userId.toString(), map: _userModel.toMap());
+    }).onError((error, stackTrace) {
+      print('error ==> $error');
+    });
+  }
+
+  // when favorites or watchlist button clicked
+  void favWatch(
+      {required FirebaseUserPaths path,
+      required String id,
+      required BuildContext context}) async {
+    if (_loading == 0) {
+      switch (path) {
+        case FirebaseUserPaths.favorites:
+          if (_userModel.favs!.contains(id)) {
+            _userModel.favs!.remove(id);
+            update();
+            _authController.saveUserDataLocally(model: _userModel).then(
+              (value) {
+                watchFav(path: path, upload: false);
+              },
+            ).onError(
+              (error, stackTrace) async {
+                _userModel.favs!.add(id);
+                update();
+                await showOkAlertDialog(
+                  context: context,
+                  title: 'error'.tr,
+                  message: error.toString(),
+                );
+              },
+            );
+          } else {
+            _userModel.favs!.add(id);
+            update();
+            _authController.saveUserDataLocally(model: _userModel).then(
+              (value) {
+                _detales.timestamp = Timestamp.now();
+                watchFav(path: path, upload: true);
+              },
+            ).catchError((error, stackTrace) async {
+              _userModel.favs!.remove(id);
+              update();
+              await showOkAlertDialog(
+                context: context,
+                title: 'error'.tr,
+                message: error.toString(),
+              );
+            });
+          }
+          break;
+        case FirebaseUserPaths.watchlist:
+          bool contain = _detales.isShow == true
+              ? _userModel.showWatchList!.contains(id)
+              : _userModel.movieWatchList!.contains(id);
+          if (contain) {
+            // desplay message that sais already in watchlist
+            await showOkAlertDialog(
+              context: context,
+              title: 'watchalready'.tr,
+            );
+          } else {
+            _detales.isShow == true
+                ? _userModel.showWatchList!.add(id)
+                : _userModel.movieWatchList!.add(id);
+            _authController
+                .saveUserDataLocally(model: _userModel)
+                .then((value) async {
+              await showOkAlertDialog(
+                context: context,
+                title: 'watchadd'.tr,
+              );
+              _detales.timestamp = Timestamp.now();
+              watchFav(path: path, upload: true);
+            });
+          }
+          break;
+
+        default:
+      }
+    }
   }
 }

@@ -1,5 +1,8 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cineverse/controllers/auth_controller.dart';
+import 'package:cineverse/controllers/home_controller.dart';
 import 'package:cineverse/utils/constants.dart';
+import 'package:cineverse/utils/enums.dart';
 import 'package:cineverse/utils/functions.dart';
 import 'package:cineverse/widgets/content_scrolling.dart';
 import 'package:cineverse/widgets/custom_text.dart';
@@ -7,7 +10,6 @@ import 'package:cineverse/widgets/image_network.dart';
 import 'package:cineverse/widgets/menu_widget.dart';
 import 'package:cineverse/widgets/movie_widget.dart';
 import 'package:cineverse/widgets/square_button.dart';
-import 'package:cineverse/widgets/ios_tab_widget.dart';
 import 'package:cineverse/widgets/tab_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +26,7 @@ class DetalePagePhone extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthController authController = Get.find<AuthController>();
+    bool isIos = authController.platform == TargetPlatform.iOS;
     return Scaffold(
       body: GetBuilder<MovieDetaleController>(
         init: Get.find<MovieDetaleController>(),
@@ -42,18 +45,95 @@ class DetalePagePhone extends StatelessWidget {
                         SizedBox(
                           width: width,
                           height: height * 0.38,
-                          child: ShapeOfView(
-                            elevation: 10,
-                            shape: ArcShape(
-                                direction: ArcDirection.Outside,
-                                height: 50,
-                                position: ArcPosition.Bottom),
-                            child: ImageNetWork(
-                                border: Colors.transparent,
-                                link: imagebase +
-                                    controller.detales.posterPath.toString(),
+                          child: GestureDetector(
+                            onTap: () => controller.getImages(
+                                height: height,
                                 width: width,
-                                height: height),
+                                isActor: false,
+                                id: controller.detales.id.toString(),
+                                content: GetBuilder<MovieDetaleController>(
+                                  init: Get.find<MovieDetaleController>(),
+                                  builder: (build) => Center(
+                                    child: controller.imagesCounter == 1
+                                        ? isIos
+                                            ? CupertinoActivityIndicator(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                                radius: width * 0.05,
+                                              )
+                                            : CircularProgressIndicator(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                              )
+                                        : controller.imageModel.isError == false
+                                            ? CarouselSlider.builder(
+                                                options: CarouselOptions(
+                                                    height: height * 0.6,
+                                                    enlargeCenterPage: true),
+                                                itemCount: controller
+                                                    .imageModel.links!.length,
+                                                itemBuilder: (context, index,
+                                                    realIndex) {
+                                                  return ImageNetWork(
+                                                    link: imagebase +
+                                                        controller.imageModel
+                                                            .links![index],
+                                                    height: height * 0.95,
+                                                    width: width * 0.8,
+                                                    border: Colors.transparent,
+                                                  );
+                                                },
+                                              )
+                                            : isIos
+                                                ? CupertinoAlertDialog(
+                                                    title: Text('noimage'.tr),
+                                                    actions: [
+                                                      CupertinoDialogAction(
+                                                          onPressed: () {
+                                                            Get.back();
+                                                          },
+                                                          child: Text(
+                                                            'ok'.tr,
+                                                          ))
+                                                    ],
+                                                  )
+                                                : AlertDialog(
+                                                    title: Text('noimage'.tr),
+                                                    actions: [
+                                                      TextButton(
+                                                        style: TextButton
+                                                            .styleFrom(
+                                                          foregroundColor:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .primary,
+                                                        ),
+                                                        child:
+                                                            Text("answer".tr),
+                                                        onPressed: () async => {
+                                                          Get.back(),
+                                                        },
+                                                      ),
+                                                    ],
+                                                  ),
+                                  ),
+                                ),
+                                isIos: true),
+                            child: ShapeOfView(
+                              elevation: 10,
+                              shape: ArcShape(
+                                  direction: ArcDirection.Outside,
+                                  height: 50,
+                                  position: ArcPosition.Bottom),
+                              child: ImageNetWork(
+                                  border: Colors.transparent,
+                                  link: imagebase +
+                                      controller.detales.posterPath.toString(),
+                                  width: width,
+                                  height: height),
+                            ),
                           ),
                         ),
                         Positioned(
@@ -90,13 +170,20 @@ class DetalePagePhone extends StatelessWidget {
                               children: [
                                 controller.detales.isShow == true
                                     ? Menu(
-                                        ios: false,
+                                        ios: isIos,
                                         titles: ["addtowatch".tr, "addkeep".tr],
                                         funcs: [
                                           () => {
-                                                //controller.watch(context: context)
+                                                Get.back(),
+                                                controller.favWatch(
+                                                    path: FirebaseUserPaths
+                                                        .watchlist,
+                                                    id: controller.detales.id
+                                                        .toString(),
+                                                    context: context)
                                               },
                                           () => {
+                                                Get.back()
                                                 // controller.addKeeping(
                                                 //     context: context)
                                               }
@@ -114,9 +201,11 @@ class DetalePagePhone extends StatelessWidget {
                                                 .colorScheme
                                                 .primary,
                                             size: width * 0.08),
-                                        onPressed: () => {}
-                                        //controller.watch(context: context)
-                                        ),
+                                        onPressed: () => controller.favWatch(
+                                            path: FirebaseUserPaths.watchlist,
+                                            id: controller.detales.id
+                                                .toString(),
+                                            context: context)),
                                 CustomText(
                                   text: controller.detales.voteAverage!
                                       .toString(),
@@ -142,23 +231,28 @@ class DetalePagePhone extends StatelessWidget {
                                     padding: 0,
                                     color:
                                         Theme.of(context).colorScheme.primary,
-                                    icon: authController.platform ==
-                                            TargetPlatform.iOS
+                                    icon: isIos
                                         ? CupertinoIcons.back
                                         : Icons.arrow_back,
                                     iconColor:
                                         Theme.of(context).colorScheme.primary,
                                     isFilled: false),
-                                // controll.heart == 0
-                                //     ? Icon(Icons.favorite_outline,
-                                //         color: whiteColor, size: width * 0.08)
-                                //     : Icon(Icons.favorite,
-                                //         color: orangeColor,
-                                //         size: width * 0.08),
-                                Icon(Icons.favorite_outline,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    size: width * 0.09)
+                                GestureDetector(
+                                  onTap: () => controller.favWatch(
+                                    context: context,
+                                    path: FirebaseUserPaths.favorites,
+                                    id: controller.detales.id.toString(),
+                                  ),
+                                  child: Icon(
+                                      controller.userModel.favs!.contains(
+                                        controller.detales.id.toString(),
+                                      )
+                                          ? Icons.favorite
+                                          : Icons.favorite_outline,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      size: width * 0.09),
+                                )
                               ],
                             ),
                           ),
@@ -205,7 +299,7 @@ class DetalePagePhone extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 12.0, vertical: 12),
+                        horizontal: 12.0, vertical: 8),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -376,7 +470,7 @@ class DetalePagePhone extends StatelessWidget {
                           ),
                         ),
                       ),
-                      isIos: authController.platform == TargetPlatform.iOS,
+                      isIos: isIos,
                       title: 'story'.tr,
                       titleSize: 18,
                       more: false,
@@ -415,10 +509,16 @@ class DetalePagePhone extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 18.0),
                       child: ContentScrolling(
-                        isIos: authController.platform == TargetPlatform.iOS,
+                        load: controller.detales.isError == false ? null : true,
+                        reload: () =>
+                            controller.getData(res: controller.detales),
+                        isIos: isIos,
                         title: 'cast'.tr,
                         titleSize: 18,
-                        more: false,
+                        more: controller.loading == 1 ||
+                                controller.detales.isError == false
+                            ? false
+                            : true,
                         mainWidget: SingleChildScrollView(
                           physics: const BouncingScrollPhysics(),
                           scrollDirection: Axis.horizontal,
@@ -445,15 +545,54 @@ class DetalePagePhone extends StatelessWidget {
                                         provider: Image.asset('name').image,
                                         shimmer: true,
                                         shadow: false)
-                                    : ImageNetWork(
-                                        border: Colors.transparent,
-                                        circle: true,
-                                        link: imagebase +
-                                            controller.detales.cast!
-                                                .cast![index].profilePath
-                                                .toString(),
-                                        height: width * 0.2,
-                                        width: width * 0.2,
+                                    : Column(
+                                        children: [
+                                          ImageNetWork(
+                                            border: Colors.transparent,
+                                            circle: true,
+                                            link: imagebase +
+                                                controller.detales.cast!
+                                                    .cast![index].profilePath
+                                                    .toString(),
+                                            height: width * 0.2,
+                                            width: width * 0.2,
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 8.0),
+                                            child: SizedBox(
+                                              width: width * 0.2,
+                                              child: Column(
+                                                children: [
+                                                  CustomText(
+                                                    maxline: 1,
+                                                    flow: TextOverflow.ellipsis,
+                                                    size: width * 0.029,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .primary,
+                                                    text: controller.detales
+                                                        .cast!.cast![index].name
+                                                        .toString(),
+                                                  ),
+                                                  CustomText(
+                                                    size: width * 0.025,
+                                                    isFit: true,
+                                                    text: controller
+                                                                .detales
+                                                                .cast!
+                                                                .cast![index]
+                                                                .character
+                                                                .toString() ==
+                                                            ''
+                                                        ? 'unknown'.tr
+                                                        : 'As ${controller.detales.cast!.cast![index].character.toString()}',
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          )
+                                        ],
                                       ),
                               ),
                             ),
@@ -461,55 +600,116 @@ class DetalePagePhone extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 18.0),
-                      child: ContentScrolling(
-                        isIos: authController.platform == TargetPlatform.iOS,
-                        title: 'recommendations'.tr,
-                        titleSize: 18,
-                        more: false,
-                        mainWidget: SingleChildScrollView(
-                          physics: const BouncingScrollPhysics(),
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: List.generate(
-                              controller.loading == 1
-                                  ? 10
-                                  : controller.detales.isError == false &&
+                    if (controller.detales.isError == false &&
+                        controller.detales.recomendation!.isError == false &&
+                        controller
+                            .detales.recomendation!.results!.isNotEmpty) ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 18.0),
+                        child: ContentScrolling(
+                          more: controller.loading == 1 ||
+                                  controller.detales.isError == false
+                              ? false
+                              : true,
+                          load:
+                              controller.detales.isError == false ? null : true,
+                          reload: () =>
+                              controller.getData(res: controller.detales),
+                          isIos: isIos,
+                          title: 'recommendations'.tr,
+                          titleSize: 18,
+                          mainWidget: SingleChildScrollView(
+                            physics: const BouncingScrollPhysics(),
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: List.generate(
+                                controller.loading == 1
+                                    ? 10
+                                    : controller.detales.isError == false &&
+                                            controller.detales.recomendation!
+                                                    .isError ==
+                                                false
+                                        ? controller.detales.recomendation!
+                                            .results!.length
+                                        : 10,
+                                (index) => Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: controller.loading == 1 ||
+                                          controller.detales.isError == true ||
                                           controller.detales.recomendation!
                                                   .isError ==
-                                              false
-                                      ? controller.detales.recomendation!
-                                          .results!.length
-                                      : 10,
-                              (index) => Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: controller.loading == 1 ||
-                                        controller.detales.isError == true ||
-                                        controller.detales.cast!.isError == true
-                                    ? MovieWidget(
-                                        circle: true,
-                                        borderColor: Colors.transparent,
-                                        height: width * 0.2,
-                                        width: width * 0.2,
-                                        link: '',
-                                        provider: Image.asset('name').image,
-                                        shimmer: true,
-                                        shadow: false)
-                                    : ImageNetWork(
-                                        border: Colors.transparent,
-                                        circle: true,
-                                        link: imagebase +
-                                            controller.detales.cast!
-                                                .cast![index].profilePath
-                                                .toString(),
-                                        height: width * 0.2,
-                                        width: width * 0.2,
-                                      ),
+                                              true
+                                      ? MovieWidget(
+                                          height: (width * 0.4) * 1.3,
+                                          width: width * 0.35,
+                                          link: '',
+                                          provider: Image.asset('name').image,
+                                          shimmer: true,
+                                          shadow: false)
+                                      : ImageNetWork(
+                                          function: () =>
+                                              Get.find<HomeController>()
+                                                  .navToDetale(
+                                                      res: controller
+                                                          .detales
+                                                          .recomendation!
+                                                          .results![index]),
+                                          link: imagebase +
+                                              controller.detales.recomendation!
+                                                  .results![index].posterPath
+                                                  .toString(),
+                                          height: (width * 0.4) * 1.3,
+                                          width: width * 0.35,
+                                        ),
+                                ),
                               ),
                             ),
                           ),
                         ),
+                      )
+                    ]
+                  ],
+                  if (controller.tabs == 3) ...[
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    //   child: Row(
+                    //     children: [
+                    //       Container(
+                    //         width: width * 0.25,
+                    //         height: width * 0.08,
+                    //         decoration: BoxDecoration(
+                    //           borderRadius: BorderRadius.circular(2.5),
+                    //           color: Theme.of(context)
+                    //               .colorScheme
+                    //               .secondary
+                    //               .withOpacity(0.1),
+                    //           border: Border.all(
+                    //               width: 1,
+                    //               color: Theme.of(context).colorScheme.primary),
+                    //         ),
+                    //         child: Row(
+                    //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    //           crossAxisAlignment: CrossAxisAlignment.center,
+                    //           children: [
+                    //             CustomText(
+                    //               text: 'sason'.tr,
+                    //               size: width * 0.04,
+                    //             ),
+                    //             CustomText(
+                    //               text: '3',
+                    //               size: width * 0.038,
+                    //             ),
+                    //           ],
+                    //         ),
+                    //       )
+                    //     ],
+                    //   ),
+                    // )
+                    Container(
+                      width: width,
+                      height: width * 0.5,
+                      child: Center(
+                        child: CircularProgressIndicator(),
                       ),
                     )
                   ]

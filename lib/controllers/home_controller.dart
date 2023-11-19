@@ -45,12 +45,12 @@ class HomeController extends GetxController {
   ];
   List<Widget> get pages => _pages;
 
-  ResultModel _trendings = ResultModel(results: [], isError: true);
-  ResultModel _upcomingMovies = ResultModel(results: [], isError: true);
-  ResultModel _popularShows = ResultModel(results: [], isError: true);
-  ResultModel _popularMovies = ResultModel(results: [], isError: true);
-  ResultModel _topMovies = ResultModel(results: [], isError: true);
-  ResultModel _topShows = ResultModel(results: [], isError: true);
+  ResultModel _trendings = ResultModel(results: [], isError: false);
+  ResultModel _upcomingMovies = ResultModel(results: [], isError: false);
+  ResultModel _popularShows = ResultModel(results: [], isError: false);
+  ResultModel _popularMovies = ResultModel(results: [], isError: false);
+  ResultModel _topMovies = ResultModel(results: [], isError: false);
+  ResultModel _topShows = ResultModel(results: [], isError: false);
   //MovieDetaleModel _movieDetales = MovieDetaleModel();
 
   ResultModel get trendings => _trendings;
@@ -204,7 +204,7 @@ class HomeController extends GetxController {
     } else {
       MovieDetaleModel movieDetales = MovieDetaleModel(
           cast: CastModel(isError: true),
-          recomendation:ResultModel() ,
+          recomendation: ResultModel(isError: true),
           isError: false,
           trailer: TrailerModel(isError: true),
           id: res.id,

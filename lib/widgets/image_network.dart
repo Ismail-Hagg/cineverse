@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cineverse/widgets/movie_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class ImageNetWork extends StatelessWidget {
   final String link;
@@ -45,6 +46,7 @@ class ImageNetWork extends StatelessWidget {
         },
         placeholder: (context, url) {
           return MovieWidget(
+            borderColor: border,
             circle: circle,
             shadow: false,
             shimmer: true,

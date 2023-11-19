@@ -1,7 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
-import 'package:cineverse/pages/detale_page/detale_controller.dart';
 import 'package:cineverse/utils/constants.dart';
 import 'package:cineverse/utils/enums.dart';
 import 'package:cineverse/widgets/avatar_widget.dart';
@@ -133,7 +132,6 @@ class HomeTap extends StatelessWidget {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         double width = constraints.maxWidth;
-        double height = constraints.maxHeight;
         return SafeArea(
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
@@ -181,15 +179,17 @@ class HomeTap extends StatelessWidget {
                       ],
                     ),
                   ),
-                  ContentScrolling(
-                    title: 'trend'.tr,
-                    weight: FontWeight.bold,
-                    more: true,
-                    titleSize: 18,
-                    isIos: authController.platform == TargetPlatform.iOS,
-                    mainWidget: GetBuilder<HomeController>(
-                      init: Get.find<HomeController>(),
-                      builder: (trend) => CarouselSlider(
+                  GetBuilder<HomeController>(
+                    init: Get.find<HomeController>(),
+                    builder: (trend) => ContentScrolling(
+                      title: 'trend'.tr,
+                      weight: FontWeight.bold,
+                      more: true,
+                      load: trend.trendings.isError == false ? null : true,
+                      reload: () => trend.apiCall(),
+                      titleSize: 18,
+                      isIos: authController.platform == TargetPlatform.iOS,
+                      mainWidget: CarouselSlider(
                         options: CarouselOptions(
                           autoPlay: trend.loading == 0 &&
                               trend.trendings.isError == false,
@@ -215,6 +215,8 @@ class HomeTap extends StatelessWidget {
                                     shimmer: true,
                                     shadow: false)
                                 : ImageNetWork(
+                                    function: () => trend.navToDetale(
+                                        res: trend.trendings.results![index]),
                                     shadow: false,
                                     link: imagebase +
                                         trend.trendings.results![index]
@@ -229,18 +231,22 @@ class HomeTap extends StatelessWidget {
                     ),
                   ),
                   // upcoming movies
-                  ContentScrolling(
-                    isIos: authController.platform == TargetPlatform.iOS,
-                    title: 'upcoming'.tr,
-                    weight: FontWeight.bold,
-                    titleSize: 18,
-                    more: true,
-                    mainWidget: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      scrollDirection: Axis.horizontal,
-                      child: GetBuilder<HomeController>(
-                        init: Get.find<HomeController>(),
-                        builder: (upcoming) => Row(
+                  GetBuilder<HomeController>(
+                    init: Get.find<HomeController>(),
+                    builder: (upcoming) => ContentScrolling(
+                      load: upcoming.upcomingMovies.isError == false
+                          ? null
+                          : true,
+                      reload: () => upcoming.apiCall(),
+                      isIos: authController.platform == TargetPlatform.iOS,
+                      title: 'upcoming'.tr,
+                      weight: FontWeight.bold,
+                      titleSize: 18,
+                      more: true,
+                      mainWidget: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
                           children: List.generate(
                             upcoming.loading == 1
                                 ? 10
@@ -277,18 +283,21 @@ class HomeTap extends StatelessWidget {
                     ),
                   ),
                   // popular movies
-                  ContentScrolling(
-                    isIos: authController.platform == TargetPlatform.iOS,
-                    title: 'popularMovies'.tr,
-                    weight: FontWeight.bold,
-                    titleSize: 18,
-                    more: true,
-                    mainWidget: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      scrollDirection: Axis.horizontal,
-                      child: GetBuilder<HomeController>(
-                        init: Get.find<HomeController>(),
-                        builder: (builder) => Row(
+                  GetBuilder<HomeController>(
+                    init: Get.find<HomeController>(),
+                    builder: (builder) => ContentScrolling(
+                      load:
+                          builder.popularMovies.isError == false ? null : true,
+                      reload: () => builder.apiCall(),
+                      isIos: authController.platform == TargetPlatform.iOS,
+                      title: 'popularMovies'.tr,
+                      weight: FontWeight.bold,
+                      titleSize: 18,
+                      more: true,
+                      mainWidget: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
                           children: List.generate(
                             builder.loading == 1
                                 ? 10
@@ -308,6 +317,9 @@ class HomeTap extends StatelessWidget {
                                       shimmer: true,
                                       shadow: false)
                                   : ImageNetWork(
+                                      function: () => builder.navToDetale(
+                                          res: builder
+                                              .popularMovies.results![index]),
                                       link: imagebase +
                                           builder.popularMovies.results![index]
                                               .posterPath
@@ -322,18 +334,20 @@ class HomeTap extends StatelessWidget {
                     ),
                   ),
                   // popular shows
-                  ContentScrolling(
-                    isIos: authController.platform == TargetPlatform.iOS,
-                    title: 'popularShows'.tr,
-                    weight: FontWeight.bold,
-                    titleSize: 18,
-                    more: true,
-                    mainWidget: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      scrollDirection: Axis.horizontal,
-                      child: GetBuilder<HomeController>(
-                        init: Get.find<HomeController>(),
-                        builder: (popShow) => Row(
+                  GetBuilder<HomeController>(
+                    init: Get.find<HomeController>(),
+                    builder: (popShow) => ContentScrolling(
+                      load: popShow.popularShows.isError == false ? null : true,
+                      reload: () => popShow.apiCall(),
+                      isIos: authController.platform == TargetPlatform.iOS,
+                      title: 'popularShows'.tr,
+                      weight: FontWeight.bold,
+                      titleSize: 18,
+                      more: true,
+                      mainWidget: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
                           children: List.generate(
                             popShow.loading == 1
                                 ? 10
@@ -353,6 +367,9 @@ class HomeTap extends StatelessWidget {
                                       shimmer: true,
                                       shadow: false)
                                   : ImageNetWork(
+                                      function: () => popShow.navToDetale(
+                                          res: popShow
+                                              .popularShows.results![index]),
                                       link: imagebase +
                                           popShow.popularShows.results![index]
                                               .posterPath
@@ -367,18 +384,20 @@ class HomeTap extends StatelessWidget {
                     ),
                   ),
                   // top rated movies
-                  ContentScrolling(
-                    isIos: authController.platform == TargetPlatform.iOS,
-                    title: 'topMovies'.tr,
-                    weight: FontWeight.bold,
-                    titleSize: 18,
-                    more: true,
-                    mainWidget: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      scrollDirection: Axis.horizontal,
-                      child: GetBuilder<HomeController>(
-                        init: Get.find<HomeController>(),
-                        builder: (topMovie) => Row(
+                  GetBuilder<HomeController>(
+                    init: Get.find<HomeController>(),
+                    builder: (topMovie) => ContentScrolling(
+                      load: topMovie.topMovies.isError == false ? null : true,
+                      reload: () => topMovie.apiCall(),
+                      isIos: authController.platform == TargetPlatform.iOS,
+                      title: 'topMovies'.tr,
+                      weight: FontWeight.bold,
+                      titleSize: 18,
+                      more: true,
+                      mainWidget: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
                           children: List.generate(
                             topMovie.loading == 1
                                 ? 10
@@ -398,6 +417,9 @@ class HomeTap extends StatelessWidget {
                                       shimmer: true,
                                       shadow: false)
                                   : ImageNetWork(
+                                      function: () => topMovie.navToDetale(
+                                          res: topMovie
+                                              .topMovies.results![index]),
                                       link: imagebase +
                                           topMovie.topMovies.results![index]
                                               .posterPath
@@ -412,18 +434,20 @@ class HomeTap extends StatelessWidget {
                     ),
                   ),
                   // top rated shows
-                  ContentScrolling(
-                    isIos: authController.platform == TargetPlatform.iOS,
-                    title: 'topShowa'.tr,
-                    weight: FontWeight.bold,
-                    titleSize: 18,
-                    more: true,
-                    mainWidget: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      scrollDirection: Axis.horizontal,
-                      child: GetBuilder<HomeController>(
-                        init: Get.find<HomeController>(),
-                        builder: (topShow) => Row(
+                  GetBuilder<HomeController>(
+                    init: Get.find<HomeController>(),
+                    builder: (topShow) => ContentScrolling(
+                      load: topShow.topShows.isError == false ? null : true,
+                      reload: () => topShow.apiCall(),
+                      isIos: authController.platform == TargetPlatform.iOS,
+                      title: 'topShowa'.tr,
+                      weight: FontWeight.bold,
+                      titleSize: 18,
+                      more: true,
+                      mainWidget: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
                           children: List.generate(
                             topShow.loading == 1
                                 ? 10
@@ -443,6 +467,9 @@ class HomeTap extends StatelessWidget {
                                       shimmer: true,
                                       shadow: false)
                                   : ImageNetWork(
+                                      function: () => topShow.navToDetale(
+                                          res:
+                                              topShow.topShows.results![index]),
                                       link: imagebase +
                                           topShow.topShows.results![index]
                                               .posterPath

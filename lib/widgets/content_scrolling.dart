@@ -14,6 +14,8 @@ class ContentScrolling extends StatelessWidget {
   final double? moreSize;
   final Widget mainWidget;
   final double? padding;
+  final Function()? reload;
+  final bool? load;
 
   const ContentScrolling(
       {super.key,
@@ -26,7 +28,9 @@ class ContentScrolling extends StatelessWidget {
       required this.mainWidget,
       this.otherMore,
       this.other,
-      this.padding});
+      this.padding,
+      this.reload,
+      this.load});
 
   @override
   Widget build(BuildContext context) {
@@ -56,8 +60,10 @@ class ContentScrolling extends StatelessWidget {
                           onPressed: () {}),
                     )
                   : TextButton(
-                      onPressed: () {},
-                      child: CustomText(text: 'more'.tr, size: moreSize),
+                      onPressed: load != null ? reload : () {},
+                      child: CustomText(
+                          text: load != null ? 'reload'.tr : 'more'.tr,
+                          size: moreSize),
                     )
             ],
             if (other == true) ...[otherMore as Widget]

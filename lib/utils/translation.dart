@@ -56,6 +56,18 @@ class Translation extends Translations {
           'episodes': 'Episodes',
           'comments': 'Comments',
           'recommendations': 'Recommendation',
+          'noimage': 'No Images Found',
+          'Year': 'Year',
+          'seasons': 'Seasons',
+          'country': 'Country',
+          'length': 'Length',
+          'reload': 'Reload',
+          'unknow': 'unknown',
+          'watchalready': 'Already in Watchlist',
+          'addtowatch': 'Add to Watchlist',
+          'addkeep': 'Add To Episode Keeping',
+          'watchadd': 'Added to Watchlist',
+          'sason': 'Season'
         },
         'ar_SA': {
           'email': 'العنوان الالكتروني',
@@ -110,6 +122,18 @@ class Translation extends Translations {
           'episodes': 'الحلقات',
           'comments': 'التعليقات',
           'recommendations': 'التوصيات',
+          'noimage': 'لاتوجد صور',
+          'Year': 'السنة',
+          'seasons': 'المواسم',
+          'country': 'الدولة',
+          'length': 'المدة',
+          'reload': 'تحديث',
+          'unknow': 'غير معروف',
+          'watchalready': 'بالفعل في قائمةالمشاهده',
+          'addtowatch': 'اضافه الى قائمة المشاهدة',
+          'addkeep': 'اضافه الى متابعة الحلقات',
+          'watchadd': 'تمت الإضافة إلى قائمة المشاهده',
+          'sason': 'الموسم'
         }
       };
 }

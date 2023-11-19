@@ -2,6 +2,7 @@ import 'package:cineverse/models/cast_model.dart';
 import 'package:cineverse/models/result_model.dart';
 import 'package:cineverse/models/trailer_model.dart';
 import 'package:cineverse/utils/constants.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MovieDetaleModel {
   List<String>? genres;
@@ -21,6 +22,7 @@ class MovieDetaleModel {
   ResultModel? recomendation;
   bool? isError;
   String? errorMessage;
+  Timestamp? timestamp;
 
   MovieDetaleModel(
       {this.genres,
@@ -31,6 +33,7 @@ class MovieDetaleModel {
       this.releaseDate,
       this.runtime,
       this.status,
+      this.timestamp,
       this.title,
       this.voteAverage,
       this.isShow,
@@ -70,12 +73,13 @@ class MovieDetaleModel {
 
     title = json['title'] ?? json['name'];
     voteAverage = double.parse(voteAve.toStringAsFixed(1));
-    isShow = json['first_air_date'] == null ? false : true;
+    isShow = json['isShow'] ?? json['first_air_date'] != null;
     originCountry = json['origin_country'] == null
         ? json['production_countries'][0]['name']
         : countries[json['origin_country'][0]];
     isError = false;
     errorMessage = '';
+    timestamp = json['timestamp'] ?? Timestamp.now();
   }
 
   Map<String, dynamic> toMap() {
@@ -89,7 +93,10 @@ class MovieDetaleModel {
       'title': title,
       'runtime': runtime,
       'status': status,
-      'vote_average': voteAverage
+      'vote_average': voteAverage,
+      'isShow': isShow,
+      'origin_country': originCountry,
+      'timestamp': timestamp
     };
   }
 }

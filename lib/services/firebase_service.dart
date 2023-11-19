@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:cineverse/models/movie_detales_model.dart';
+import 'package:cineverse/utils/enums.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
@@ -40,5 +42,24 @@ class FirebaseServices {
       print('=====>> $e');
       return '';
     }
+  }
+
+  // upload favorites and or watchlist
+  Future<void> watchFav(
+      {required String userId,
+      required FirebaseUserPaths path,
+      required MovieDetaleModel model,
+      required bool upload}) async {
+    upload
+        ? await _ref
+            .doc(userId)
+            .collection(path.name)
+            .doc(model.id.toString())
+            .set(model.toMap())
+        : await _ref
+            .doc(userId)
+            .collection(path.name)
+            .doc(model.id.toString())
+            .delete();
   }
 }
