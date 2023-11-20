@@ -1,5 +1,6 @@
 import 'package:cineverse/models/cast_model.dart';
 import 'package:cineverse/models/result_model.dart';
+import 'package:cineverse/models/season_model.dart';
 import 'package:cineverse/models/trailer_model.dart';
 import 'package:cineverse/utils/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -23,6 +24,7 @@ class MovieDetaleModel {
   bool? isError;
   String? errorMessage;
   Timestamp? timestamp;
+  SeasonModel? seaosn;
 
   MovieDetaleModel(
       {this.genres,
@@ -40,6 +42,7 @@ class MovieDetaleModel {
       this.originCountry,
       this.cast,
       this.trailer,
+      this.seaosn,
       this.recomendation,
       this.isError,
       this.errorMessage});

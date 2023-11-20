@@ -19,15 +19,18 @@ class Menu extends StatelessWidget {
 
   void thing({required BuildContext context}) {
     showCupertinoModalPopup(
-        context: context,
-        builder: (BuildContext context) => CupertinoActionSheet(
-              actions: titles
-                  .map((e) => CupertinoActionSheetAction(
-                        onPressed: funcs[titles.indexOf(e)],
-                        child: CustomText(text: titles[titles.indexOf(e)]),
-                      ))
-                  .toList(),
-            ));
+      context: context,
+      builder: (BuildContext context) => CupertinoActionSheet(
+        actions: titles
+            .map(
+              (e) => CupertinoActionSheetAction(
+                onPressed: funcs[titles.indexOf(e)],
+                child: CustomText(text: titles[titles.indexOf(e)]),
+              ),
+            )
+            .toList(),
+      ),
+    );
   }
 
   @override
@@ -43,14 +46,17 @@ class Menu extends StatelessWidget {
             icon: child,
             itemBuilder: (context) {
               return titles
-                  .map((e) => PopupMenuItem<int>(
-                        value: titles.indexOf(e),
-                        child: Text(e),
-                      ))
+                  .map(
+                    (e) => PopupMenuItem<int>(
+                      value: titles.indexOf(e),
+                      child: Text(e),
+                    ),
+                  )
                   .toList();
             },
             onSelected: (value) {
               funcs[value]();
-            });
+            },
+          );
   }
 }

@@ -5,6 +5,7 @@ import 'package:cineverse/models/cast_model.dart';
 import 'package:cineverse/models/movie_detales_model.dart';
 import 'package:cineverse/models/result_details_model.dart';
 import 'package:cineverse/models/result_model.dart';
+import 'package:cineverse/models/season_model.dart';
 import 'package:cineverse/models/trailer_model.dart';
 import 'package:cineverse/models/user_model.dart';
 import 'package:cineverse/pages/chats_page/chat_controller.dart';
@@ -216,6 +217,7 @@ class HomeController extends GetxController {
           runtime: 0,
           genres: null,
           releaseDate: res.releaseDate,
+          seaosn: SeasonModel(isError: true, seasonNumber: 1),
           originCountry: '');
 
       Get.create(

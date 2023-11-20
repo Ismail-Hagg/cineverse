@@ -13,6 +13,7 @@ import 'package:cineverse/widgets/square_button.dart';
 import 'package:cineverse/widgets/tab_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:shape_of_view_null_safe/shape_of_view_null_safe.dart';
 
@@ -28,6 +29,7 @@ class DetalePagePhone extends StatelessWidget {
     final AuthController authController = Get.find<AuthController>();
     bool isIos = authController.platform == TargetPlatform.iOS;
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.onBackground,
       body: GetBuilder<MovieDetaleController>(
         init: Get.find<MovieDetaleController>(),
         builder: (controller) => LayoutBuilder(
@@ -83,6 +85,7 @@ class DetalePagePhone extends StatelessWidget {
                                                     height: height * 0.95,
                                                     width: width * 0.8,
                                                     border: Colors.transparent,
+                                                    shadow: false,
                                                   );
                                                 },
                                               )
@@ -670,48 +673,152 @@ class DetalePagePhone extends StatelessWidget {
                     ]
                   ],
                   if (controller.tabs == 3) ...[
-                    // Padding(
-                    //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    //   child: Row(
-                    //     children: [
-                    //       Container(
-                    //         width: width * 0.25,
-                    //         height: width * 0.08,
-                    //         decoration: BoxDecoration(
-                    //           borderRadius: BorderRadius.circular(2.5),
-                    //           color: Theme.of(context)
-                    //               .colorScheme
-                    //               .secondary
-                    //               .withOpacity(0.1),
-                    //           border: Border.all(
-                    //               width: 1,
-                    //               color: Theme.of(context).colorScheme.primary),
-                    //         ),
-                    //         child: Row(
-                    //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    //           crossAxisAlignment: CrossAxisAlignment.center,
-                    //           children: [
-                    //             CustomText(
-                    //               text: 'sason'.tr,
-                    //               size: width * 0.04,
-                    //             ),
-                    //             CustomText(
-                    //               text: '3',
-                    //               size: width * 0.038,
-                    //             ),
-                    //           ],
-                    //         ),
-                    //       )
-                    //     ],
-                    //   ),
-                    // )
-                    Container(
-                      width: width,
-                      height: width * 0.5,
-                      child: Center(
-                        child: CircularProgressIndicator(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 6),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Menu(
+                            ios: isIos,
+                            titles: List.generate(
+                                controller.detales.runtime as int,
+                                (index) => '${'season'.tr} ${index + 1}'),
+                            funcs: List.generate(
+                              controller.detales.runtime as int,
+                              (index) => () {
+                                if (isIos) {
+                                  Get.back();
+                                }
+                                controller.seasonChange(
+                                    index: index + 1, season: index + 1);
+                              },
+                            ),
+                            child: Container(
+                              width: width * 0.25,
+                              height: width * 0.08,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(2.5),
+                                border: Border.all(
+                                    width: 1,
+                                    color:
+                                        Theme.of(context).colorScheme.primary),
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  CustomText(
+                                    text:
+                                        '${'sason'.tr} ${controller.seasonTrack}',
+                                    size: width * 0.04,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Menu(
+                            ios: isIos,
+                            titles: ['ascend'.tr, 'decend'.tr],
+                            funcs: [
+                              () {
+                                if (isIos) {
+                                  Get.back();
+                                }
+                                controller.episodeSort(ascending: true);
+                              },
+                              () {
+                                if (isIos) {
+                                  Get.back();
+                                }
+                                controller.episodeSort(ascending: false);
+                              },
+                            ],
+                            child: const Icon(FontAwesomeIcons.list),
+                          )
+                        ],
                       ),
-                    )
+                    ),
+                    controller.loading == 1 || controller.loadingSeason == 1
+                        ? SizedBox(
+                            width: width,
+                            height: width * 0.5,
+                            child: Center(
+                              child: isIos
+                                  ? CupertinoActivityIndicator(
+                                      radius: width * 0.04,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    )
+                                  : CircularProgressIndicator(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                            ),
+                          )
+                        : controller.detales.isError == true ||
+                                controller.detales.seaosn!.isError == true
+                            ? SizedBox(
+                                width: width,
+                                height: width * 0.5,
+                                child: Center(
+                                  child: isIos
+                                      ? CupertinoButton(
+                                          child: const Icon(
+                                            CupertinoIcons.refresh,
+                                          ),
+                                          onPressed: () {},
+                                        )
+                                      : IconButton(
+                                          icon: const Icon(Icons.refresh),
+                                          onPressed: () {},
+                                        ),
+                                ),
+                              )
+                            : Column(
+                                children: List.generate(
+                                  controller.detales.seaosn!.episodes!.length,
+                                  (index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: ListTile(
+                                        onTap: () {},
+                                        leading: ImageNetWork(
+                                          link: imagebase +
+                                              controller.detales.seaosn!
+                                                  .episodes![index].posterPath,
+                                          width: width * 0.1,
+                                          height: width * 0.1,
+                                          border: Colors.transparent,
+                                        ),
+                                        title: CustomText(
+                                          text: controller.detales.seaosn!
+                                              .episodes![index].name
+                                              .toString(),
+                                        ),
+                                        subtitle: CustomText(
+                                          text:
+                                              '${'epnum'.tr} ${controller.detales.seaosn!.episodes![index].episodeNumber}  -  ${controller.detales.seaosn!.episodes![index].voteAverage.toStringAsFixed(1)} ',
+                                        ),
+                                        trailing: Icon(
+                                          isDatePassed(
+                                                  time: controller
+                                                      .detales
+                                                      .seaosn!
+                                                      .episodes![index]
+                                                      .airDate)
+                                              ? Icons.tv
+                                              : Icons.tv_off,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
                   ]
                 ],
               ),

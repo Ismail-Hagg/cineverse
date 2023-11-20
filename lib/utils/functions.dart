@@ -58,3 +58,12 @@ bool maxLines(
   tp.layout(maxWidth: width);
   return tp.didExceedMaxLines;
 }
+
+// determin if a date has passed
+bool isDatePassed({required String time}) {
+  if (time == '') {
+    return false;
+  } else {
+    return DateTime.parse(time).isBefore(DateTime.now());
+  }
+}

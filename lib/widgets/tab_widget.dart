@@ -1,6 +1,9 @@
 import 'package:cineverse/widgets/custom_text.dart';
 import 'package:cineverse/widgets/ios_tab_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../utils/constants.dart';
 
 class TabWidget extends StatelessWidget {
   final String title;
@@ -72,10 +75,12 @@ class TabWidget extends StatelessWidget {
                           size: width * 0.08,
                           color: selected
                               ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context)
-                                  .colorScheme
-                                  .primary
-                                  .withOpacity(0.4),
+                              : Get.isDarkMode
+                                  ? Theme.of(context)
+                                      .colorScheme
+                                      .primary
+                                      .withOpacity(0.4)
+                                  : blackColor.withOpacity(0.35),
                           text: title,
                         ),
                       ),

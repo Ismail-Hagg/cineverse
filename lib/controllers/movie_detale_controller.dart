@@ -8,6 +8,7 @@ import 'package:cineverse/services/firebase_service.dart';
 import 'package:cineverse/services/image_service.dart';
 import 'package:cineverse/services/movie_detale_service.dart';
 import 'package:cineverse/services/recommendation_service.dart';
+import 'package:cineverse/services/season_service.dart';
 import 'package:cineverse/services/trailer_service.dart';
 import 'package:cineverse/utils/constants.dart';
 import 'package:cineverse/utils/enums.dart';
@@ -31,14 +32,23 @@ class MovieDetaleController extends GetxController
   int _loading = 0;
   int get loading => _loading;
 
+  int _loadingSeason = 0;
+  int get loadingSeason => _loadingSeason;
+
   int _imagesCounter = 0;
   int get imagesCounter => _imagesCounter;
 
   int _tabs = 1;
   int get tabs => _tabs;
 
+  int _seasonTrack = 1;
+  int get seasonTrack => _seasonTrack;
+
   bool _storyOpen = false;
   bool get storyOpen => _storyOpen;
+
+  bool _isAscending = true;
+  bool get isAscending => _isAscending;
 
   late AnimationController _controller;
   AnimationController get controller => _controller;
@@ -68,7 +78,13 @@ class MovieDetaleController extends GetxController
     var show = res.isShow == true ? 'tv' : 'movie';
     var base = 'https://api.themoviedb.org/3/$show/${res.id}';
     var end = '?api_key=$apiKey&language=$lan';
-    List<String> slashes = ['', '/credits', '/recommendations', '/videos'];
+    List<String> slashes = [
+      '',
+      '/credits',
+      '/recommendations',
+      '/videos',
+      '/season'
+    ];
 
     for (var i = 0; i < slashes.length; i++) {
       switch (i) {
@@ -90,19 +106,64 @@ class MovieDetaleController extends GetxController
         case 2:
           await RecommendationService()
               .getHomeInfo(link: '$base/${slashes[i]}$end')
-              .then((value) => {
-                    _detales.recomendation = value,
-                  });
+              .then(
+                (value) => {
+                  _detales.recomendation = value,
+                },
+              );
           break;
         case 3:
           await TrailerService()
               .getHomeInfo(link: '$base/${slashes[i]}$end')
-              .then((value) => {_detales.trailer = value});
+              .then(
+                (value) => {_detales.trailer = value},
+              );
+          break;
+        case 4:
+          if (res.isShow == true) {
+            await SeasonService()
+                .getHomeInfo(link: '$base/${slashes[i]}/1$end')
+                .then((value) => {_detales.seaosn = value});
+          }
           break;
       }
     }
     _loading = 0;
     update();
+  }
+
+  // change show season
+  void seasonChange({required int season, required int index}) async {
+    if (_detales.seaosn!.seasonNumber != index) {
+      _loadingSeason = 1;
+      _seasonTrack = index;
+      update();
+      await SeasonService()
+          .getHomeInfo(
+              link:
+                  'https://api.themoviedb.org/3/tv/${_detales.id}/season/$season?api_key=$apiKey&language=${_userModel.language.toString().replaceAll('_', '-')}')
+          .then((value) {
+        _detales.seaosn = value;
+        _loadingSeason = 0;
+        update();
+      });
+    }
+  }
+
+  // sort episode list ascending and descending
+  void episodeSort({required bool ascending}) {
+    if (ascending != _isAscending && _loading == 0 && _loadingSeason == 0) {
+      if (ascending) {
+        _detales.seaosn!.episodes!
+            .sort((a, b) => a.episodeNumber.compareTo(b.episodeNumber));
+        _isAscending = true;
+      } else {
+        _detales.seaosn!.episodes!
+            .sort((b, a) => a.episodeNumber.compareTo(b.episodeNumber));
+        _isAscending = false;
+      }
+      update();
+    }
   }
 
   void load() {

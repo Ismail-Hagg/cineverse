@@ -67,7 +67,10 @@ class Translation extends Translations {
           'addtowatch': 'Add to Watchlist',
           'addkeep': 'Add To Episode Keeping',
           'watchadd': 'Added to Watchlist',
-          'sason': 'Season'
+          'sason': 'Season',
+          'epnum': 'Episode',
+          'ascend': 'Ascending',
+          'decend': 'Decending'
         },
         'ar_SA': {
           'email': 'العنوان الالكتروني',
@@ -133,7 +136,10 @@ class Translation extends Translations {
           'addtowatch': 'اضافه الى قائمة المشاهدة',
           'addkeep': 'اضافه الى متابعة الحلقات',
           'watchadd': 'تمت الإضافة إلى قائمة المشاهده',
-          'sason': 'الموسم'
+          'sason': 'الموسم',
+          'epnum': 'الحلقة',
+          'ascend': 'تصاعدي',
+          'decend': 'تنازلي'
         }
       };
 }
