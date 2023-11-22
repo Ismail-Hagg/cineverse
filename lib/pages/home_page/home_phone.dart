@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
+import 'package:cineverse/models/result_model.dart';
 import 'package:cineverse/utils/constants.dart';
 import 'package:cineverse/utils/enums.dart';
 import 'package:cineverse/widgets/avatar_widget.dart';
@@ -148,7 +149,12 @@ class HomeTap extends StatelessWidget {
                         LoginInput(
                           isSearch: true,
                           textSize: 15,
-                          onTap: () => authController.themeSwich(),
+                          onTap: () => Get.find<HomeController>().navToSearch(
+                              model:
+                                  ResultModel(isError: true, errorMessage: ''),
+                              isSearch: true,
+                              title: 'title',
+                              link: 'link'),
                           height: width * 0.115,
                           width: width * 0.82,
                           obscure: false,
@@ -182,6 +188,11 @@ class HomeTap extends StatelessWidget {
                   GetBuilder<HomeController>(
                     init: Get.find<HomeController>(),
                     builder: (trend) => ContentScrolling(
+                      function: () => trend.navToSearch(
+                          model: trend.trendings,
+                          isSearch: false,
+                          title: 'trend'.tr,
+                          link: trend.urls[0]),
                       title: 'trend'.tr,
                       weight: FontWeight.bold,
                       more: true,
@@ -234,6 +245,11 @@ class HomeTap extends StatelessWidget {
                   GetBuilder<HomeController>(
                     init: Get.find<HomeController>(),
                     builder: (upcoming) => ContentScrolling(
+                      function: () => upcoming.navToSearch(
+                          model: upcoming.upcomingMovies,
+                          isSearch: false,
+                          title: 'upcoming'.tr,
+                          link: upcoming.urls[1]),
                       load: upcoming.upcomingMovies.isError == false
                           ? null
                           : true,
@@ -286,6 +302,11 @@ class HomeTap extends StatelessWidget {
                   GetBuilder<HomeController>(
                     init: Get.find<HomeController>(),
                     builder: (builder) => ContentScrolling(
+                      function: () => builder.navToSearch(
+                          model: builder.popularMovies,
+                          isSearch: false,
+                          title: 'popularMovies'.tr,
+                          link: builder.urls[2]),
                       load:
                           builder.popularMovies.isError == false ? null : true,
                       reload: () => builder.apiCall(),
@@ -337,6 +358,11 @@ class HomeTap extends StatelessWidget {
                   GetBuilder<HomeController>(
                     init: Get.find<HomeController>(),
                     builder: (popShow) => ContentScrolling(
+                      function: () => popShow.navToSearch(
+                          model: popShow.popularShows,
+                          isSearch: false,
+                          title: 'popularShows'.tr,
+                          link: popShow.urls[3]),
                       load: popShow.popularShows.isError == false ? null : true,
                       reload: () => popShow.apiCall(),
                       isIos: authController.platform == TargetPlatform.iOS,
@@ -387,6 +413,11 @@ class HomeTap extends StatelessWidget {
                   GetBuilder<HomeController>(
                     init: Get.find<HomeController>(),
                     builder: (topMovie) => ContentScrolling(
+                      function: () => topMovie.navToSearch(
+                          model: topMovie.topMovies,
+                          isSearch: false,
+                          title: 'topMovies'.tr,
+                          link: topMovie.urls[4]),
                       load: topMovie.topMovies.isError == false ? null : true,
                       reload: () => topMovie.apiCall(),
                       isIos: authController.platform == TargetPlatform.iOS,
@@ -437,6 +468,11 @@ class HomeTap extends StatelessWidget {
                   GetBuilder<HomeController>(
                     init: Get.find<HomeController>(),
                     builder: (topShow) => ContentScrolling(
+                      function: () => topShow.navToSearch(
+                          model: topShow.topShows,
+                          isSearch: false,
+                          title: 'topShowa'.tr,
+                          link: topShow.urls[5]),
                       load: topShow.topShows.isError == false ? null : true,
                       reload: () => topShow.apiCall(),
                       isIos: authController.platform == TargetPlatform.iOS,

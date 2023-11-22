@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:cineverse/widgets/image_network.dart';
-import 'package:cineverse/widgets/movie_widget.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/enums.dart';

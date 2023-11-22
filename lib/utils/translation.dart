@@ -70,7 +70,9 @@ class Translation extends Translations {
           'sason': 'Season',
           'epnum': 'Episode',
           'ascend': 'Ascending',
-          'decend': 'Decending'
+          'decend': 'Decending',
+          'trailer': 'No Trailer',
+          'res': 'No Results',
         },
         'ar_SA': {
           'email': 'العنوان الالكتروني',
@@ -139,7 +141,9 @@ class Translation extends Translations {
           'sason': 'الموسم',
           'epnum': 'الحلقة',
           'ascend': 'تصاعدي',
-          'decend': 'تنازلي'
+          'decend': 'تنازلي',
+          'trailer': 'لايوجد اعلان',
+          'res': 'لا توجد نتائج',
         }
       };
 }

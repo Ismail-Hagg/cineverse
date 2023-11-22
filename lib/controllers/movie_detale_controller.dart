@@ -2,6 +2,7 @@ import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/models/image_model.dart';
 import 'package:cineverse/models/movie_detales_model.dart';
+import 'package:cineverse/models/trailer_model.dart';
 import 'package:cineverse/models/user_model.dart';
 import 'package:cineverse/services/cast_service.dart';
 import 'package:cineverse/services/firebase_service.dart';
@@ -15,6 +16,7 @@ import 'package:cineverse/utils/enums.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MovieDetaleController extends GetxController
     with GetSingleTickerProviderStateMixin {
@@ -52,6 +54,11 @@ class MovieDetaleController extends GetxController
 
   late AnimationController _controller;
   AnimationController get controller => _controller;
+
+  TrailerModel _episodeModel = TrailerModel(
+    isError: true,
+  );
+  TrailerModel get episodeModel => _episodeModel;
 
   @override
   void onInit() {
@@ -134,6 +141,7 @@ class MovieDetaleController extends GetxController
 
   // change show season
   void seasonChange({required int season, required int index}) async {
+    authController.platform == TargetPlatform.iOS ? Get.back() : null;
     if (_detales.seaosn!.seasonNumber != index) {
       _loadingSeason = 1;
       _seasonTrack = index;
@@ -231,6 +239,49 @@ class MovieDetaleController extends GetxController
     }
   }
 
+  // // trailer button pressed
+  void trailerButton(
+      {required Widget content,
+      required BuildContext context,
+      required TrailerModel? model}) async {
+    if (_loading == 0 && model!.isError == false) {
+      if (model.results!.isEmpty) {
+        await showOkAlertDialog(
+          context: context,
+          title: 'trailer'.tr,
+        );
+      } else if (model.results!.length == 1) {
+        launcherUse(
+            url: 'https://www.youtube.com/watch?v=${model.results![0].key}',
+            context: context);
+      } else {
+        Get.dialog(content);
+      }
+    }
+  }
+
+  // use uri launcher
+  void launcherUse({required String url, required BuildContext context}) async {
+    await launcherUrl(url: url).then((value) async {
+      if (value.$1) {
+        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+      } else {
+        await showOkAlertDialog(
+            context: context, title: 'error'.tr, message: value.$2);
+      }
+    });
+  }
+
+  // uri launcher
+  Future<(bool, String)> launcherUrl({required String url}) async {
+    try {
+      await canLaunchUrl(Uri.parse(url));
+      return (true, '');
+    } catch (e) {
+      return (false, e.toString());
+    }
+  }
+
   // upload favorites and or watchlist to firebase
   void watchFav({required FirebaseUserPaths path, required bool upload}) async {
     await FirebaseServices()
@@ -322,5 +373,31 @@ class MovieDetaleController extends GetxController
         default:
       }
     }
+  }
+
+  // get episode trailer
+  void episodeTrailer(
+      {required String episode,
+      required BuildContext context,
+      required Widget content,
+      required int index}) async {
+    _detales.seaosn!.episodes![index].loading = true;
+    update();
+    bool check = _detales.isError == false;
+    String id = check ? _detales.id.toString() : '';
+    String season = check && _detales.seaosn!.isError == false
+        ? _detales.seaosn!.seasonNumber.toString()
+        : '';
+    String lan = _userModel.language.toString().replaceAll('_', '-');
+    await TrailerService()
+        .getHomeInfo(
+            link:
+                'https://api.themoviedb.org/3/tv/$id/season/$season/episode/$episode/videos?api_key=$apiKey&language=$lan')
+        .then((value) {
+      _episodeModel = value;
+      _detales.seaosn!.episodes![index].loading = false;
+      update();
+      trailerButton(content: content, context: context, model: value);
+    });
   }
 }

@@ -15,6 +15,7 @@ class ContentScrolling extends StatelessWidget {
   final Widget mainWidget;
   final double? padding;
   final Function()? reload;
+  final Function()? function;
   final bool? load;
 
   const ContentScrolling(
@@ -30,7 +31,8 @@ class ContentScrolling extends StatelessWidget {
       this.other,
       this.padding,
       this.reload,
-      this.load});
+      this.load,
+      this.function});
 
   @override
   Widget build(BuildContext context) {
@@ -52,15 +54,16 @@ class ContentScrolling extends StatelessWidget {
                   ? Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: CupertinoButton(
-                          padding: const EdgeInsets.all(0),
-                          child: CustomText(
-                            text: 'more'.tr,
-                            size: moreSize,
-                          ),
-                          onPressed: () {}),
+                        padding: const EdgeInsets.all(0),
+                        onPressed: function,
+                        child: CustomText(
+                          text: 'more'.tr,
+                          size: moreSize,
+                        ),
+                      ),
                     )
                   : TextButton(
-                      onPressed: load != null ? reload : () {},
+                      onPressed: load != null ? reload : function,
                       child: CustomText(
                           text: load != null ? 'reload'.tr : 'more'.tr,
                           size: moreSize),

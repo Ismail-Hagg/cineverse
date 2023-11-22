@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/models/cast_model.dart';
+import 'package:cineverse/models/move_model.dart';
 import 'package:cineverse/models/movie_detales_model.dart';
 import 'package:cineverse/models/result_details_model.dart';
 import 'package:cineverse/models/result_model.dart';
@@ -14,6 +15,7 @@ import 'package:cineverse/pages/episode_keeping_page/keeping_controller.dart';
 import 'package:cineverse/pages/favorites_page/favourites_controller.dart';
 import 'package:cineverse/pages/home_page/home_phone.dart';
 import 'package:cineverse/pages/profile_page/profile_controller.dart';
+import 'package:cineverse/pages/search_page/search_controller.dart';
 import 'package:cineverse/pages/watchlist_page/watchlist_controller.dart';
 import 'package:cineverse/services/firebase_service.dart';
 import 'package:cineverse/services/home_page_service.dart';
@@ -230,5 +232,20 @@ class HomeController extends GetxController {
           preventDuplicates: false,
           arguments: movieDetales);
     }
+  }
+
+  // nav to search or more page
+  void navToSearch(
+      {required bool isSearch,
+      String? title,
+      String? link,
+      required ResultModel model}) {
+    Move moving =
+        Move(isSearch: isSearch, link: link, title: title, model: model);
+    Get.to(
+      () => const SearchViewController(),
+      arguments: moving,
+      transition: Transition.native,
+    );
   }
 }

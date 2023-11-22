@@ -13,7 +13,9 @@ class TrailerModel {
     if (json['results'] != null) {
       results = <Trail>[];
       json['results'].forEach((v) {
-        results!.add(Trail.fromJson(v));
+        if (v['type'] == 'Trailer' && v['site'] == 'YouTube') {
+          results!.add(Trail.fromJson(v));
+        }
       });
     }
   }

@@ -42,8 +42,9 @@ class Menu extends StatelessWidget {
             child: child,
           )
         : PopupMenuButton(
+            padding: const EdgeInsets.all(0.0),
             splashRadius: 15,
-            icon: child,
+            //icon: child,
             itemBuilder: (context) {
               return titles
                   .map(
@@ -57,6 +58,7 @@ class Menu extends StatelessWidget {
             onSelected: (value) {
               funcs[value]();
             },
+            child: child,
           );
   }
 }

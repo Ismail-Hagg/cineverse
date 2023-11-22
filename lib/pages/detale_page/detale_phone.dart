@@ -147,7 +147,61 @@ class DetalePagePhone extends StatelessWidget {
                             padding: const EdgeInsets.all(10),
                             elevation: 6,
                             onPressed: () {
-                              // controll.goToTrailer(context: context);
+                              controller.trailerButton(
+                                  model: controller.detales.trailer,
+                                  content: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: SingleChildScrollView(
+                                        physics: const BouncingScrollPhysics(),
+                                        child: Column(
+                                          children: List.generate(
+                                            controller.detales.trailer != null
+                                                ? controller.detales.trailer!
+                                                    .results!.length
+                                                : 0,
+                                            (index) {
+                                              return Material(
+                                                child: ListTile(
+                                                  onTap: () =>
+                                                      controller.launcherUse(
+                                                          url:
+                                                              'https://www.youtube.com/watch?v=${controller.detales.trailer!.results![index].key}',
+                                                          context: context),
+                                                  title: CustomText(
+                                                      maxline: 2,
+                                                      flow:
+                                                          TextOverflow.ellipsis,
+                                                      text: controller
+                                                          .detales
+                                                          .trailer!
+                                                          .results![index]
+                                                          .name
+                                                          .toString()),
+                                                  subtitle: CustomText(
+                                                      text: controller
+                                                          .detales
+                                                          .trailer!
+                                                          .results![index]
+                                                          .type
+                                                          .toString()),
+                                                  leading: ImageNetWork(
+                                                      border:
+                                                          Colors.transparent,
+                                                      fit: BoxFit.cover,
+                                                      link:
+                                                          'https://img.youtube.com/vi/${controller.detales.trailer!.results![index].key.toString()}/0.jpg',
+                                                      width: width * 0.2,
+                                                      height: width * 0.2),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  context: context);
                             },
                             shape: const CircleBorder(),
                             fillColor: whiteColor,
@@ -177,7 +231,7 @@ class DetalePagePhone extends StatelessWidget {
                                         titles: ["addtowatch".tr, "addkeep".tr],
                                         funcs: [
                                           () => {
-                                                Get.back(),
+                                                isIos ? Get.back() : null,
                                                 controller.favWatch(
                                                     path: FirebaseUserPaths
                                                         .watchlist,
@@ -186,7 +240,7 @@ class DetalePagePhone extends StatelessWidget {
                                                     context: context)
                                               },
                                           () => {
-                                                Get.back()
+                                                !isIos ? Get.back() : null
                                                 // controller.addKeeping(
                                                 //     context: context)
                                               }
@@ -687,9 +741,6 @@ class DetalePagePhone extends StatelessWidget {
                             funcs: List.generate(
                               controller.detales.runtime as int,
                               (index) => () {
-                                if (isIos) {
-                                  Get.back();
-                                }
                                 controller.seasonChange(
                                     index: index + 1, season: index + 1);
                               },
@@ -710,6 +761,8 @@ class DetalePagePhone extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   CustomText(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                     text:
                                         '${'sason'.tr} ${controller.seasonTrack}',
                                     size: width * 0.04,
@@ -735,7 +788,12 @@ class DetalePagePhone extends StatelessWidget {
                                 controller.episodeSort(ascending: false);
                               },
                             ],
-                            child: const Icon(FontAwesomeIcons.list),
+                            child: Icon(
+                              controller.isAscending
+                                  ? FontAwesomeIcons.arrowDownShortWide
+                                  : FontAwesomeIcons.arrowDownWideShort,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
                           )
                         ],
                       ),
@@ -782,8 +840,8 @@ class DetalePagePhone extends StatelessWidget {
                                   (index) {
                                     return Padding(
                                       padding: const EdgeInsets.all(4.0),
-                                      child: ListTile(
-                                        onTap: () {},
+                                      child: ExpansionTile(
+                                        //onTap: () {},
                                         leading: ImageNetWork(
                                           link: imagebase +
                                               controller.detales.seaosn!
@@ -799,21 +857,120 @@ class DetalePagePhone extends StatelessWidget {
                                         ),
                                         subtitle: CustomText(
                                           text:
-                                              '${'epnum'.tr} ${controller.detales.seaosn!.episodes![index].episodeNumber}  -  ${controller.detales.seaosn!.episodes![index].voteAverage.toStringAsFixed(1)} ',
+                                              '${'epnum'.tr} ${controller.detales.seaosn!.episodes![index].episodeNumber}  -  ${controller.detales.seaosn!.episodes![index].voteAverage.toStringAsFixed(1)}  -  ${controller.detales.seaosn!.episodes![index].runTime} m',
                                         ),
-                                        trailing: Icon(
-                                          isDatePassed(
-                                                  time: controller
+                                        trailing: controller.detales.seaosn!
+                                                .episodes![index].loading
+                                            ? isIos
+                                                ? CupertinoActivityIndicator(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .primary,
+                                                  )
+                                                : CircularProgressIndicator()
+                                            : Icon(
+                                                isDatePassed(
+                                                        time: controller
+                                                            .detales
+                                                            .seaosn!
+                                                            .episodes![index]
+                                                            .airDate)
+                                                    ? Icons.tv
+                                                    : Icons.tv_off,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                              ),
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: GestureDetector(
+                                              onTap: () =>
+                                                  controller.episodeTrailer(
+                                                index: index,
+                                                episode: controller
+                                                    .detales
+                                                    .seaosn!
+                                                    .episodes![index]
+                                                    .episodeNumber
+                                                    .toString(),
+                                                context: context,
+                                                content: Center(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child:
+                                                        SingleChildScrollView(
+                                                      physics:
+                                                          const BouncingScrollPhysics(),
+                                                      child: Column(
+                                                        children: List.generate(
+                                                          controller.episodeModel
+                                                                      .isError ==
+                                                                  false
+                                                              ? controller
+                                                                  .episodeModel
+                                                                  .results!
+                                                                  .length
+                                                              : 0,
+                                                          (index) {
+                                                            return Material(
+                                                              child: ListTile(
+                                                                onTap: () => controller
+                                                                    .launcherUse(
+                                                                        url:
+                                                                            'https://www.youtube.com/watch?v=${controller.episodeModel.results![index].key}',
+                                                                        context:
+                                                                            context),
+                                                                title: CustomText(
+                                                                    maxline: 2,
+                                                                    flow: TextOverflow
+                                                                        .ellipsis,
+                                                                    text: controller
+                                                                        .episodeModel
+                                                                        .results![
+                                                                            index]
+                                                                        .name
+                                                                        .toString()),
+                                                                subtitle: CustomText(
+                                                                    text: controller
+                                                                        .episodeModel
+                                                                        .results![
+                                                                            index]
+                                                                        .type
+                                                                        .toString()),
+                                                                leading: ImageNetWork(
+                                                                    border: Colors
+                                                                        .transparent,
+                                                                    fit: BoxFit
+                                                                        .cover,
+                                                                    link:
+                                                                        'https://img.youtube.com/vi/${controller.episodeModel.results![index].key.toString()}/0.jpg',
+                                                                    width:
+                                                                        width *
+                                                                            0.2,
+                                                                    height:
+                                                                        width *
+                                                                            0.2),
+                                                              ),
+                                                            );
+                                                          },
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              child: CustomText(
+                                                  text: controller
                                                       .detales
                                                       .seaosn!
                                                       .episodes![index]
-                                                      .airDate)
-                                              ? Icons.tv
-                                              : Icons.tv_off,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                        ),
+                                                      .overview),
+                                            ),
+                                          )
+                                        ],
                                       ),
                                     );
                                   },

@@ -19,8 +19,11 @@ class LoginInput extends StatelessWidget {
   final bool? otherShadow;
   final bool? readOnly;
   final Function()? onTap;
+  final Function(String val)? sub;
   final String? hintNoLable;
   final bool? isSearch;
+  final bool? autoFocus;
+  final Widget? leadingButton;
   const LoginInput({
     super.key,
     required this.height,
@@ -43,6 +46,9 @@ class LoginInput extends StatelessWidget {
     this.hintNoLable,
     this.textSize,
     this.isSearch,
+    this.autoFocus,
+    this.leadingButton,
+    this.sub,
   });
 
   @override
@@ -91,6 +97,8 @@ class LoginInput extends StatelessWidget {
         child: Center(
           child: other ??
               TextField(
+                onSubmitted: sub,
+                autofocus: autoFocus ?? false,
                 onTap: onTap,
                 readOnly: readOnly ?? false,
                 obscureText: obscure,
@@ -103,7 +111,7 @@ class LoginInput extends StatelessWidget {
                     hintText: hintNoLable,
                     hintStyle: TextStyle(
                         overflow: TextOverflow.ellipsis, fontSize: textSize),
-                    prefixIcon: leadingIcon,
+                    prefixIcon: leadingButton ?? leadingIcon,
                     prefixIconColor: isSelected
                         ? Theme.of(context).colorScheme.primary
                         : Theme.of(context).colorScheme.secondary,
