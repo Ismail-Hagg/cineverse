@@ -7,7 +7,6 @@ import 'package:cineverse/widgets/image_network.dart';
 import 'package:cineverse/widgets/login_input.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
 class SearchPhone extends StatelessWidget {
@@ -21,6 +20,9 @@ class SearchPhone extends StatelessWidget {
     return Scaffold(
       appBar: Get.find<SearchMoreController>().info.isSearch == false
           ? AppBar(
+              iconTheme: IconThemeData(
+                color: Theme.of(context).colorScheme.primary,
+              ),
               elevation: 0,
               backgroundColor: Theme.of(context).colorScheme.background,
               centerTitle: true,
@@ -28,25 +30,6 @@ class SearchPhone extends StatelessWidget {
                 color: Theme.of(context).colorScheme.primary,
                 text: Get.find<SearchMoreController>().info.title.toString(),
               ),
-              actions: [
-                isIos
-                    ? CupertinoButton(
-                        onPressed: () => Get.find<SearchMoreController>()
-                            .search(query: 'query', page: 1, search: false),
-                        child: Icon(
-                          FontAwesomeIcons.filter,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      )
-                    : IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          FontAwesomeIcons.filter,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        splashRadius: 15,
-                      )
-              ],
             )
           : null,
       backgroundColor: Theme.of(context).colorScheme.background,
@@ -65,13 +48,16 @@ class SearchPhone extends StatelessWidget {
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                          vertical: 8,
+                          vertical: 16,
                         ),
                         child: LoginInput(
                           controller: controller.controller,
                           sub: (val) {
                             controller.search(
-                                query: val.trim(), page: 1, search: true);
+                                loadMore: false,
+                                query: val.trim(),
+                                page: 1,
+                                search: true);
                           },
                           focusNode: controller.focusNode,
                           leadingButton: GestureDetector(
@@ -123,7 +109,7 @@ class SearchPhone extends StatelessWidget {
                         : controller.model.totalResults == 0 ||
                                 controller.model.results!.isEmpty
                             ? Center(
-                                child: CustomText(text: 'res'.tr.toString()),
+                                child: CustomText(text: 'res'.tr),
                               )
                             : SingleChildScrollView(
                                 controller: controller.scrollController,

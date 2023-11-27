@@ -1,7 +1,14 @@
 import 'dart:io';
 
 import 'package:cineverse/controllers/auth_controller.dart';
+import 'package:cineverse/controllers/chat_controller.dart';
+import 'package:cineverse/controllers/favorites_controller.dart';
+import 'package:cineverse/controllers/keeping_controller.dart';
+import 'package:cineverse/controllers/profile_controller.dart';
+import 'package:cineverse/controllers/wachlist_controller.dart';
+import 'package:cineverse/models/actor_model.dart';
 import 'package:cineverse/models/cast_model.dart';
+import 'package:cineverse/models/collection_model.dart';
 import 'package:cineverse/models/move_model.dart';
 import 'package:cineverse/models/movie_detales_model.dart';
 import 'package:cineverse/models/result_details_model.dart';
@@ -9,6 +16,7 @@ import 'package:cineverse/models/result_model.dart';
 import 'package:cineverse/models/season_model.dart';
 import 'package:cineverse/models/trailer_model.dart';
 import 'package:cineverse/models/user_model.dart';
+import 'package:cineverse/pages/actor_page/actor_controller.dart';
 import 'package:cineverse/pages/chats_page/chat_controller.dart';
 import 'package:cineverse/pages/detale_page/detale_controller.dart';
 import 'package:cineverse/pages/episode_keeping_page/keeping_controller.dart';
@@ -40,11 +48,11 @@ class HomeController extends GetxController {
 
   final List<Widget> _pages = [
     const HomeTap(),
-    const WatchlistController(),
-    const FavouritesController(),
-    const KeepingController(),
-    const ChatController(),
-    const ProfileController()
+    const WatchlistViewController(),
+    const FavouritesViewController(),
+    const KeepingViewController(),
+    const ChatViewController(),
+    const ProfileViewController()
   ];
   List<Widget> get pages => _pages;
 
@@ -79,7 +87,6 @@ class HomeController extends GetxController {
 
   @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
     _userModel = Get.find<AuthController>().userModel;
 
@@ -88,18 +95,105 @@ class HomeController extends GetxController {
 
   // change page index
   void indexChange({required int index}) {
-    _pageIndex = index;
-    update();
-  }
+    if (index != _pageIndex) {
+      _pageIndex = index;
+      update();
+      switch (index) {
+        case 0:
+          if (Get.isRegistered<FavoritesController>()) {
+            Get.delete<FavoritesController>();
+          }
+          if (Get.isRegistered<KeepingController>()) {
+            Get.delete<KeepingController>();
+          }
+          if (Get.isRegistered<ChatController>()) {
+            Get.delete<ChatController>();
+          }
+          if (Get.isRegistered<ProfilePageController>()) {
+            Get.delete<ProfilePageController>();
+          }
+          if (Get.isRegistered<WatchlistController>()) {
+            Get.delete<WatchlistController>();
+          }
+          break;
 
-  void swigtching() async {
-    if (_userModel.theme == ChosenTheme.light) {
-      _userModel.theme = ChosenTheme.dark;
-    } else {
-      _userModel.theme = ChosenTheme.light;
+        case 1:
+          if (Get.isRegistered<FavoritesController>()) {
+            Get.delete<FavoritesController>();
+          }
+          if (Get.isRegistered<KeepingController>()) {
+            Get.delete<KeepingController>();
+          }
+          if (Get.isRegistered<ChatController>()) {
+            Get.delete<ChatController>();
+          }
+          if (Get.isRegistered<ProfilePageController>()) {
+            Get.delete<ProfilePageController>();
+          }
+          break;
+
+        case 2:
+          if (Get.isRegistered<WatchlistController>()) {
+            Get.delete<WatchlistController>();
+          }
+          if (Get.isRegistered<KeepingController>()) {
+            Get.delete<KeepingController>();
+          }
+          if (Get.isRegistered<ChatController>()) {
+            Get.delete<ChatController>();
+          }
+          if (Get.isRegistered<ProfilePageController>()) {
+            Get.delete<ProfilePageController>();
+          }
+          break;
+
+        case 3:
+          if (Get.isRegistered<FavoritesController>()) {
+            Get.delete<FavoritesController>();
+          }
+          if (Get.isRegistered<WatchlistController>()) {
+            Get.delete<WatchlistController>();
+          }
+          if (Get.isRegistered<ChatController>()) {
+            Get.delete<ChatController>();
+          }
+          if (Get.isRegistered<ProfilePageController>()) {
+            Get.delete<ProfilePageController>();
+          }
+          break;
+
+        case 4:
+          if (Get.isRegistered<FavoritesController>()) {
+            Get.delete<FavoritesController>();
+          }
+          if (Get.isRegistered<KeepingController>()) {
+            Get.delete<KeepingController>();
+          }
+          if (Get.isRegistered<WatchlistController>()) {
+            Get.delete<WatchlistController>();
+          }
+          if (Get.isRegistered<ProfilePageController>()) {
+            Get.delete<ProfilePageController>();
+          }
+          break;
+
+        case 5:
+          if (Get.isRegistered<FavoritesController>()) {
+            Get.delete<FavoritesController>();
+          }
+          if (Get.isRegistered<KeepingController>()) {
+            Get.delete<KeepingController>();
+          }
+          if (Get.isRegistered<WatchlistController>()) {
+            Get.delete<WatchlistController>();
+          }
+          if (Get.isRegistered<ChatController>()) {
+            Get.delete<ChatController>();
+          }
+          break;
+        default:
+      }
     }
-
-    await Get.find<AuthController>().saveUserDataLocally(model: _userModel);
   }
 
   // upload image to firebase
@@ -197,6 +291,19 @@ class HomeController extends GetxController {
   // navigate to the detale page
   void navToDetale({required ResultsDetail res}) {
     if (res.mediaType == 'person') {
+      Get.to(() => const ActorViewController(),
+          arguments: ActorModel(
+              link: res.posterPath,
+              name: res.title,
+              isError: false,
+              errorMessage: '',
+              birth: '',
+              id: res.id,
+              roles: [],
+              bio: '',
+              acted: [],
+              produced: [],
+              directed: []));
       // navigate to cast member pagex
       // navToCast(
       //     name: res.title.toString(),
@@ -208,6 +315,7 @@ class HomeController extends GetxController {
       MovieDetaleModel movieDetales = MovieDetaleModel(
           cast: CastModel(isError: true),
           recomendation: ResultModel(isError: true),
+          collection: CollectionModel(isError: true),
           isError: false,
           trailer: TrailerModel(isError: true),
           id: res.id,

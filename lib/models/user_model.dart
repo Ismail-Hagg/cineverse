@@ -23,6 +23,8 @@ class UserModel {
   List<String>? watching;
   List<String>? commentLike;
   List<String>? commentDislike;
+  List<String>? follwers;
+  List<String>? following;
 
   UserModel(
       {this.userName,
@@ -42,6 +44,8 @@ class UserModel {
       this.avatarType,
       this.movieWatchList,
       this.showWatchList,
+      this.following,
+      this.follwers,
       this.watching,
       this.favs,
       this.commentDislike,
@@ -72,11 +76,19 @@ class UserModel {
       'watching': watching!.join(','),
       'commentLike': commentLike!.join(','),
       'commentDislike': commentDislike!.join(','),
+      'following': following!.join(','),
+      'follwers': follwers!.join(','),
     };
   }
 
   factory UserModel.fromMap(Map<dynamic, dynamic> map) {
     return UserModel(
+        following: map['following'] != null && map['following'] != []
+            ? map['following'].split(',')
+            : [],
+        follwers: map['follwers'] != null && map['follwers'] != []
+            ? map['follwers'].split(',')
+            : [],
         userName: map['userName'],
         email: map['email'],
         onlinePicPath: map['onlinePicPath'],

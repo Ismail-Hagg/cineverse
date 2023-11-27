@@ -62,4 +62,21 @@ class FirebaseServices {
             .doc(model.id.toString())
             .delete();
   }
+
+  // get favorites or watchlist or watching now
+  Future<QuerySnapshot> userCollections(
+      {required String uid,
+      required String collection,
+      required bool order,
+      String? orderby,
+      bool? ascend}) async {
+    return order
+        ? _ref
+            .doc(uid)
+            .collection(collection)
+            .orderBy(orderby.toString(),
+                descending: ascend == false ? true : false)
+            .get()
+        : _ref.doc(uid).collection(collection).get();
+  }
 }

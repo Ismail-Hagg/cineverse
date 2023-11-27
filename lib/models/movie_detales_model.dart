@@ -1,4 +1,5 @@
 import 'package:cineverse/models/cast_model.dart';
+import 'package:cineverse/models/collection_model.dart';
 import 'package:cineverse/models/result_model.dart';
 import 'package:cineverse/models/season_model.dart';
 import 'package:cineverse/models/trailer_model.dart';
@@ -25,12 +26,15 @@ class MovieDetaleModel {
   String? errorMessage;
   Timestamp? timestamp;
   SeasonModel? seaosn;
+  String? collectionId;
+  CollectionModel? collection;
 
   MovieDetaleModel(
       {this.genres,
       this.id,
       this.imdbId,
       this.overview,
+      this.collectionId,
       this.posterPath,
       this.releaseDate,
       this.runtime,
@@ -38,6 +42,7 @@ class MovieDetaleModel {
       this.timestamp,
       this.title,
       this.voteAverage,
+      this.collection,
       this.isShow,
       this.originCountry,
       this.cast,
@@ -47,7 +52,7 @@ class MovieDetaleModel {
       this.isError,
       this.errorMessage});
 
-  MovieDetaleModel.fromMap(Map<String, dynamic> json) {
+  MovieDetaleModel.fromMap(Map<String, dynamic> json, {bool? fire}) {
     double voteAve = json['vote_average'] ?? 0.0;
     String relDate =
         json['release_date'] ?? json['first_air_date'] ?? 'unknown';
@@ -56,11 +61,14 @@ class MovieDetaleModel {
     if (json['genres'] != null) {
       genres = <String>[];
       json['genres'].forEach((v) {
-        genres!.add(v['name']);
+        genres!.add(fire == true ? v : v['name']);
       });
     }
+    collectionId = json['belongs_to_collection'] != null
+        ? json['belongs_to_collection']['id'].toString()
+        : '';
     id = json['id'];
-    imdbId = json['imdb_id'];
+    imdbId = json['imdb_id'] ?? '';
     overview = json['overview'];
     posterPath = json['poster_path'];
 
@@ -99,7 +107,8 @@ class MovieDetaleModel {
       'vote_average': voteAverage,
       'isShow': isShow,
       'origin_country': originCountry,
-      'timestamp': timestamp
+      'timestamp': timestamp,
+      'collectionId': collectionId
     };
   }
 }

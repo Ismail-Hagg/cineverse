@@ -4,8 +4,8 @@ import 'package:cineverse/pages/watchlist_page/watchlist_tablet.dart';
 import 'package:cineverse/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 
-class WatchlistController extends StatelessWidget {
-  const WatchlistController({super.key});
+class WatchlistViewController extends StatelessWidget {
+  const WatchlistViewController({super.key});
 
   @override
   Widget build(BuildContext context) {

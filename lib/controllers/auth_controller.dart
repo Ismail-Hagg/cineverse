@@ -118,17 +118,21 @@ class AuthController extends GetxController {
 
   // setup listeners
   void setListeners() {
-    _nodes.forEach((key, value) {
-      value.addListener(() {
-        if (value.hasFocus) {
-          _flips[key] = true;
-          update();
-        } else {
-          _flips[key] = false;
-          update();
-        }
-      });
-    });
+    _nodes.forEach(
+      (key, value) {
+        value.addListener(
+          () {
+            if (value.hasFocus) {
+              _flips[key] = true;
+              update();
+            } else {
+              _flips[key] = false;
+              update();
+            }
+          },
+        );
+      },
+    );
   }
 
   // when otp field is changed

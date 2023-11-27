@@ -2,6 +2,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
 import 'package:cineverse/models/result_model.dart';
+import 'package:cineverse/models/user_model.dart';
+import 'package:cineverse/pages/profile_page/profile_controller.dart';
 import 'package:cineverse/utils/constants.dart';
 import 'package:cineverse/utils/enums.dart';
 import 'package:cineverse/widgets/avatar_widget.dart';
@@ -99,7 +101,7 @@ class HomePhone extends StatelessWidget {
                   width: width * 0.08,
                   height: width * 0.08,
                   isBorder: false,
-                  type: authController.userModel.avatarType as AvatarType,
+                  type: controller.userModel.avatarType as AvatarType,
                   boxFit: BoxFit.cover,
                   shadow: false,
                   link: authController.userModel.avatarType == AvatarType.local
@@ -167,7 +169,15 @@ class HomeTap extends StatelessWidget {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () => authController.signOut(),
+                          onTap: () => Get.to(
+                              () => const ProfileViewController(),
+                              arguments: UserModel(
+                                  onlinePicPath:
+                                      'https://firebasestorage.googleapis.com/v0/b/cineverse-70e0b.appspot.com/o/uXUokz9wOqOwSn8Z7yCssEYzq5q1%2Fimages%2Fprofile?alt=media&token=5f8fea19-608c-4cdd-94a9-94fe49cee904',
+                                  userName: 'sam smith',
+                                  follwers: [],
+                                  following: ['ting'],
+                                  userId: 'uXUokz9wOqOwSn8Z7yCssEYzq5q1')),
                           child: NotificationWidget(
                             isNotify: true,
                             mainWidget: Icon(

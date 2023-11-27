@@ -1,6 +1,7 @@
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
 import 'package:cineverse/models/move_model.dart';
+import 'package:cineverse/models/result_details_model.dart';
 import 'package:cineverse/models/result_model.dart';
 import 'package:cineverse/services/home_page_service.dart';
 import 'package:cineverse/utils/constants.dart';
@@ -53,16 +54,18 @@ class SearchMoreController extends GetxController {
     _scrollController.addListener(scrollListener);
     _fNode.addListener(() {
       _focus = _fNode.hasFocus;
+      update();
     });
   }
 
   @override
   void onClose() {
-    super.onInit();
+    super.onClose();
 
     _controller.dispose();
     _fNode.dispose();
     _scrollController.dispose();
+    Get.delete<SearchMoreController>();
   }
 
   // clear search field
@@ -73,32 +76,59 @@ class SearchMoreController extends GetxController {
 
   // search
   void search(
-      {required String query, required int page, required bool search}) async {
+      {required String query,
+      required int page,
+      required bool search,
+      required bool loadMore,
+      bool? add}) async {
     _detect = true;
-    _qury = query;
-    String lang =
-        _authController.userModel.language.toString().replaceAll('_', '-');
-    String link =
-        'https://api.themoviedb.org/3/search/multi?api_key=$apiKey&language=';
-    String end = search ? '$lang&query=$query&page=$page' : '$lang&page=$page';
-
-    _loading = true;
     update();
-    //print(search ? link + end : '${_info.link}$end');
 
-    await HomePageService()
-        .getHomeInfo(link: link, language: end)
-        .then((value) {
-      _model = value;
-      _loading = false;
-      update();
-    });
+    if (search && query == '') {
+    } else {
+      _qury = query;
+      String lang =
+          _authController.userModel.language.toString().replaceAll('_', '-');
+      String link = search
+          ? 'https://api.themoviedb.org/3/search/multi?api_key=$apiKey&language='
+          : _info.link.toString();
+      String end =
+          search ? '$lang&query=$query&page=$page' : '$lang&page=$page';
+
+      if (loadMore == false) {
+        _loading = true;
+        update();
+      }
+
+      await HomePageService()
+          .getHomeInfo(link: link, language: end)
+          .then((value) {
+        add == true
+            ? {
+                _model.results =
+                    _model.results! + (value.results as List<ResultsDetail>),
+                _model.page = value.page
+              }
+            : _model = value;
+        if (loadMore == false) {
+          _loading = false;
+        }
+        update();
+      });
+    }
   }
 
   // listner for the scrollnig controller
   void scrollListener() {
     if (_scrollController.offset >=
             _scrollController.position.maxScrollExtent &&
-        !_scrollController.position.outOfRange) {}
+        !_scrollController.position.outOfRange) {
+      search(
+          query: _qury,
+          loadMore: true,
+          search: _info.isSearch,
+          page: (_model.page as int) + 1,
+          add: true);
+    }
   }
 }

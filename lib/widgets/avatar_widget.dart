@@ -42,8 +42,8 @@ class Avatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return type == AvatarType.online
         ? ImageNetWork(
-            border: Colors.transparent,
-            shadow: false,
+            border: borderColor,
+            shadow: shadow,
             link: link.toString(),
             width: width,
             height: height,

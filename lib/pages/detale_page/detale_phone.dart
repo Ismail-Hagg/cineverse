@@ -658,6 +658,73 @@ class DetalePagePhone extends StatelessWidget {
                       ),
                     ),
                     if (controller.detales.isError == false &&
+                        controller.detales.collectionId.toString() != '' &&
+                        controller.detales.collection!.isError == false) ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 18.0),
+                        child: ContentScrolling(
+                          more: controller.loading == 1 ||
+                                  controller.detales.isError == false
+                              ? false
+                              : true,
+                          load:
+                              controller.detales.isError == false ? null : true,
+                          reload: () =>
+                              controller.getData(res: controller.detales),
+                          isIos: isIos,
+                          title: 'parts'.tr,
+                          titleSize: 18,
+                          mainWidget: SingleChildScrollView(
+                            physics: const BouncingScrollPhysics(),
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: List.generate(
+                                controller.loading == 1
+                                    ? 10
+                                    : controller.detales.isError == false &&
+                                            controller.detales.collection!
+                                                    .isError ==
+                                                false
+                                        ? controller
+                                            .detales.collection!.results!.length
+                                        : 10,
+                                (index) => Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: controller.loading == 1 ||
+                                          controller.detales.isError == true ||
+                                          controller.detales.collection!
+                                                  .isError ==
+                                              true
+                                      ? MovieWidget(
+                                          height: (width * 0.4) * 1.3,
+                                          width: width * 0.35,
+                                          link: '',
+                                          provider: Image.asset('name').image,
+                                          shimmer: true,
+                                          shadow: false)
+                                      : ImageNetWork(
+                                          function: () =>
+                                              Get.find<HomeController>()
+                                                  .navToDetale(
+                                                      res: controller
+                                                          .detales
+                                                          .collection!
+                                                          .results![index]),
+                                          link: imagebase +
+                                              controller.detales.collection!
+                                                  .results![index].posterPath
+                                                  .toString(),
+                                          height: (width * 0.4) * 1.3,
+                                          width: width * 0.35,
+                                        ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                    if (controller.detales.isError == false &&
                         controller.detales.recomendation!.isError == false &&
                         controller
                             .detales.recomendation!.results!.isNotEmpty) ...[
@@ -737,7 +804,7 @@ class DetalePagePhone extends StatelessWidget {
                             ios: isIos,
                             titles: List.generate(
                                 controller.detales.runtime as int,
-                                (index) => '${'season'.tr} ${index + 1}'),
+                                (index) => '${'sason'.tr} ${index + 1}'),
                             funcs: List.generate(
                               controller.detales.runtime as int,
                               (index) => () {
@@ -867,7 +934,7 @@ class DetalePagePhone extends StatelessWidget {
                                                         .colorScheme
                                                         .primary,
                                                   )
-                                                : CircularProgressIndicator()
+                                                : const CircularProgressIndicator()
                                             : Icon(
                                                 isDatePassed(
                                                         time: controller

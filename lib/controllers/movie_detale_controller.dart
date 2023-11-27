@@ -5,6 +5,7 @@ import 'package:cineverse/models/movie_detales_model.dart';
 import 'package:cineverse/models/trailer_model.dart';
 import 'package:cineverse/models/user_model.dart';
 import 'package:cineverse/services/cast_service.dart';
+import 'package:cineverse/services/collection_service.dart';
 import 'package:cineverse/services/firebase_service.dart';
 import 'package:cineverse/services/image_service.dart';
 import 'package:cineverse/services/movie_detale_service.dart';
@@ -90,7 +91,8 @@ class MovieDetaleController extends GetxController
       '/credits',
       '/recommendations',
       '/videos',
-      '/season'
+      '/season',
+      'https://api.themoviedb.org/3/collection/'
     ];
 
     for (var i = 0; i < slashes.length; i++) {
@@ -131,6 +133,17 @@ class MovieDetaleController extends GetxController
             await SeasonService()
                 .getHomeInfo(link: '$base/${slashes[i]}/1$end')
                 .then((value) => {_detales.seaosn = value});
+          }
+          break;
+
+        case 5:
+          if (_detales.collectionId != '') {
+            await CollectionService()
+                .getHomeInfo(
+                    link: slashes[5] + _detales.collectionId.toString() + end)
+                .then((value) {
+              _detales.collection = value;
+            });
           }
           break;
       }

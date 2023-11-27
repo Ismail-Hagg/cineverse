@@ -4,8 +4,8 @@ import 'package:cineverse/pages/episode_keeping_page/keeping_tablet.dart';
 import 'package:cineverse/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 
-class KeepingController extends StatelessWidget {
-  const KeepingController({super.key});
+class KeepingViewController extends StatelessWidget {
+  const KeepingViewController({super.key});
 
   @override
   Widget build(BuildContext context) {

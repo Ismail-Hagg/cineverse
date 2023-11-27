@@ -10,7 +10,7 @@ enum ChosenTheme { light, dark, system }
 
 enum ApiType { rest, graphql }
 
-enum FirebaseUserPaths { favorites, watchlist, chat, keeping }
+enum FirebaseUserPaths { favorites, watchlist, chat, keeping, comments }
 
 enum FieldType {
   loginEmail,
