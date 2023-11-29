@@ -939,5 +939,10 @@ class AuthController extends GetxController {
         ),
       );
     }
+    if (Get.deviceLocale.toString().substring(0, 2) !=
+        _userModel.language.toString().substring(0, 2)) {
+      Get.updateLocale(Locale(_userModel.language.toString().substring(0, 2),
+          _userModel.language.toString().substring(3, 5)));
+    }
   }
 }

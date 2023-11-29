@@ -130,14 +130,33 @@ class SearchPhone extends StatelessWidget {
                                             .navToDetale(
                                                 res: controller
                                                     .model.results![index]),
-                                        child: ImageNetWork(
-                                            shadow: false,
-                                            link: imagebase +
-                                                controller.model.results![index]
-                                                    .posterPath
+                                        child: controller.model.results![index]
+                                                    .mediaType ==
+                                                'person'
+                                            ? Hero(
+                                                tag: controller
+                                                    .model.results![index].id
                                                     .toString(),
-                                            width: width * 0.32,
-                                            height: width * 0.47),
+                                                child: ImageNetWork(
+                                                    shadow: false,
+                                                    link: imagebase +
+                                                        controller
+                                                            .model
+                                                            .results![index]
+                                                            .posterPath
+                                                            .toString(),
+                                                    width: width * 0.32,
+                                                    height: width * 0.47))
+                                            : ImageNetWork(
+                                                shadow: false,
+                                                link: imagebase +
+                                                    controller
+                                                        .model
+                                                        .results![index]
+                                                        .posterPath
+                                                        .toString(),
+                                                width: width * 0.32,
+                                                height: width * 0.47),
                                       ),
                                     ),
                                   ),

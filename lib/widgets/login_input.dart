@@ -24,11 +24,15 @@ class LoginInput extends StatelessWidget {
   final bool? isSearch;
   final bool? autoFocus;
   final Widget? leadingButton;
+  final int? maxLine;
+  final int? minLines;
   const LoginInput({
     super.key,
     required this.height,
     required this.width,
     this.focusNode,
+    this.maxLine,
+    this.minLines,
     this.hintText,
     this.controller,
     this.leadingIcon,
@@ -97,6 +101,8 @@ class LoginInput extends StatelessWidget {
         child: Center(
           child: other ??
               TextField(
+                maxLines: maxLine ?? 1,
+                minLines: minLines ?? 1,
                 onSubmitted: sub,
                 autofocus: autoFocus ?? false,
                 onTap: onTap,

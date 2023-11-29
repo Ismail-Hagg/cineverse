@@ -91,7 +91,19 @@ class Translation extends Translations {
           'changeuser': 'Change Username',
           'darkmode': 'Dark Mode',
           'about': 'About',
-          'biog': 'Biography'
+          'biog': 'Biography',
+          'age': 'Age',
+          'nobio': 'No Biography Available',
+          'actedmovie': 'Acted in Movies',
+          'actedinshows': 'Acted in shows',
+          'direced': 'Directed',
+          'produced': 'Produced',
+          'devname': 'Ismail Alhagg',
+          'filmmer':
+              'Cineverse is a movie app made using flutter and the movie database api (tmdb) and firebase in the backend',
+          'cancel': 'no',
+          'commentsad': 'Add a comment',
+          'replies': 'replies',
         },
         'ar_SA': {
           'email': 'العنوان الالكتروني',
@@ -181,7 +193,19 @@ class Translation extends Translations {
           'darkmode': 'الوضع الداكن',
           'about': 'عن التطبيق',
           'changelanguage': 'تغيير اللغه',
-          'biog': 'سيرة ذاتية'
+          'biog': 'سيرة ذاتية',
+          'age': 'العمر',
+          'nobio': 'لاتوجد سيرة ذاتيه',
+          'actedmovie': 'الافلام',
+          'actedinshows': 'المسلسلات',
+          'direced': 'اخرج',
+          'produced': 'انتج',
+          'dev': 'المطور',
+          'devname': 'اسماعيل الحاج',
+          'filmmer': 'سينيفيرس تطبيق افلام و مسلسلات',
+          'cancel': 'لا',
+          'commentsad': 'اضف تعليقك',
+          'replies': 'ردود',
         }
       };
 }

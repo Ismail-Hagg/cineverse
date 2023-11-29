@@ -230,7 +230,96 @@ class SettingsPhone extends StatelessWidget {
                                             .primary,
                                         text: 'about'.tr,
                                       ),
-                                      onTap: () {},
+                                      onTap: () => controller.about(
+                                        context: context,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            CustomText(
+                                                text: 'filmmer'.tr,
+                                                size: constraints.maxWidth *
+                                                    0.04),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 12.0),
+                                              child: CustomText(
+                                                  text:
+                                                      '${"dev".tr} : ${"devname".tr}',
+                                                  size: constraints.maxWidth *
+                                                      0.04),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 12.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                children: [
+                                                  GestureDetector(
+                                                    onTap: () =>
+                                                        controller.launcherUse(
+                                                            context: context,
+                                                            url:
+                                                                'https://twitter.com/ESMAELNOOR'),
+                                                    child: Icon(
+                                                      FontAwesomeIcons.twitter,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
+                                                      size: width * 0.08,
+                                                    ),
+                                                  ),
+                                                  GestureDetector(
+                                                    onTap: () =>
+                                                        controller.launcherUse(
+                                                            context: context,
+                                                            url:
+                                                                'https://github.com/Ismail-Hagg'),
+                                                    child: Icon(
+                                                      FontAwesomeIcons.github,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
+                                                      size: width * 0.08,
+                                                    ),
+                                                  ),
+                                                  GestureDetector(
+                                                    onTap: () =>
+                                                        controller.launcherUse(
+                                                            context: context,
+                                                            url:
+                                                                'https://wa.me/966500258717'),
+                                                    child: Icon(
+                                                      FontAwesomeIcons.whatsapp,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
+                                                      size: width * 0.08,
+                                                    ),
+                                                  ),
+                                                  GestureDetector(
+                                                    onTap: () =>
+                                                        controller.launcherUse(
+                                                            context: context,
+                                                            url:
+                                                                'tel:+966500258717'),
+                                                    child: Icon(
+                                                      FontAwesomeIcons.phone,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
+                                                      size: width * 0.08,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
                                     ),
                                   ),
                                   Padding(
@@ -251,7 +340,8 @@ class SettingsPhone extends StatelessWidget {
                                             .primary,
                                         text: 'logout'.tr,
                                       ),
-                                      onTap: () {},
+                                      onTap: () =>
+                                          controller.logOut(context: context),
                                     ),
                                   ),
                                 ]
@@ -361,26 +451,115 @@ class SettingsPhone extends StatelessWidget {
                                             .primary,
                                         text: 'about'.tr,
                                       ),
-                                      onTap: () {},
+                                      onTap: () => controller.about(
+                                        context: context,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            CustomText(
+                                                text: 'filmmer'.tr,
+                                                size: constraints.maxWidth *
+                                                    0.04),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 12.0),
+                                              child: CustomText(
+                                                  text:
+                                                      '${"dev".tr} : ${"devname".tr}',
+                                                  size: constraints.maxWidth *
+                                                      0.04),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 12.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                children: [
+                                                  GestureDetector(
+                                                    onTap: () =>
+                                                        controller.launcherUse(
+                                                            context: context,
+                                                            url:
+                                                                'https://twitter.com/ESMAELNOOR'),
+                                                    child: Icon(
+                                                      FontAwesomeIcons.twitter,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
+                                                      size: width * 0.08,
+                                                    ),
+                                                  ),
+                                                  GestureDetector(
+                                                    onTap: () =>
+                                                        controller.launcherUse(
+                                                            context: context,
+                                                            url:
+                                                                'https://github.com/Ismail-Hagg'),
+                                                    child: Icon(
+                                                      FontAwesomeIcons.github,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
+                                                      size: width * 0.08,
+                                                    ),
+                                                  ),
+                                                  GestureDetector(
+                                                    onTap: () =>
+                                                        controller.launcherUse(
+                                                            context: context,
+                                                            url:
+                                                                'https://wa.me/966500258717'),
+                                                    child: Icon(
+                                                      FontAwesomeIcons.whatsapp,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
+                                                      size: width * 0.08,
+                                                    ),
+                                                  ),
+                                                  GestureDetector(
+                                                    onTap: () =>
+                                                        controller.launcherUse(
+                                                            context: context,
+                                                            url:
+                                                                'tel:+966500258717'),
+                                                    child: Icon(
+                                                      FontAwesomeIcons.phone,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
+                                                      size: width * 0.08,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
                                     ),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: ListTile(
-                                      leading: FaIcon(
-                                        FontAwesomeIcons.rightFromBracket,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ),
-                                      title: CustomText(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                        text: 'logout'.tr,
-                                      ),
-                                      onTap: () {},
-                                    ),
+                                        leading: FaIcon(
+                                          FontAwesomeIcons.rightFromBracket,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                        title: CustomText(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                          text: 'logout'.tr,
+                                        ),
+                                        onTap: () => controller.logOut(
+                                            context: context)),
                                   ),
                                 ],
                         ),

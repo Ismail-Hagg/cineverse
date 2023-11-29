@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cineverse/controllers/actor_controller.dart';
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/chat_controller.dart';
 import 'package:cineverse/controllers/favorites_controller.dart';
@@ -291,26 +292,21 @@ class HomeController extends GetxController {
   // navigate to the detale page
   void navToDetale({required ResultsDetail res}) {
     if (res.mediaType == 'person') {
+      Get.create(() => ActorController());
       Get.to(() => const ActorViewController(),
           arguments: ActorModel(
-              link: res.posterPath,
-              name: res.title,
-              isError: false,
-              errorMessage: '',
-              birth: '',
-              id: res.id,
-              roles: [],
-              bio: '',
-              acted: [],
-              produced: [],
-              directed: []));
-      // navigate to cast member pagex
-      // navToCast(
-      //     name: res.title.toString(),
-      //     link: imagebase + res.posterPath.toString(),
-      //     id: res.id.toString(),
-      //     language: Get.find<HomeController>().userModel.language.toString(),
-      //     isShow: false);
+            detales: ActorDetale(
+                actedMovies: [], actedShows: [], directed: [], produced: []),
+            link: res.posterPath,
+            name: res.title,
+            isError: false,
+            errorMessage: '',
+            birth: '',
+            id: res.id,
+            bio: '',
+          ),
+          transition: Transition.native,
+          preventDuplicates: false);
     } else {
       MovieDetaleModel movieDetales = MovieDetaleModel(
           cast: CastModel(isError: true),

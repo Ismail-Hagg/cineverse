@@ -1,5 +1,6 @@
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:cineverse/controllers/auth_controller.dart';
+import 'package:cineverse/models/comment_model.dart';
 import 'package:cineverse/models/image_model.dart';
 import 'package:cineverse/models/movie_detales_model.dart';
 import 'package:cineverse/models/trailer_model.dart';
@@ -61,6 +62,53 @@ class MovieDetaleController extends GetxController
   );
   TrailerModel get episodeModel => _episodeModel;
 
+  final FocusNode _focusNode = FocusNode();
+  FocusNode get focusNode => _focusNode;
+
+  final TextEditingController _commentController = TextEditingController();
+  TextEditingController get commentController => _commentController;
+
+  bool _commentSelected = false;
+  bool get commentSelected => _commentSelected;
+
+  bool _commentOpen = false;
+  bool get commentOpen => _commentOpen;
+
+  List<CommentModel> commentList = [
+    CommentModel(
+      commentId: 'commentId',
+      userId: 'userId',
+      userName: 'userName',
+      userLink:
+          'https://stylesatlife.com/wp-content/uploads/2023/08/Beautiful-Zendaya-Pic-in-a-Yellow-Swim-Bikini.jpg',
+      time: DateTime.now(),
+      comment:
+          'comment comment comment comment comment comment comment comment comment',
+      likes: 1,
+      dislikea: 0,
+      hasMore: false,
+      token: '',
+      commentOpen: false,
+      repliesNum: 0,
+    ),
+    CommentModel(
+      commentId: 'commentId',
+      userId: Get.find<AuthController>().userModel.userId.toString(),
+      userName: 'scarlett johanson',
+      userLink:
+          'https://hips.hearstapps.com/hmg-prod/images/american-actress-scarlett-johansson-at-cannes-film-festival-news-photo-1685449533.jpg',
+      time: DateTime.now(),
+      comment:
+          'comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment commentcomment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment',
+      likes: 0,
+      dislikea: 0,
+      hasMore: true,
+      token: '',
+      commentOpen: false,
+      repliesNum: 2,
+    )
+  ];
+
   @override
   void onInit() {
     super.onInit();
@@ -68,7 +116,7 @@ class MovieDetaleController extends GetxController
     _controller = AnimationController(
         duration: const Duration(milliseconds: 400), vsync: this);
     _detales = Get.arguments ?? MovieDetaleModel(isError: true);
-
+    isCommentSelected();
     getData(res: _detales);
   }
 
@@ -76,6 +124,29 @@ class MovieDetaleController extends GetxController
   void onClose() {
     super.onClose();
     _controller.dispose();
+    _commentController.dispose();
+    _focusNode.dispose();
+  }
+
+  // comment flip
+  void commentFlip() {
+    _commentOpen = !_commentOpen;
+    update();
+  }
+
+  // comments input selected or not
+  void isCommentSelected() {
+    _focusNode.addListener(
+      () {
+        if (_focusNode.hasFocus) {
+          _commentSelected = true;
+          update();
+        } else {
+          _commentSelected = false;
+          update();
+        }
+      },
+    );
   }
 
   // get data from api
@@ -316,7 +387,7 @@ class MovieDetaleController extends GetxController
       {required FirebaseUserPaths path,
       required String id,
       required BuildContext context}) async {
-    if (_loading == 0) {
+    if (_loading == 0 && _detales.isError == false) {
       switch (path) {
         case FirebaseUserPaths.favorites:
           if (_userModel.favs!.contains(id)) {

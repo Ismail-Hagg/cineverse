@@ -1,4 +1,6 @@
 // set initial language according to device
+import 'package:cineverse/widgets/custom_text.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -65,5 +67,134 @@ bool isDatePassed({required String time}) {
     return false;
   } else {
     return DateTime.parse(time).isBefore(DateTime.now());
+  }
+}
+
+//calculate actor's age
+int calculateAge({required String birthDate}) {
+  DateTime bDate = DateTime.parse(birthDate);
+  DateTime currentDate = DateTime.now();
+  int age = currentDate.year - bDate.year;
+  int month1 = currentDate.month;
+  int month2 = bDate.month;
+  if (month2 > month1) {
+    age--;
+  } else if (month1 == month2) {
+    int day1 = currentDate.day;
+    int day2 = bDate.day;
+    if (day2 > day1) {
+      age--;
+    }
+  }
+  return age;
+}
+
+//calculate time ago
+String timeAgo(DateTime d) {
+  Duration diff = DateTime.now().difference(d);
+  if (diff.inDays > 365) {
+    return "${(diff.inDays / 365).floor()} y ago";
+  }
+  if (diff.inDays > 30) {
+    return "${(diff.inDays / 30).floor()} ${(diff.inDays / 30).floor() == 1 ? "month" : "months"} ago";
+  }
+  if (diff.inDays > 7) {
+    return "${(diff.inDays / 7).floor()} w ago";
+  }
+  if (diff.inDays > 0) {
+    return "${diff.inDays} d ago";
+  }
+  if (diff.inHours > 0) {
+    return "${diff.inHours} h ago";
+  }
+  if (diff.inMinutes > 0) {
+    return "${diff.inMinutes} m ago";
+  }
+  return "just now";
+}
+
+// show dialog old way
+void platforMulti(
+    {required bool isIos,
+    required String title,
+    required List<String> buttonTitle,
+    required String body,
+    required List<Function()> func,
+    bool? field,
+    TextEditingController? controller,
+    String? hint,
+    Widget? child,
+    required BuildContext context}) {
+  if (isIos) {
+    showCupertinoDialog(
+        context: context,
+        builder: (_) => CupertinoAlertDialog(
+            title: Text(
+              title,
+            ),
+            content: field == true
+                ? child ??
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12.0),
+                      child: CupertinoTextField(
+                        placeholder: hint,
+                        autofocus: true,
+                        controller: controller,
+                        decoration: BoxDecoration(
+                            color: Colors.grey[400],
+                            borderRadius: BorderRadius.circular(8)),
+                        clearButtonMode: OverlayVisibilityMode.editing,
+                      ),
+                    )
+                : Text(
+                    body,
+                  ),
+            actions: buttonTitle
+                .map((e) => CupertinoDialogAction(
+                      onPressed: func[buttonTitle.indexOf(e)],
+                      child: Text(e),
+                    ))
+                .toList()));
+  } else {
+    showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+            title: Text(title),
+            content: field == true
+                ? child ??
+                    TextField(
+                      autofocus: true,
+                      controller: controller,
+                      cursorColor: Theme.of(context).colorScheme.primary,
+                      decoration: InputDecoration(
+                        hintText: hint,
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.primary),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.primary),
+                        ),
+                        fillColor: Theme.of(context).colorScheme.primary,
+                        focusColor: Theme.of(context).colorScheme.primary,
+                      ),
+                    )
+                : Text(body),
+            actions: buttonTitle
+                .map((e) => TextButton(
+                      onPressed: func[buttonTitle.indexOf(e)],
+                      style: ButtonStyle(
+                          overlayColor: MaterialStateProperty.all(
+                              Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withOpacity(0.2))),
+                      child: CustomText(
+                        text: e,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ))
+                .toList()));
   }
 }
