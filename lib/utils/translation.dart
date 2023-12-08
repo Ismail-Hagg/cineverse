@@ -104,6 +104,17 @@ class Translation extends Translations {
           'cancel': 'no',
           'commentsad': 'Add a comment',
           'replies': 'replies',
+          'commentdel': 'Delete This Comment ?',
+          'showrep': 'show',
+          'hiderip': 'hide',
+          'repdel': 'Delete This Reply ?',
+          'repadd': 'Add a Reply',
+          'timerecent': 'Most Recent',
+          'timeold': 'Oldest',
+          'mostlikes': 'Most Likes',
+          'leastlikes': 'Least Likes',
+          'mostrep': 'Most Replies',
+          'localsearch': 'Search  ...'
         },
         'ar_SA': {
           'email': 'العنوان الالكتروني',
@@ -206,6 +217,17 @@ class Translation extends Translations {
           'cancel': 'لا',
           'commentsad': 'اضف تعليقك',
           'replies': 'ردود',
+          'commentdel': 'حذف هذا التعليق ؟',
+          'showrep': 'اظهار',
+          'hiderip': 'اخفاء',
+          'repdel': 'حذف هذا الرد ؟',
+          'repadd': 'اضف رد',
+          'timerecent': 'الاحدث',
+          'timeold': 'الاقدم',
+          'mostlikes': 'الاكثر اعجابا',
+          'leastlikes': 'الاقل اعجابا',
+          'mostrep': 'الاكثر ردود',
+          'localsearch': 'بحث  ...'
         }
       };
 }

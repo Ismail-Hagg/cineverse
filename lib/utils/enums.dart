@@ -12,6 +12,18 @@ enum ApiType { rest, graphql }
 
 enum FirebaseUserPaths { favorites, watchlist, chat, keeping, comments }
 
+enum FirebaseMainPaths { users, keeping, comments, other }
+
+enum CommentState { read, update, upload, delete }
+
+enum CommentOrder {
+  replies,
+  mostLikes,
+  leastLikes,
+  timeRecent,
+  timeOld,
+}
+
 enum FieldType {
   loginEmail,
   loginPass,

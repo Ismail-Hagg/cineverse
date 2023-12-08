@@ -1,3 +1,4 @@
+import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
 import 'package:cineverse/models/movie_detales_model.dart';
 import 'package:cineverse/models/user_model.dart';
@@ -15,6 +16,9 @@ class ProfilePageController extends GetxController {
   bool _loading = false;
   bool get loading => _loading;
 
+  bool _isMe = false;
+  bool get isMe => _isMe;
+
   List<List<MovieDetaleModel>> _lst = [];
   List<List<MovieDetaleModel>> get lst => _lst;
 
@@ -24,7 +28,10 @@ class ProfilePageController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
     _model = Get.arguments ?? Get.find<HomeController>().userModel;
+    _isMe =
+        _model.userId == Get.find<AuthController>().userModel.userId.toString();
     _lst = [<MovieDetaleModel>[], <MovieDetaleModel>[], <MovieDetaleModel>[]];
 
     fireMovie(collection: FirebaseUserPaths.favorites);

@@ -1,10 +1,13 @@
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:cineverse/controllers/auth_controller.dart';
+import 'package:cineverse/controllers/profile_controller.dart';
+import 'package:cineverse/local_storage/user_data.dart';
 import 'package:cineverse/models/comment_model.dart';
 import 'package:cineverse/models/image_model.dart';
 import 'package:cineverse/models/movie_detales_model.dart';
 import 'package:cineverse/models/trailer_model.dart';
 import 'package:cineverse/models/user_model.dart';
+import 'package:cineverse/pages/profile_page/profile_controller.dart';
 import 'package:cineverse/services/cast_service.dart';
 import 'package:cineverse/services/collection_service.dart';
 import 'package:cineverse/services/firebase_service.dart';
@@ -15,10 +18,12 @@ import 'package:cineverse/services/season_service.dart';
 import 'package:cineverse/services/trailer_service.dart';
 import 'package:cineverse/utils/constants.dart';
 import 'package:cineverse/utils/enums.dart';
+import 'package:cineverse/utils/functions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:uuid/uuid.dart';
 
 class MovieDetaleController extends GetxController
     with GetSingleTickerProviderStateMixin {
@@ -35,6 +40,9 @@ class MovieDetaleController extends GetxController
 
   int _loading = 0;
   int get loading => _loading;
+
+  int _commentLoading = 0;
+  int get commentLoading => _commentLoading;
 
   int _loadingSeason = 0;
   int get loadingSeason => _loadingSeason;
@@ -74,40 +82,11 @@ class MovieDetaleController extends GetxController
   bool _commentOpen = false;
   bool get commentOpen => _commentOpen;
 
-  List<CommentModel> commentList = [
-    CommentModel(
-      commentId: 'commentId',
-      userId: 'userId',
-      userName: 'userName',
-      userLink:
-          'https://stylesatlife.com/wp-content/uploads/2023/08/Beautiful-Zendaya-Pic-in-a-Yellow-Swim-Bikini.jpg',
-      time: DateTime.now(),
-      comment:
-          'comment comment comment comment comment comment comment comment comment',
-      likes: 1,
-      dislikea: 0,
-      hasMore: false,
-      token: '',
-      commentOpen: false,
-      repliesNum: 0,
-    ),
-    CommentModel(
-      commentId: 'commentId',
-      userId: Get.find<AuthController>().userModel.userId.toString(),
-      userName: 'scarlett johanson',
-      userLink:
-          'https://hips.hearstapps.com/hmg-prod/images/american-actress-scarlett-johansson-at-cannes-film-festival-news-photo-1685449533.jpg',
-      time: DateTime.now(),
-      comment:
-          'comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment commentcomment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment comment',
-      likes: 0,
-      dislikea: 0,
-      hasMore: true,
-      token: '',
-      commentOpen: false,
-      repliesNum: 2,
-    )
-  ];
+  final List<CommentModel> _commentList = [];
+  List<CommentModel> get commentList => _commentList;
+
+  String _replyToComment = '';
+  String get replyToComment => _replyToComment;
 
   @override
   void onInit() {
@@ -128,9 +107,442 @@ class MovieDetaleController extends GetxController
     _focusNode.dispose();
   }
 
+  // delete comment
+  void commentDelete(
+      {required BuildContext context,
+      required int index,
+      required bool reply,
+      required int repIndex,
+      required bool isIos}) {
+    platforMulti(
+        isIos: isIos,
+        title: reply ? 'repdel'.tr : "commentdel".tr,
+        buttonTitle: ['cancel'.tr, "answer".tr],
+        body: '',
+        func: [
+          () {
+            Get.back();
+          },
+          () => reply
+              ? replyDelete(commentIndex: index, replyIndex: repIndex)
+              : deleteComment(index: index)
+        ],
+        context: context);
+  }
+
+  // delete reply
+  void replyDelete({required int commentIndex, required int replyIndex}) async {
+    Get.back();
+    String commentid = _commentList[commentIndex].commentId;
+    String replyid =
+        _commentList[commentIndex].subComments![replyIndex].commentId;
+    _commentList[commentIndex]
+        .subComments!
+        .remove(_commentList[commentIndex].subComments![replyIndex]);
+    _commentList[commentIndex].repliesNum =
+        _commentList[commentIndex].repliesNum - 1;
+    if (_commentList[commentIndex].subComments!.isEmpty) {
+      _commentList[commentIndex].subComments = null;
+      _commentList[commentIndex].hasMore = false;
+    }
+    update();
+    await FirebaseServices()
+        .keepComment(
+            path: FirebaseMainPaths.comments,
+            movieId: _detales.id.toString(),
+            state: CommentState.delete,
+            commentId: commentid,
+            reply: true,
+            repId: replyid)
+        .then(
+      (value) async {
+        await FirebaseServices().keepComment(
+            path: FirebaseMainPaths.comments,
+            movieId: _detales.id.toString(),
+            state: CommentState.update,
+            commentId: _commentList[commentIndex].commentId,
+            map: _commentList[commentIndex].toMap(),
+            reply: false);
+      },
+    );
+  }
+
+  // toggle reply box
+  void repBoxOpen({required int index}) {
+    if (_commentList[index].replyBox == false) {
+      _commentList[index].replyBox = true;
+    } else {
+      _commentList[index].replyBox = false;
+      _replyToComment = '';
+    }
+    update();
+  }
+
+  // delete comment
+  void deleteComment({required int index}) async {
+    Get.back();
+    CommentModel comment = _commentList[index];
+    _commentList.remove(comment);
+    update();
+    await FirebaseServices()
+        .keepComment(
+            path: FirebaseMainPaths.comments,
+            movieId: _detales.id.toString(),
+            state: CommentState.delete,
+            commentId: comment.commentId,
+            reply: false)
+        .then(
+      (value) async {
+        await FirebaseServices().watchFav(
+            userId: comment.userId,
+            path: FirebaseUserPaths.comments,
+            comment: comment,
+            model: MovieDetaleModel(),
+            upload: false);
+      },
+    );
+  }
+
+  // add a reply to comment
+  void reply({
+    required int index,
+  }) async {
+    if (_replyToComment.trim() != '') {
+      CommentModel reply = CommentModel(
+          commentId: const Uuid().v4(),
+          userId: _userModel.userId.toString(),
+          userName: _userModel.userName.toString(),
+          userLink: _userModel.onlinePicPath.toString(),
+          time: DateTime.now(),
+          comment: _replyToComment.trim(),
+          likes: 0,
+          dislikea: 0,
+          hasMore: false,
+          token: _userModel.messagingToken.toString(),
+          commentOpen: commentOpen,
+          repliesNum: 0,
+          movieId: _detales.id.toString());
+      if (_commentList[index].hasMore == false) {
+        _commentList[index].hasMore = true;
+      }
+      _commentList[index].repliesNum = _commentList[index].repliesNum + 1;
+      _commentList[index].subComments == null
+          ? _commentList[index].subComments = [reply]
+          : _commentList[index].subComments!.insert(0, reply);
+      _commentList[index].replyBox = false;
+      _replyToComment = '';
+      update();
+      await FirebaseServices()
+          .keepComment(
+              path: FirebaseMainPaths.comments,
+              movieId: _detales.id.toString(),
+              state: CommentState.upload,
+              commentId: _commentList[index].commentId,
+              repId: reply.commentId,
+              map: reply.toMap(),
+              reply: true)
+          .then(
+        (value) async {
+          await FirebaseServices()
+              .keepComment(
+                  path: FirebaseMainPaths.comments,
+                  movieId: _detales.id.toString(),
+                  state: CommentState.update,
+                  commentId: _commentList[index].commentId,
+                  map: _commentList[index].toMap(),
+                  reply: false)
+              .then(
+            (value) {
+              // notify comment owner
+            },
+          );
+        },
+      );
+    }
+  }
+
+  // like controller
+  void likeController(
+      {required bool like,
+      required int index,
+      required bool reply,
+      required int repIndex}) {
+    String id = reply
+        ? _commentList[index].subComments![repIndex].commentId
+        : _commentList[index].commentId;
+    if (like) {
+      likeOp(
+          add: !_userModel.commentLike!.contains(id),
+          id: id,
+          index: index,
+          reply: reply,
+          repIndex: repIndex);
+      if (userModel.commentDislike!.contains(id)) {
+        disLikeOp(
+            add: false, id: id, index: index, reply: reply, repIndex: repIndex);
+      }
+    } else {
+      disLikeOp(
+          add: !_userModel.commentDislike!.contains(id),
+          id: id,
+          index: index,
+          reply: reply,
+          repIndex: repIndex);
+      if (userModel.commentLike!.contains(id)) {
+        likeOp(
+            add: false, id: id, index: index, reply: reply, repIndex: repIndex);
+      }
+    }
+    update();
+    afterLike(index: index, reply: reply, repIndex: repIndex);
+  }
+
+  // add or remove a like
+  void likeOp(
+      {required bool add,
+      required String id,
+      required int index,
+      required int repIndex,
+      required bool reply}) {
+    if (add) {
+      _userModel.commentLike!.add(id);
+      reply
+          ? _commentList[index].subComments![repIndex].likes =
+              _commentList[index].subComments![repIndex].likes + 1
+          : _commentList[index].likes = _commentList[index].likes + 1;
+    } else {
+      _userModel.commentLike!.remove(id);
+      reply
+          ? _commentList[index].subComments![repIndex].likes =
+              _commentList[index].subComments![repIndex].likes - 1
+          : _commentList[index].likes = _commentList[index].likes - 1;
+    }
+  }
+
+  // add or remove a dislike
+  void disLikeOp(
+      {required bool add,
+      required String id,
+      required int index,
+      required int repIndex,
+      required bool reply}) {
+    if (add) {
+      _userModel.commentDislike!.add(id);
+      reply
+          ? _commentList[index].subComments![repIndex].dislikea =
+              _commentList[index].subComments![repIndex].dislikea + 1
+          : _commentList[index].dislikea = _commentList[index].dislikea + 1;
+    } else {
+      _userModel.commentDislike!.remove(id);
+      reply
+          ? _commentList[index].subComments![repIndex].dislikea =
+              _commentList[index].subComments![repIndex].dislikea - 1
+          : _commentList[index].dislikea = _commentList[index].dislikea - 1;
+    }
+  }
+
+  // after like
+  void afterLike(
+      {required int index, required bool reply, required int repIndex}) async {
+    await DataPref().setUser(_userModel).then(
+      (value) async {
+        if (value) {
+          await FirebaseServices()
+              .userUpdate(
+                  userId: _userModel.userId.toString(), map: _userModel.toMap())
+              .then(
+            (value) async {
+              await FirebaseServices()
+                  .keepComment(
+                      path: FirebaseMainPaths.comments,
+                      movieId: _detales.id.toString(),
+                      state: CommentState.update,
+                      commentId: _commentList[index].commentId,
+                      map: reply
+                          ? _commentList[index].subComments![repIndex].toMap()
+                          : _commentList[index].toMap(),
+                      repId:
+                          _commentList[index].subComments![repIndex].commentId,
+                      reply: reply)
+                  .then(
+                (value) async {
+                  if (reply == false) {
+                    await FirebaseServices().watchFav(
+                        userId: _commentList[index].userId,
+                        path: FirebaseUserPaths.comments,
+                        model: MovieDetaleModel(),
+                        upload: false,
+                        update: true,
+                        comment: _commentList[index]);
+                  }
+                },
+              );
+            },
+          );
+        } else {
+          // data wasn't saves locally
+        }
+      },
+    );
+  }
+
+  // upload comment
+  void commentUpload({required bool reply, String? repid}) async {
+    if (_commentController.text.trim() != '' && _commentLoading == 0) {
+      String comment = _commentController.text.trim();
+      _focusNode.unfocus();
+      _commentController.clear();
+      String commentId = const Uuid().v4();
+      // build comment object
+      CommentModel model = CommentModel(
+        replyBox: false,
+        showRep: false,
+        commentId: commentId,
+        userId: _userModel.userId.toString(),
+        userName: _userModel.userName.toString(),
+        userLink: _userModel.onlinePicPath.toString(),
+        time: DateTime.now(),
+        comment: comment,
+        likes: 0,
+        dislikea: 0,
+        hasMore: false,
+        token: _userModel.messagingToken.toString(),
+        commentOpen: false,
+        repliesNum: 0,
+        movieId: _detales.id.toString(),
+      );
+      // add to the list
+      commentList.insert(0, model);
+      _commentOpen = false;
+      update();
+      // upload to firebase
+      await FirebaseServices()
+          .keepComment(
+              repId: repid,
+              reply: reply,
+              commentId: commentId,
+              map: model.toMap(),
+              path: FirebaseMainPaths.comments,
+              movieId: _detales.id.toString(),
+              state: CommentState.upload)
+          .then(
+        (value) async {
+          await FirebaseServices()
+              .watchFav(
+                  userId: _userModel.userId.toString(),
+                  path: FirebaseUserPaths.comments,
+                  model: MovieDetaleModel(),
+                  upload: true,
+                  comment: model)
+              .then((value) => null);
+        },
+      );
+    }
+  }
+
+  // get comments from firebase
+  void getComments() async {
+    await FirebaseServices()
+        .keepComment(
+            reply: false,
+            path: FirebaseMainPaths.comments,
+            movieId: _detales.id.toString(),
+            state: CommentState.read)
+        .then(
+      (val) async {
+        if (val.$1!.docs.isNotEmpty) {
+          for (var i = 0; i < val.$1!.docs.length; i++) {
+            _commentList.add(
+              CommentModel.fromMap(
+                  val.$1!.docs[i].data() as Map<String, dynamic>),
+            );
+            if ((val.$1!.docs[i].data() as Map<String, dynamic>)['hasMore'] ==
+                true) {
+              await FirebaseServices()
+                  .keepComment(
+                      path: FirebaseMainPaths.comments,
+                      movieId: _detales.id.toString(),
+                      state: CommentState.read,
+                      commentId: val.$1!.docs[i].id,
+                      reply: true)
+                  .then(
+                (value) {
+                  List<CommentModel> subs = [];
+                  for (var i = 0; i < value.$1!.docs.length; i++) {
+                    subs.add(CommentModel.fromMap(
+                        value.$1!.docs[i].data() as Map<String, dynamic>));
+                  }
+                  _commentList[(_commentList.length) - 1].subComments = subs;
+                },
+              );
+            }
+          }
+        }
+        _commentList.sort((a, b) => b.time.compareTo(a.time));
+        _commentLoading = 0;
+        for (var i = 0; i < _commentList.length; i++) {
+          if (_commentList[i].subComments != null) {
+            _commentList[i]
+                .subComments!
+                .sort((a, b) => b.time.compareTo(a.time));
+          }
+        }
+        update();
+      },
+    );
+  }
+
   // comment flip
   void commentFlip() {
     _commentOpen = !_commentOpen;
+    update();
+  }
+
+  // full comments
+  void commentFull(
+      {required int index, required bool reply, required int repIndex}) {
+    reply
+        ? _commentList[index].subComments![repIndex].commentOpen =
+            !_commentList[index].subComments![repIndex].commentOpen
+        : _commentList[index].commentOpen = !_commentList[index].commentOpen;
+    update();
+  }
+
+  // nav to profile from comment
+  void navToProfile(
+      {required int index, required bool reply, required int repIndex}) {
+    Get.create(() => ProfilePageController());
+    Get.to((const ProfileViewController()),
+        arguments: UserModel(
+            isError: false,
+            avatarType: AvatarType.online,
+            movieWatchList: [],
+            favs: [],
+            showWatchList: [],
+            watching: [],
+            following: [],
+            follwers: [],
+            commentDislike: [],
+            commentLike: [],
+            email: '',
+            language: 'en_US',
+            userName: reply
+                ? _commentList[index].subComments![repIndex].userName
+                : _commentList[index].userName,
+            userId: reply
+                ? commentList[index].subComments![repIndex].userId
+                : _commentList[index].userId,
+            onlinePicPath: reply
+                ? commentList[index].subComments![repIndex].userLink
+                : _commentList[index].userLink),
+        preventDuplicates: false);
+  }
+
+  // show and hide replies
+  void repFlip({required int index}) {
+    _commentList[index].showRep == true
+        ? _commentList[index].showRep = false
+        : _commentList[index].showRep = true;
     update();
   }
 
@@ -149,9 +561,16 @@ class MovieDetaleController extends GetxController
     );
   }
 
+  // typing in reply box
+  void replyChange({required String reply}) {
+    _replyToComment = reply;
+    update();
+  }
+
   // get data from api
   void getData({required MovieDetaleModel res}) async {
     _loading = 1;
+    _commentLoading = 1;
     update();
     var lan = _userModel.language.toString().replaceAll('_', '-');
     var show = res.isShow == true ? 'tv' : 'movie';
@@ -219,6 +638,7 @@ class MovieDetaleController extends GetxController
           break;
       }
     }
+    getComments();
     _loading = 0;
     update();
   }
@@ -287,8 +707,10 @@ class MovieDetaleController extends GetxController
 
   // change tabs
   void tabChange({required int tab}) {
-    _tabs = tab;
-    update();
+    if (tab != _tabs) {
+      _tabs = tab;
+      update();
+    }
   }
 
   // call api to get images
@@ -483,5 +905,38 @@ class MovieDetaleController extends GetxController
       update();
       trailerButton(content: content, context: context, model: value);
     });
+  }
+
+  // order the comments
+  void commentOrder({required CommentOrder order}) {
+    if (_commentLoading == 0) {
+      switch (order) {
+        case CommentOrder.timeRecent:
+          Get.back();
+          _commentList.sort((a, b) => b.time.compareTo(a.time));
+          break;
+        case CommentOrder.timeOld:
+          Get.back();
+          _commentList.sort((a, b) => a.time.compareTo(b.time));
+          break;
+        case CommentOrder.mostLikes:
+          Get.back();
+          _commentList.sort((a, b) => b.likes.compareTo(a.likes));
+          break;
+        case CommentOrder.leastLikes:
+          Get.back();
+          _commentList.sort((a, b) => a.likes.compareTo(b.likes));
+          break;
+        case CommentOrder.replies:
+          Get.back();
+          _commentList.sort((a, b) => (b.subComments != null
+                  ? b.subComments!.length
+                  : 0)
+              .compareTo(a.subComments != null ? a.subComments!.length : 0));
+          break;
+        default:
+      }
+      update();
+    }
   }
 }

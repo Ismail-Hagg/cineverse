@@ -104,6 +104,8 @@ class HomePhone extends StatelessWidget {
                   type: controller.userModel.avatarType as AvatarType,
                   boxFit: BoxFit.cover,
                   shadow: false,
+                  borderColor:
+                      controller.pageIndex == 5 ? null : Colors.transparent,
                   link: authController.userModel.avatarType == AvatarType.local
                       ? authController.userModel.localPicPath
                       : authController.userModel.avatarType == AvatarType.online

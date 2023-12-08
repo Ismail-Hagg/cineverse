@@ -5,7 +5,6 @@ import 'package:cineverse/models/result_details_model.dart';
 import 'package:cineverse/utils/constants.dart';
 import 'package:cineverse/utils/enums.dart';
 import 'package:cineverse/utils/functions.dart';
-import 'package:cineverse/widgets/avatar_widget.dart';
 import 'package:cineverse/widgets/comment_widget.dart';
 import 'package:cineverse/widgets/content_scrolling.dart';
 import 'package:cineverse/widgets/custom_text.dart';
@@ -1132,6 +1131,7 @@ class DetalePagePhone extends StatelessWidget {
                                     ? isIos
                                         ? CupertinoButton(
                                             child: FaIcon(FontAwesomeIcons.plus,
+                                                size: width * 0.05,
                                                 color: Theme.of(context)
                                                     .colorScheme
                                                     .primary),
@@ -1142,6 +1142,7 @@ class DetalePagePhone extends StatelessWidget {
                                             onPressed: () =>
                                                 controller.commentFlip(),
                                             icon: FaIcon(
+                                              size: width * 0.05,
                                               FontAwesomeIcons.plus,
                                               color: Theme.of(context)
                                                   .colorScheme
@@ -1167,10 +1168,14 @@ class DetalePagePhone extends StatelessWidget {
                                                               .colorScheme
                                                               .secondary,
                                                     ),
-                                                    onPressed: () {},
+                                                    onPressed: () => controller
+                                                        .commentUpload(
+                                                            reply: false),
                                                   )
                                                 : IconButton(
-                                                    onPressed: () {},
+                                                    onPressed: () => controller
+                                                        .commentUpload(
+                                                            reply: false),
                                                     icon: FaIcon(
                                                       FontAwesomeIcons
                                                           .paperPlane,
@@ -1206,7 +1211,7 @@ class DetalePagePhone extends StatelessWidget {
                                                 controller.commentController,
                                             focusNode: controller.focusNode,
                                             isSearch: true,
-                                            height: width * 0.125,
+                                            height: width * 0.2,
                                             width: width * 0.85,
                                             obscure: false,
                                             otherShadow: false,
@@ -1217,121 +1222,295 @@ class DetalePagePhone extends StatelessWidget {
                                   height: width * 0.12,
                                   width: (width * 0.15) - 16,
                                   child: Center(
-                                    child: isIos
-                                        ? CupertinoButton(
-                                            child: FaIcon(
-                                              FontAwesomeIcons
-                                                  .arrowDownWideShort,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
-                                            ),
-                                            onPressed: () {},
-                                          )
-                                        : IconButton(
-                                            onPressed: () {},
-                                            icon: FaIcon(
-                                              FontAwesomeIcons
-                                                  .arrowDownWideShort,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
-                                            ),
-                                            splashRadius: 15,
-                                          ),
+                                    child: Menu(
+                                      ios: isIos,
+                                      titles: [
+                                        'timerecent'.tr,
+                                        'timeold'.tr,
+                                        'mostlikes'.tr,
+                                        'leastlikes'.tr,
+                                        'mostrep'.tr
+                                      ],
+                                      funcs: [
+                                        () => controller.commentOrder(
+                                            order: CommentOrder.timeRecent),
+                                        () => controller.commentOrder(
+                                            order: CommentOrder.timeOld),
+                                        () => controller.commentOrder(
+                                            order: CommentOrder.mostLikes),
+                                        () => controller.commentOrder(
+                                            order: CommentOrder.leastLikes),
+                                        () => controller.commentOrder(
+                                            order: CommentOrder.replies)
+                                      ],
+                                      child: FaIcon(
+                                        size: width * 0.05,
+                                        FontAwesomeIcons.arrowDownWideShort,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                      ),
+                                    ),
                                   ),
                                 )
                               ],
                             ),
-                            // CommentWidget(
-                            //   replyNum: 4,
-                            //   profileNav: () {},
-                            //   likes: 3,
-                            //   dislikes: 1,
-                            //   hasMore: true,
-                            //   like: () {},
-                            //   dislike: () {},
-                            //   commentToggle: () {},
-                            //   delete: () {},
-                            //   replies: () {},
-                            //   isLiked: false,
-                            //   isDisLiked: false,
-                            //   commentOpen: false,
-                            //   isIos: isIos,
-                            //   elevation: 5,
-                            //   imageBorder: false,
-                            //   imageLink:
-                            //       'https://i.pinimg.com/originals/46/ea/0b/46ea0bf4f3985f905aa215c42c5b3133.jpg',
-                            //   width: width,
-                            //   isMe: true,
-                            //   timeAgo: '5 days ago',
-                            //   comment:
-                            //       'asjdkf kadfk dklf alksd flj asjdkf kadfk dklf alksd flj asjdkf kadfk dklf alk  kadfk dklf alksd flj asjdkf kadfk dklf alksd flj asjdkf kadfk dklf alk   kadfk dklf alksd flj asjdkf kadfk dklf alksd flj asjdkf kadfk dklf alk  kadfk dklf alksd flj asjdkf kadfk dklf alksd flj asjdkf kadfk dklf alksd flj asjdkf kadfk dklf alksd flj ',
-                            //   userName: 'seemoe_06',
-                            // ),
-                            // CommentWidget(
-                            //   likes: 0,
-                            //   dislikes: 0,
-                            //   profileNav: () {},
-                            //   hasMore: false,
-                            //   like: () {},
-                            //   dislike: () {},
-                            //   commentToggle: () {},
-                            //   delete: () {},
-                            //   replies: () {},
-                            //   isLiked: true,
-                            //   isDisLiked: false,
-                            //   commentOpen: true,
-                            //   isIos: isIos,
-                            //   elevation: 5,
-                            //   imageBorder: false,
-                            //   imageLink:
-                            //       'https://i.pinimg.com/originals/46/ea/0b/46ea0bf4f3985f905aa215c42c5b3133.jpg',
-                            //   width: width,
-                            //   isMe: true,
-                            //   timeAgo: '5 days ago',
-                            //   comment:
-                            //       'asjdkf kadfk dklf alksd flj asjdkf kadfk dklf alksd flj asjdkf kadfk dklf alk  kadfk dklf alksd flj asjdkf kadfk dklf alksd flj asjdkf kadfk dklf alk   kadfk dklf alksd flj asjdkf kadfk dklf alksd flj asjdkf kadfk dklf alk  kadfk dklf alksd flj asjdkf kadfk dklf alksd flj asjdkf kadfk dklf alksd flj asjdkf kadfk dklf alksd flj ',
-                            //   userName: 'seemoe_06',
-                            // )
-                            Column(
-                              children: List.generate(
-                                  controller.commentList.length, (index) {
-                                return CommentWidget(
-                                  likes: controller.commentList[index].likes,
-                                  dislikes:
-                                      controller.commentList[index].dislikea,
-                                  profileNav: () {},
-                                  hasMore:
-                                      controller.commentList[index].hasMore,
-                                  like: () {},
-                                  dislike: () {},
-                                  commentToggle: () {},
-                                  delete: () {},
-                                  replies: () {},
-                                  isLiked: true,
-                                  isDisLiked: false,
-                                  commentOpen:
-                                      controller.commentList[index].commentOpen,
-                                  isIos: isIos,
-                                  elevation: 5,
-                                  imageBorder: false,
-                                  imageLink:
-                                      controller.commentList[index].userLink,
-                                  width: width,
-                                  isMe: controller.commentList[index].userId ==
-                                      controller.userModel.userId.toString(),
-                                  timeAgo: timeAgo(
-                                      controller.commentList[index].time),
-                                  comment:
-                                      controller.commentList[index].comment,
-                                  userName:
-                                      controller.commentList[index].userName,
-                                  replyNum:
-                                      controller.commentList[index].repliesNum,
-                                );
-                              }),
-                            )
+                            controller.commentLoading == 0
+                                ? Column(
+                                    children: List.generate(
+                                      controller.commentList.length,
+                                      (index) {
+                                        return CommentWidget(
+                                          sendRep: () =>
+                                              controller.reply(index: index),
+                                          paper: controller.replyToComment
+                                                      .trim() ==
+                                                  ''
+                                              ? Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary
+                                              : Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                          repChange: (rep) => controller
+                                              .replyChange(reply: rep),
+                                          repBox: controller.commentList[index]
+                                              .replyBox as bool,
+                                          flipRep: () =>
+                                              controller.repFlip(index: index),
+                                          showRep: controller.commentList[index]
+                                              .showRep as bool,
+                                          likes: controller
+                                              .commentList[index].likes,
+                                          dislikes: controller
+                                              .commentList[index].dislikea,
+                                          profileNav: () =>
+                                              controller.navToProfile(
+                                                  index: index,
+                                                  reply: false,
+                                                  repIndex: 0),
+                                          hasMore: controller
+                                              .commentList[index].hasMore,
+                                          like: () => controller.likeController(
+                                              reply: false,
+                                              repIndex: 0,
+                                              like: true,
+                                              index: index),
+                                          dislike: () =>
+                                              controller.likeController(
+                                                  reply: false,
+                                                  repIndex: 0,
+                                                  like: false,
+                                                  index: index),
+                                          commentToggle: () =>
+                                              controller.commentFull(
+                                                  index: index,
+                                                  reply: false,
+                                                  repIndex: 0),
+                                          delete: () =>
+                                              controller.commentDelete(
+                                                  reply: false,
+                                                  repIndex: 0,
+                                                  index: index,
+                                                  context: context,
+                                                  isIos: isIos),
+                                          replies: () => controller.repBoxOpen(
+                                            index: index,
+                                          ),
+                                          isLiked: controller
+                                              .userModel.commentLike!
+                                              .contains(controller
+                                                  .commentList[index]
+                                                  .commentId),
+                                          isDisLiked: controller
+                                              .userModel.commentDislike!
+                                              .contains(controller
+                                                  .commentList[index]
+                                                  .commentId),
+                                          commentOpen: controller
+                                              .commentList[index].commentOpen,
+                                          isIos: isIos,
+                                          elevation: 5,
+                                          imageBorder: false,
+                                          imageLink: controller
+                                              .commentList[index].userLink,
+                                          width: width,
+                                          isMe: controller
+                                                  .commentList[index].userId ==
+                                              controller.userModel.userId
+                                                  .toString(),
+                                          timeAgo: timeAgo(controller
+                                              .commentList[index].time),
+                                          comment: controller
+                                              .commentList[index].comment,
+                                          userName: controller
+                                              .commentList[index].userName,
+                                          replyNum: controller
+                                              .commentList[index].repliesNum,
+                                          subs: controller.commentList[index]
+                                                          .subComments ==
+                                                      null ||
+                                                  controller.commentList[index]
+                                                          .showRep ==
+                                                      false
+                                              ? null
+                                              : Column(
+                                                  children: List.generate(
+                                                    controller
+                                                        .commentList[index]
+                                                        .subComments!
+                                                        .length,
+                                                    (comIndex) {
+                                                      return CommentWidget(
+                                                        repBox: controller
+                                                            .commentList[index]
+                                                            .replyBox as bool,
+                                                        flipRep: () =>
+                                                            controller.repFlip(
+                                                                index: index),
+                                                        showRep: controller
+                                                            .commentList[index]
+                                                            .showRep as bool,
+                                                        subComments: true,
+                                                        likes: controller
+                                                            .commentList[index]
+                                                            .subComments![
+                                                                comIndex]
+                                                            .likes,
+                                                        dislikes: controller
+                                                            .commentList[index]
+                                                            .subComments![
+                                                                comIndex]
+                                                            .dislikea,
+                                                        profileNav: () =>
+                                                            controller
+                                                                .navToProfile(
+                                                                    reply: true,
+                                                                    repIndex:
+                                                                        comIndex,
+                                                                    index:
+                                                                        index),
+                                                        hasMore: false,
+                                                        like: () => controller
+                                                            .likeController(
+                                                                reply: true,
+                                                                repIndex:
+                                                                    comIndex,
+                                                                like: true,
+                                                                index: index),
+                                                        dislike: () => controller
+                                                            .likeController(
+                                                                reply: true,
+                                                                repIndex:
+                                                                    comIndex,
+                                                                like: false,
+                                                                index: index),
+                                                        commentToggle: () =>
+                                                            controller
+                                                                .commentFull(
+                                                                    repIndex:
+                                                                        comIndex,
+                                                                    reply: true,
+                                                                    index:
+                                                                        index),
+                                                        delete: () => controller
+                                                            .commentDelete(
+                                                                reply: true,
+                                                                repIndex:
+                                                                    comIndex,
+                                                                index: index,
+                                                                context:
+                                                                    context,
+                                                                isIos: isIos),
+                                                        replies: () {},
+                                                        isLiked: controller
+                                                            .userModel
+                                                            .commentLike!
+                                                            .contains(controller
+                                                                .commentList[
+                                                                    index]
+                                                                .subComments![
+                                                                    comIndex]
+                                                                .commentId),
+                                                        isDisLiked: controller
+                                                            .userModel
+                                                            .commentDislike!
+                                                            .contains(controller
+                                                                .commentList[
+                                                                    index]
+                                                                .subComments![
+                                                                    comIndex]
+                                                                .commentId),
+                                                        commentOpen: controller
+                                                            .commentList[index]
+                                                            .subComments![
+                                                                comIndex]
+                                                            .commentOpen,
+                                                        isIos: isIos,
+                                                        elevation: 5,
+                                                        imageBorder: false,
+                                                        imageLink: controller
+                                                            .commentList[index]
+                                                            .subComments![
+                                                                comIndex]
+                                                            .userLink,
+                                                        width: width,
+                                                        isMe: controller
+                                                                .commentList[
+                                                                    index]
+                                                                .subComments![
+                                                                    comIndex]
+                                                                .userId ==
+                                                            controller.userModel
+                                                                .userId
+                                                                .toString(),
+                                                        timeAgo: timeAgo(
+                                                            controller
+                                                                .commentList[
+                                                                    index]
+                                                                .subComments![
+                                                                    comIndex]
+                                                                .time),
+                                                        comment: controller
+                                                            .commentList[index]
+                                                            .subComments![
+                                                                comIndex]
+                                                            .comment,
+                                                        userName: controller
+                                                            .commentList[index]
+                                                            .subComments![
+                                                                comIndex]
+                                                            .userName,
+                                                        replyNum: controller
+                                                            .commentList[index]
+                                                            .subComments![
+                                                                comIndex]
+                                                            .repliesNum,
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                        );
+                                      },
+                                    ),
+                                  )
+                                : SizedBox(
+                                    height: height * 0.2,
+                                    width: width,
+                                    child: Center(
+                                      child: isIos
+                                          ? CupertinoActivityIndicator(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                            )
+                                          : CircularProgressIndicator(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                            ),
+                                    ),
+                                  )
                           ],
                         ),
                       )

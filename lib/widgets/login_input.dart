@@ -26,6 +26,8 @@ class LoginInput extends StatelessWidget {
   final Widget? leadingButton;
   final int? maxLine;
   final int? minLines;
+  final EdgeInsets? contentPadding;
+  final Function(String thing)? change;
   const LoginInput({
     super.key,
     required this.height,
@@ -53,6 +55,8 @@ class LoginInput extends StatelessWidget {
     this.autoFocus,
     this.leadingButton,
     this.sub,
+    this.contentPadding,
+    this.change,
   });
 
   @override
@@ -104,6 +108,7 @@ class LoginInput extends StatelessWidget {
                 maxLines: maxLine ?? 1,
                 minLines: minLines ?? 1,
                 onSubmitted: sub,
+                onChanged: change,
                 autofocus: autoFocus ?? false,
                 onTap: onTap,
                 readOnly: readOnly ?? false,
@@ -114,6 +119,7 @@ class LoginInput extends StatelessWidget {
                 controller: controller,
                 showCursor: false,
                 decoration: InputDecoration(
+                    contentPadding: contentPadding,
                     hintText: hintNoLable,
                     hintStyle: TextStyle(
                         overflow: TextOverflow.ellipsis, fontSize: textSize),

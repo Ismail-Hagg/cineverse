@@ -1,8 +1,8 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 class CommentModel {
   String commentId;
   String userId;
@@ -16,20 +16,27 @@ class CommentModel {
   String token;
   bool commentOpen;
   int repliesNum;
-  CommentModel({
-    required this.commentId,
-    required this.userId,
-    required this.userName,
-    required this.userLink,
-    required this.time,
-    required this.comment,
-    required this.likes,
-    required this.dislikea,
-    required this.hasMore,
-    required this.token,
-    required this.commentOpen,
-    required this.repliesNum,
-  });
+  String movieId;
+  bool? showRep;
+  bool? replyBox;
+  List<CommentModel>? subComments;
+  CommentModel(
+      {required this.commentId,
+      required this.userId,
+      this.subComments,
+      required this.userName,
+      required this.userLink,
+      this.showRep,
+      required this.time,
+      required this.comment,
+      required this.likes,
+      required this.dislikea,
+      required this.hasMore,
+      required this.token,
+      required this.commentOpen,
+      required this.repliesNum,
+      required this.movieId,
+      this.replyBox});
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -37,7 +44,7 @@ class CommentModel {
       'userId': userId,
       'userName': userName,
       'userLink': userLink,
-      'time': time.millisecondsSinceEpoch,
+      'time': Timestamp.now(),
       'comment': comment,
       'likes': likes,
       'dislikea': dislikea,
@@ -45,23 +52,26 @@ class CommentModel {
       'token': token,
       'commentOpen': commentOpen,
       'repliesNum': repliesNum,
+      'movieId': movieId,
     };
   }
 
   factory CommentModel.fromMap(Map<String, dynamic> map) {
     return CommentModel(
-      commentId: map['commentId'] as String,
-      userId: map['userId'] as String,
-      userName: map['userName'] as String,
-      userLink: map['userLink'] as String,
-      time: DateTime.fromMillisecondsSinceEpoch(map['time'] as int),
-      comment: map['comment'] as String,
-      likes: map['likes'] as int,
-      dislikea: map['dislikea'] as int,
-      hasMore: map['hasMore'] as bool,
-      token: map['token'] as String,
-      commentOpen: map['commentOpen'] as bool,
-      repliesNum: map['repliesNum'] as int,
-    );
+        commentId: map['commentId'] as String,
+        userId: map['userId'] as String,
+        userName: map['userName'] as String,
+        userLink: map['userLink'] as String,
+        time: map['time'].toDate(),
+        comment: map['comment'] as String,
+        likes: map['likes'] as int,
+        dislikea: map['dislikea'] as int,
+        hasMore: map['hasMore'] as bool,
+        token: map['token'] as String,
+        commentOpen: false,
+        repliesNum: map['repliesNum'] as int,
+        movieId: map['movieId'] as String,
+        replyBox: false,
+        showRep: false);
   }
 }

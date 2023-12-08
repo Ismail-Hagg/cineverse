@@ -97,10 +97,11 @@ class ActorController extends GetxController
   void actorData() async {
     _loading = true;
     update();
+
     await ActorService()
         .getHomeInfo(
             link:
-                'https://api.themoviedb.org/3/person/${_actor.id}?api_key=$apiKey')
+                'https://api.themoviedb.org/3/person/${_actor.id}?api_key=$apiKey&language=${_userModel.language.toString().substring(0, 2)}')
         .then(
       (actor) async {
         if (actor.isError == false) {
@@ -108,7 +109,7 @@ class ActorController extends GetxController
           await ActorDetaleService()
               .getHomeInfo(
                   link:
-                      'https://api.themoviedb.org/3/person/${_actor.id}/combined_credits?api_key=$apiKey')
+                      'https://api.themoviedb.org/3/person/${_actor.id}/combined_credits?api_key=$apiKey&language=${_userModel.language.toString().substring(0, 2)}')
               .then(
             (value) {
               _actor.detales = value;

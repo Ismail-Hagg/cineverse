@@ -23,8 +23,7 @@ class ProfilePhone extends StatelessWidget {
       init: Get.find<ProfilePageController>(),
       builder: (controller) {
         bool isIos = Get.find<AuthController>().platform == TargetPlatform.iOS;
-        bool isMe = controller.model.userId.toString() ==
-            Get.find<AuthController>().userModel.userId.toString();
+        bool isMe = controller.isMe;
         return Scaffold(
           backgroundColor: Theme.of(context).colorScheme.background,
           appBar: AppBar(
@@ -33,7 +32,9 @@ class ProfilePhone extends StatelessWidget {
               color: Theme.of(context).colorScheme.primary,
             ),
             centerTitle: true,
-            leading: isMe
+            iconTheme:
+                IconThemeData(color: Theme.of(context).colorScheme.primary),
+            leading: isMe == true
                 ? null
                 : isIos
                     ? CupertinoButton(
@@ -141,7 +142,7 @@ class ProfilePhone extends StatelessWidget {
                       children: [
                         SizedBox(
                           width: width / 3,
-                          height: width * 0.12,
+                          height: width * 0.14,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -163,7 +164,7 @@ class ProfilePhone extends StatelessWidget {
                         ),
                         SizedBox(
                           width: width / 3,
-                          height: width * 0.12,
+                          height: width * 0.14,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -186,7 +187,7 @@ class ProfilePhone extends StatelessWidget {
                         ),
                         SizedBox(
                           width: width / 3,
-                          height: width * 0.12,
+                          height: width * 0.14,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -319,12 +320,17 @@ class ProfilePhone extends StatelessWidget {
                                       height: width * 0.1,
                                       width: width * 0.1,
                                       child: FittedBox(
-                                        child:
-                                            CircularProgressIndicator.adaptive(
-                                          backgroundColor: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                        ),
+                                        child: isIos
+                                            ? CupertinoActivityIndicator(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                              )
+                                            : CircularProgressIndicator(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                              ),
                                       ),
                                     ),
                                   ),

@@ -120,6 +120,7 @@ class SettingsController extends GetxController {
           () async {
             Get.find<AuthController>().signOut();
             Get.delete<SettingsController>();
+            Get.delete<HomeController>();
             Get.offAll(const ViewController());
           }
         ],
