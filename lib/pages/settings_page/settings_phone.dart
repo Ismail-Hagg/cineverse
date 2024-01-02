@@ -128,7 +128,8 @@ class SettingsPhone extends StatelessWidget {
                                             .primary,
                                         text: 'changepic'.tr,
                                       ),
-                                      onTap: () {},
+                                      onTap: () =>
+                                          controller.changeProfilePic(),
                                     ),
                                   ),
                                   Padding(
@@ -361,7 +362,8 @@ class SettingsPhone extends StatelessWidget {
                                             .primary,
                                         text: 'changepic'.tr,
                                       ),
-                                      onTap: () {},
+                                      onTap: () =>
+                                          controller.changeProfilePic(),
                                     ),
                                   ),
                                   Padding(

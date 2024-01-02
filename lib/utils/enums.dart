@@ -10,11 +10,28 @@ enum ChosenTheme { light, dark, system }
 
 enum ApiType { rest, graphql }
 
-enum FirebaseUserPaths { favorites, watchlist, chat, keeping, comments }
+enum FirebaseUserPaths {
+  favorites,
+  watchlist,
+  chat,
+  keeping,
+  comments,
+  notifications
+}
 
 enum FirebaseMainPaths { users, keeping, comments, other }
 
 enum CommentState { read, update, upload, delete }
+
+enum NotificationType {
+  newEpisode,
+  releaseDate,
+  showEnded,
+  followed,
+  followerAction,
+  comment,
+  chatMessage
+}
 
 enum CommentOrder {
   replies,

@@ -114,7 +114,17 @@ class Translation extends Translations {
           'mostlikes': 'Most Likes',
           'leastlikes': 'Least Likes',
           'mostrep': 'Most Replies',
-          'localsearch': 'Search  ...'
+          'localsearch': 'Search  ...',
+          'notifications': 'Notifications',
+          'nextepisodedate': 'Next Episode Date',
+          'readykeep': 'Already In Episode Keeping',
+          'keepadd': 'Added to Episode Keeping',
+          'lastepisode': 'Last Episode To Air',
+          'nextepisode': 'Next Episode To Air',
+          'status': 'Status',
+          'return': 'Returning Series',
+          'ended': 'Ended',
+          'edit': 'Edit'
         },
         'ar_SA': {
           'email': 'العنوان الالكتروني',
@@ -227,7 +237,17 @@ class Translation extends Translations {
           'mostlikes': 'الاكثر اعجابا',
           'leastlikes': 'الاقل اعجابا',
           'mostrep': 'الاكثر ردود',
-          'localsearch': 'بحث  ...'
+          'localsearch': 'بحث  ...',
+          'notifications': 'الاشعارات',
+          'nextepisodedate': 'موعد الحلقة القادمة',
+          'readykeep': 'موجود في متابعة الحلقات',
+          'keepadd': 'تمت الاضافه الى متابعة الحلقات',
+          'lastepisode': 'اخر حلقه اصدرت',
+          'nextepisode': 'الحلقه القادمه',
+          'status': 'الحاله',
+          'return': 'مستمر',
+          'ended': 'منتهي',
+          'edit': 'تعديل'
         }
       };
 }

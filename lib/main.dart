@@ -38,7 +38,7 @@ void main() async {
       );
       runApp(
         MyApp(
-          theme: user.theme ?? ChosenTheme.system,
+          theme: user.theme ?? ChosenTheme.dark,
           language: Locale(
               user.language!.substring(0, 2), user.language!.substring(3, 5)),
         ),

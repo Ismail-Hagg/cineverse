@@ -180,8 +180,10 @@ class FavoritesController extends GetxController {
 
   // random
   void randomMovie() {
-    int randomNum = Random().nextInt(_lst.length);
-    detaleNav(movie: _lst[randomNum]);
+    if (_lst.isNotEmpty) {
+      int randomNum = Random().nextInt(_lst.length);
+      detaleNav(movie: _lst[randomNum]);
+    }
   }
 
   // delete from favorites

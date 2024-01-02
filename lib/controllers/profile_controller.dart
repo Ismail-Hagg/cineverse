@@ -2,6 +2,8 @@ import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
 import 'package:cineverse/models/movie_detales_model.dart';
 import 'package:cineverse/models/user_model.dart';
+import 'package:cineverse/pages/chat/chat_page_controller.dart';
+import 'package:cineverse/pages/settings_page/settings_view_controller.dart';
 import 'package:cineverse/services/firebase_service.dart';
 import 'package:cineverse/utils/enums.dart';
 import 'package:get/get.dart';
@@ -64,6 +66,13 @@ class ProfilePageController extends GetxController {
   // back
   void goBack() {
     Get.back();
+  }
+
+  // go to settings or chat
+  void settingChat({required bool isMe}) {
+    isMe
+        ? Get.to(() => const SettingsViewController())
+        : Get.to(() => const ChatPageViewController(), arguments: _model);
   }
 
   // get comments

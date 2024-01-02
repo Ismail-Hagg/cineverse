@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/profile_controller.dart';
@@ -5,11 +7,14 @@ import 'package:cineverse/local_storage/user_data.dart';
 import 'package:cineverse/models/comment_model.dart';
 import 'package:cineverse/models/image_model.dart';
 import 'package:cineverse/models/movie_detales_model.dart';
+import 'package:cineverse/models/notification_action_model.dart';
 import 'package:cineverse/models/trailer_model.dart';
 import 'package:cineverse/models/user_model.dart';
 import 'package:cineverse/pages/profile_page/profile_controller.dart';
 import 'package:cineverse/services/cast_service.dart';
 import 'package:cineverse/services/collection_service.dart';
+import 'package:cineverse/services/episode_service.dart';
+import 'package:cineverse/services/firebase_messaging_service.dart';
 import 'package:cineverse/services/firebase_service.dart';
 import 'package:cineverse/services/image_service.dart';
 import 'package:cineverse/services/movie_detale_service.dart';
@@ -252,8 +257,47 @@ class MovieDetaleController extends GetxController
                   map: _commentList[index].toMap(),
                   reply: false)
               .then(
-            (value) {
+            (value) async {
               // notify comment owner
+              if (_commentList[index].userId != _userModel.userId.toString()) {
+                await FirebaseServices()
+                    .getCurrentUser(userId: _commentList[index].userId)
+                    .then((value) async {
+                  UserModel user =
+                      UserModel.fromMap(value.data() as Map<String, dynamic>);
+
+                  String comment = _commentList[index].comment;
+
+                  String commentBody =
+                      user.language.toString().substring(0, 2) == 'en'
+                          ? 'Replied to Your Comment - $comment'
+                          : ' قام بالرد على تعليقك - $comment';
+
+                  String token = _commentList[index].token;
+
+                  NotificationAction action = NotificationAction(
+                      userName: _userModel.userName.toString(),
+                      userImage: _userModel.onlinePicPath.toString(),
+                      notificationBody: commentBody,
+                      posterPath: _detales.posterPath.toString(),
+                      title: _detales.title.toString(),
+                      isShow: _detales.isShow as bool,
+                      movieOverView: _detales.overview.toString(),
+                      type: NotificationType.comment,
+                      userId: _userModel.userId.toString(),
+                      movieId: _detales.id.toString());
+                  sendNotification(
+                      action: jsonEncode(action.toMap()),
+                      token: token,
+                      body: commentBody,
+                      image: _userModel.onlinePicPath.toString(),
+                      title: _userModel.userName.toString());
+                  await FirebaseServices().uploadNotification(
+                      userId: _commentList[index].userId,
+                      collection: FirebaseUserPaths.notifications.name,
+                      action: action);
+                });
+              }
             },
           );
         },
@@ -294,7 +338,7 @@ class MovieDetaleController extends GetxController
       }
     }
     update();
-    afterLike(index: index, reply: reply, repIndex: repIndex);
+    afterLike(index: index, reply: reply, repIndex: repIndex, like: like);
   }
 
   // add or remove a like
@@ -343,7 +387,10 @@ class MovieDetaleController extends GetxController
 
   // after like
   void afterLike(
-      {required int index, required bool reply, required int repIndex}) async {
+      {required int index,
+      required bool reply,
+      required int repIndex,
+      required bool like}) async {
     await DataPref().setUser(_userModel).then(
       (value) async {
         if (value) {
@@ -361,11 +408,76 @@ class MovieDetaleController extends GetxController
                       map: reply
                           ? _commentList[index].subComments![repIndex].toMap()
                           : _commentList[index].toMap(),
-                      repId:
-                          _commentList[index].subComments![repIndex].commentId,
+                      repId: reply
+                          ? _commentList[index].subComments![repIndex].commentId
+                          : '',
                       reply: reply)
                   .then(
                 (value) async {
+                  String id = reply
+                      ? _commentList[index].subComments![repIndex].commentId
+                      : _commentList[index].commentId;
+                  if ((like && _userModel.commentLike!.contains(id)) ||
+                      (like == false &&
+                          _userModel.commentDislike!.contains(id))) {
+                    String userIdGetInfo = reply
+                        ? _commentList[index].subComments![repIndex].userId
+                        : _commentList[index].userId;
+
+                    String token = reply
+                        ? _commentList[index].subComments![repIndex].token
+                        : _commentList[index].token;
+
+                    String comment = reply
+                        ? _commentList[index].subComments![repIndex].comment
+                        : _commentList[index].comment;
+                    if (userIdGetInfo != _userModel.userId.toString()) {
+                      await FirebaseServices()
+                          .getCurrentUser(userId: userIdGetInfo)
+                          .then((value) async {
+                        UserModel user = UserModel.fromMap(
+                            value.data() as Map<String, dynamic>);
+
+                        String commentBody =
+                            user.language.toString().substring(0, 2) == 'en'
+                                ? like
+                                    ? reply
+                                        ? 'Liked Your Reply - $comment'
+                                        : 'Liked Your Comment - $comment'
+                                    : reply
+                                        ? 'Disliked Your Reply - $comment'
+                                        : 'Disliked Your Comment - $comment'
+                                : like
+                                    ? reply
+                                        ? 'اعجب بردك - $comment'
+                                        : 'اعجب بتعليقك - $comment'
+                                    : reply
+                                        ? 'لم يعجبه ردك - $comment'
+                                        : 'لم يعجبه تعليقك - $comment';
+                        NotificationAction action = NotificationAction(
+                            userName: _userModel.userName.toString(),
+                            userImage: _userModel.onlinePicPath.toString(),
+                            notificationBody: commentBody,
+                            posterPath: _detales.posterPath.toString(),
+                            title: _detales.title.toString(),
+                            isShow: _detales.isShow as bool,
+                            movieOverView: _detales.overview.toString(),
+                            type: NotificationType.comment,
+                            userId: _userModel.userId.toString(),
+                            movieId: _detales.id.toString());
+                        sendNotification(
+                            action: jsonEncode(action.toMap()),
+                            token: token,
+                            body: commentBody,
+                            image: _userModel.onlinePicPath.toString(),
+                            title: _userModel.userName.toString());
+                        await FirebaseServices().uploadNotification(
+                            userId: userIdGetInfo,
+                            collection: FirebaseUserPaths.notifications.name,
+                            action: action);
+                      });
+                    }
+                  }
                   if (reply == false) {
                     await FirebaseServices().watchFav(
                         userId: _commentList[index].userId,
@@ -380,7 +492,7 @@ class MovieDetaleController extends GetxController
             },
           );
         } else {
-          // data wasn't saves locally
+          // data wasn't saved locally
         }
       },
     );
@@ -512,7 +624,7 @@ class MovieDetaleController extends GetxController
   void navToProfile(
       {required int index, required bool reply, required int repIndex}) {
     Get.create(() => ProfilePageController());
-    Get.to((const ProfileViewController()),
+    Get.to(() => (const ProfileViewController()),
         arguments: UserModel(
             isError: false,
             avatarType: AvatarType.online,
@@ -908,27 +1020,27 @@ class MovieDetaleController extends GetxController
   }
 
   // order the comments
-  void commentOrder({required CommentOrder order}) {
+  void commentOrder({required CommentOrder order, required bool isIos}) {
     if (_commentLoading == 0) {
       switch (order) {
         case CommentOrder.timeRecent:
-          Get.back();
+          iosBack(isIos: isIos);
           _commentList.sort((a, b) => b.time.compareTo(a.time));
           break;
         case CommentOrder.timeOld:
-          Get.back();
+          iosBack(isIos: isIos);
           _commentList.sort((a, b) => a.time.compareTo(b.time));
           break;
         case CommentOrder.mostLikes:
-          Get.back();
+          iosBack(isIos: isIos);
           _commentList.sort((a, b) => b.likes.compareTo(a.likes));
           break;
         case CommentOrder.leastLikes:
-          Get.back();
+          iosBack(isIos: isIos);
           _commentList.sort((a, b) => a.likes.compareTo(b.likes));
           break;
         case CommentOrder.replies:
-          Get.back();
+          iosBack(isIos: isIos);
           _commentList.sort((a, b) => (b.subComments != null
                   ? b.subComments!.length
                   : 0)
@@ -937,6 +1049,108 @@ class MovieDetaleController extends GetxController
         default:
       }
       update();
+    }
+  }
+
+  // back if ios
+  void iosBack({required bool isIos}) {
+    if (isIos) {
+      Get.back();
+    }
+  }
+
+  // alert comment owner
+  void sendNotification(
+      {required String token,
+      required String title,
+      required String body,
+      required String action,
+      String? image}) async {
+    await MessagingService().sendMessage(
+        title: title, body: body, token: token, image: image, action: action);
+  }
+
+  // add to keeping
+  void addKeeping({required BuildContext context, required bool isIos}) async {
+    if (_loading == 0 && _detales.isError == false) {
+      if (isIos) {
+        Get.back();
+      }
+
+      if (_userModel.watching!.contains(_detales.id.toString())) {
+        await showOkAlertDialog(
+          context: context,
+          title: 'readykeep'.tr,
+        );
+      } else {
+        await EpisodeKeepingService()
+            .getData(
+                link:
+                    'https://api.themoviedb.org/3/tv/${_detales.id}?api_key=$apiKey&language=',
+                lan: _userModel.language.toString(),
+                isFire: false)
+            .then((epModel) async {
+          if (epModel.isError == false) {
+            _userModel.watching!.add(_detales.id.toString());
+            await DataPref().setUser(_userModel).then((value) async {
+              epModel.token = _userModel.messagingToken.toString();
+              await FirebaseServices()
+                  .addEpisodeMe(
+                      uid: _userModel.userId.toString(), model: epModel)
+                  .then((_) async {
+                await showOkAlertDialog(
+                  context: context,
+                  title: 'keepadd'.tr,
+                );
+                // check if the show data already exists
+
+                await FirebaseServices()
+                    .getShowData(showId: _detales.id.toString())
+                    .then((value) async {
+                  DocumentReference myRef = FirebaseServices()
+                      .ref
+                      .doc(_userModel.userId.toString())
+                      .collection(FirebaseMainPaths.keeping.name)
+                      .doc(_detales.id.toString());
+                  if (value.exists == false ||
+                      (value.data() as Map<String, dynamic>)['id'] == null ||
+                      value.data() == null ||
+                      value.data() == {}) {
+                    // no data on this show so add
+                    epModel.refList = [myRef];
+                    await FirebaseServices().addShowData(model: epModel);
+                  } else {
+                    // there's data so add my refrence and update
+                    List<dynamic> lst = value.get('refList');
+                    lst.add(myRef);
+                    await FirebaseServices().updateShowData(
+                        showId: _detales.id.toString(), map: {'refList': lst});
+                  }
+                });
+              });
+              // check if its in the watchlist and delete it
+              await FirebaseServices()
+                  .userDocument(
+                      uid: _userModel.userId.toString(),
+                      collection: FirebaseUserPaths.watchlist.name,
+                      docId: _detales.id.toString())
+                  .then((val) async {
+                if (val.exists) {
+                  await FirebaseServices().delDoc(
+                      uid: _userModel.userId.toString(),
+                      collection: FirebaseUserPaths.watchlist.name,
+                      docId: _detales.id.toString());
+                }
+              });
+            });
+          } else {
+            await showOkAlertDialog(
+                context: context,
+                title: 'error'.tr,
+                message: epModel.errorMessage.toString());
+          }
+        });
+      }
     }
   }
 }

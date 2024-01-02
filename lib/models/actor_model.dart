@@ -60,11 +60,10 @@ class ActorDetale {
     List<ResultsDetail>? actedShows = [];
     List<ResultsDetail>? directed = [];
     List<ResultsDetail>? produced = [];
-
     if (map['cast'] != null || map['cast'] != []) {
       map['cast'].forEach(
         (item) {
-          if (!item['genre_ids'].contains(10767)) {
+          if (item['genre_ids'] != null && !item['genre_ids'].contains(10767)) {
             item['media_type'] == 'movie'
                 ? actedMovies.add(ResultsDetail.fromMap(item))
                 : actedShows.add(ResultsDetail.fromMap(item));
@@ -76,7 +75,7 @@ class ActorDetale {
     if (map['crew'] != null || map['crew'] != []) {
       map['crew'].forEach(
         (item) {
-          if (!item['genre_ids'].contains(10767)) {
+          if (item['genre_ids'] != null && !item['genre_ids'].contains(10767)) {
             item['job'] == 'Director'
                 ? directed.add(ResultsDetail.fromMap(item))
                 : item['job'] == 'Producer'

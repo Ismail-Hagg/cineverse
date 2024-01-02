@@ -300,39 +300,18 @@ class WatchlistPhone extends StatelessWidget {
                                               padding:
                                                   const EdgeInsets.all(8.0),
                                               child: CupertinoListTile(
-                                                trailing: controller.isIos
-                                                    ? CupertinoButton(
-                                                        onPressed: () =>
-                                                            controller
-                                                                .watchDelete(
-                                                                    index:
-                                                                        index),
-                                                        child: FaIcon(
-                                                          FontAwesomeIcons
-                                                              .trashCan,
-                                                          size: width * 0.045,
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .primary,
-                                                        ),
-                                                      )
-                                                    : IconButton(
-                                                        onPressed: () =>
-                                                            controller
-                                                                .watchDelete(
-                                                                    index:
-                                                                        index),
-                                                        icon: FaIcon(
-                                                          FontAwesomeIcons
-                                                              .trashCan,
-                                                          size: width * 0.045,
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .primary,
-                                                        ),
-                                                      ),
+                                                trailing: CupertinoButton(
+                                                  onPressed: () =>
+                                                      controller.watchDelete(
+                                                          index: index),
+                                                  child: FaIcon(
+                                                    FontAwesomeIcons.trashCan,
+                                                    size: width * 0.045,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .primary,
+                                                  ),
+                                                ),
                                                 backgroundColorActivated: Colors
                                                     .grey
                                                     .withOpacity(0.3),
@@ -418,18 +397,31 @@ class WatchlistPhone extends StatelessWidget {
                                                                 controller
                                                                     .afterGenre
                                                                     .isNotEmpty
-                                                            ? controller
-                                                                .afterGenre[
-                                                                    index]
-                                                                .posterPath
-                                                                .toString()
+                                                            ? imagebase +
+                                                                controller
+                                                                    .afterGenre[
+                                                                        index]
+                                                                    .posterPath
+                                                                    .toString()
                                                             : imagebase +
                                                                 controller
                                                                     .lst[index]
                                                                     .posterPath
                                                                     .toString(),
-                                                    width: width * 0.15,
-                                                    height: width * 0.15),
+                                                    width: width * 0.2,
+                                                    height: width * 0.2),
+                                                trailing: IconButton(
+                                                  onPressed: () =>
+                                                      controller.watchDelete(
+                                                          index: index),
+                                                  icon: FaIcon(
+                                                    FontAwesomeIcons.trashCan,
+                                                    size: width * 0.045,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .primary,
+                                                  ),
+                                                ),
                                                 title: CustomText(
                                                   maxline: 2,
                                                   text: controller.search ==

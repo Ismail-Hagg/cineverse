@@ -44,16 +44,22 @@
       "request": "launch",
       "type": "dart",
       "deviceId": "RZCRB05EWAZ"
+    },
+    {
+      "name": "iosphone",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "D8ED3B08-A779-4DFC-A977-8E610AE72582"
     }
   ],
   "compounds": [
     {
       "name": "All",
-      "configurations": ["Android", "Iphone", "Mac"]
+      "configurations": ["Android", "Iphone", "Mac", "iosphone"]
     },
     {
       "name": "Mobile",
-      "configurations": ["Android", "Iphone", "real"]
+      "configurations": ["Android", "Iphone", "real", "iosphone"]
     }
   ]
 }

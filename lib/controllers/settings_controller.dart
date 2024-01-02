@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
@@ -8,6 +6,7 @@ import 'package:cineverse/pages/view_controller.dart';
 import 'package:cineverse/services/firebase_service.dart';
 import 'package:cineverse/utils/enums.dart';
 import 'package:cineverse/utils/functions.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -125,5 +124,15 @@ class SettingsController extends GetxController {
           }
         ],
         context: context);
+  }
+
+  // change the profile pic
+  void changeProfilePic() async {
+    await FilePicker.platform.pickFiles(
+        allowMultiple: false,
+        type: FileType.custom,
+        allowedExtensions: ['png', 'jpg', 'jpeg']).then((value) {
+      if (value != null) {}
+    });
   }
 }

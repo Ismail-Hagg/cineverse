@@ -254,11 +254,8 @@ class DetalePagePhone extends StatelessWidget {
                                                           .toString(),
                                                       context: context)
                                                 },
-                                            () => {
-                                                  !isIos ? Get.back() : null
-                                                  // controller.addKeeping(
-                                                  //     context: context)
-                                                }
+                                            () => controller.addKeeping(
+                                                isIos: isIos, context: context)
                                           ],
                                           child: Icon(Icons.add,
                                               color: Theme.of(context)
@@ -388,16 +385,13 @@ class DetalePagePhone extends StatelessWidget {
                                   flow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 3),
-                                FittedBox(
-                                  child: CustomText(
-                                    text: controller.detales.releaseDate
-                                        .toString(),
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    size: width * 0.04,
-                                    weight: FontWeight.bold,
-                                    flow: TextOverflow.ellipsis,
-                                  ),
+                                CustomText(
+                                  text:
+                                      controller.detales.releaseDate.toString(),
+                                  color: Theme.of(context).colorScheme.primary,
+                                  size: width * 0.04,
+                                  weight: FontWeight.bold,
+                                  flow: TextOverflow.ellipsis,
                                 )
                               ],
                             ),
@@ -413,21 +407,18 @@ class DetalePagePhone extends StatelessWidget {
                                   flow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 3),
-                                FittedBox(
-                                  child: CustomText(
-                                    align: TextAlign.center,
-                                    text: controller.detales.originCountry
-                                                .toString() ==
-                                            ''
-                                        ? 'country'.tr
-                                        : controller.detales.originCountry
-                                            .toString(),
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    size: width * 0.04,
-                                    weight: FontWeight.bold,
-                                    flow: TextOverflow.ellipsis,
-                                  ),
+                                CustomText(
+                                  align: TextAlign.center,
+                                  text: controller.detales.originCountry
+                                              .toString() ==
+                                          ''
+                                      ? 'country'.tr
+                                      : controller.detales.originCountry
+                                          .toString(),
+                                  color: Theme.of(context).colorScheme.primary,
+                                  size: width * 0.04,
+                                  weight: FontWeight.bold,
+                                  flow: TextOverflow.ellipsis,
                                 )
                               ],
                             ),
@@ -450,17 +441,14 @@ class DetalePagePhone extends StatelessWidget {
                                   flow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 3),
-                                FittedBox(
-                                  child: CustomText(
-                                    text: controller.detales.isShow == false
-                                        ? getTimeString(
-                                            controller.detales.runtime as int)
-                                        : controller.detales.runtime.toString(),
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    size: width * 0.04,
-                                    weight: FontWeight.bold,
-                                  ),
+                                CustomText(
+                                  text: controller.detales.isShow == false
+                                      ? getTimeString(
+                                          controller.detales.runtime as int)
+                                      : controller.detales.runtime.toString(),
+                                  color: Theme.of(context).colorScheme.primary,
+                                  size: width * 0.04,
+                                  weight: FontWeight.bold,
                                 )
                               ],
                             ),
@@ -680,6 +668,7 @@ class DetalePagePhone extends StatelessWidget {
                                                   children: [
                                                     CustomText(
                                                       maxline: 1,
+                                                      align: TextAlign.center,
                                                       flow:
                                                           TextOverflow.ellipsis,
                                                       size: width * 0.029,
@@ -694,8 +683,12 @@ class DetalePagePhone extends StatelessWidget {
                                                           .toString(),
                                                     ),
                                                     CustomText(
+                                                      flow:
+                                                          TextOverflow.ellipsis,
+                                                      align: TextAlign.center,
                                                       size: width * 0.025,
-                                                      isFit: true,
+                                                      isFit: false,
+                                                      maxline: 1,
                                                       text: controller
                                                                   .detales
                                                                   .cast!
@@ -1233,14 +1226,19 @@ class DetalePagePhone extends StatelessWidget {
                                       ],
                                       funcs: [
                                         () => controller.commentOrder(
+                                            isIos: isIos,
                                             order: CommentOrder.timeRecent),
                                         () => controller.commentOrder(
+                                            isIos: isIos,
                                             order: CommentOrder.timeOld),
                                         () => controller.commentOrder(
+                                            isIos: isIos,
                                             order: CommentOrder.mostLikes),
                                         () => controller.commentOrder(
+                                            isIos: isIos,
                                             order: CommentOrder.leastLikes),
                                         () => controller.commentOrder(
+                                            isIos: isIos,
                                             order: CommentOrder.replies)
                                       ],
                                       child: FaIcon(

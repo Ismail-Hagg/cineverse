@@ -360,6 +360,8 @@ class AuthController extends GetxController {
                 avatarType: AvatarType.none,
                 movieWatchList: [],
                 showWatchList: [],
+                following: [],
+                follwers: [],
                 favs: [],
                 watching: [],
                 theme: ChosenTheme.system,
@@ -508,6 +510,8 @@ class AuthController extends GetxController {
                           avatarType: AvatarType.online,
                           movieWatchList: [],
                           showWatchList: [],
+                          following: [],
+                          follwers: [],
                           favs: [],
                           watching: [],
                           theme: ChosenTheme.system,
@@ -656,6 +660,8 @@ class AuthController extends GetxController {
         showWatchList: [],
         favs: [],
         watching: [],
+        following: [],
+        follwers: [],
         theme: ChosenTheme.system,
         commentDislike: [],
         commentLike: []);
@@ -817,26 +823,28 @@ class AuthController extends GetxController {
                 movieWatchList: [],
                 showWatchList: [],
                 favs: [],
+                following: [],
+                follwers: [],
                 watching: [],
                 theme: ChosenTheme.system,
                 commentDislike: [],
                 commentLike: []);
             await saveUserDataLocally(model: _userModel).then((saved) async {
-              if (saved) {
-                _loading = false;
-                update();
-                Get.offAll(() => const ViewController());
-                await uploadUser(model: _userModel);
-              } else {
-                _loading = false;
-                update();
-                // ignore: use_build_context_synchronously
-                await showOkAlertDialog(
-                  context: context,
-                  title: 'error'.tr,
-                  message: 'firelogin'.tr,
-                );
-              }
+              _loading = false;
+              update();
+              Get.offAll(() => const ViewController());
+              await uploadUser(model: _userModel);
+
+              // else {
+              //   _loading = false;
+              //   update();
+              //   // ignore: use_build_context_synchronously
+              //   await showOkAlertDialog(
+              //     context: context,
+              //     title: 'error'.tr,
+              //     message: 'firelogin'.tr,
+              //   );
+              // }
             }).onError((error, stackTrace) async {
               _loading = false;
               update();
@@ -844,8 +852,9 @@ class AuthController extends GetxController {
               await showOkAlertDialog(
                 context: context,
                 title: 'error'.tr,
-                message: 'firelogin'.tr,
+                message: error.toString(),
               );
+              signOut();
             });
           },
         );

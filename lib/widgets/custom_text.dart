@@ -11,6 +11,7 @@ class CustomText extends StatelessWidget {
   final TextOverflow? flow;
   final TextAlign? align;
   final bool? isFit;
+  final AlignmentGeometry? aligning;
   const CustomText(
       {super.key,
       required this.text,
@@ -21,12 +22,14 @@ class CustomText extends StatelessWidget {
       this.spacing,
       this.flow,
       this.align,
-      this.isFit});
+      this.isFit,
+      this.aligning});
 
   @override
   Widget build(BuildContext context) {
     return isFit == true
         ? FittedBox(
+            alignment: aligning ?? Alignment.center,
             child: Text(text,
                 maxLines: maxline,
                 textAlign: align,

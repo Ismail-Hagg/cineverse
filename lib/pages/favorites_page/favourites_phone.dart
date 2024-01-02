@@ -399,6 +399,39 @@ class FavouritesPhone extends StatelessWidget {
                                               padding:
                                                   const EdgeInsets.all(8.0),
                                               child: ListTile(
+                                                trailing: controller.isIos
+                                                    ? CupertinoButton(
+                                                        onPressed: () =>
+                                                            controller
+                                                                .favDelete(
+                                                                    index:
+                                                                        index),
+                                                        child: FaIcon(
+                                                          FontAwesomeIcons
+                                                              .trashCan,
+                                                          size: width * 0.045,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .primary,
+                                                        ),
+                                                      )
+                                                    : IconButton(
+                                                        onPressed: () =>
+                                                            controller
+                                                                .favDelete(
+                                                                    index:
+                                                                        index),
+                                                        icon: FaIcon(
+                                                          FontAwesomeIcons
+                                                              .trashCan,
+                                                          size: width * 0.045,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .primary,
+                                                        ),
+                                                      ),
                                                 minLeadingWidth: width * 0.15,
                                                 onTap: () => controller
                                                     .navToDetale(index: index),
@@ -418,18 +451,19 @@ class FavouritesPhone extends StatelessWidget {
                                                                 controller
                                                                     .afterGenre
                                                                     .isNotEmpty
-                                                            ? controller
-                                                                .afterGenre[
-                                                                    index]
-                                                                .posterPath
-                                                                .toString()
+                                                            ? imagebase +
+                                                                controller
+                                                                    .afterGenre[
+                                                                        index]
+                                                                    .posterPath
+                                                                    .toString()
                                                             : imagebase +
                                                                 controller
                                                                     .lst[index]
                                                                     .posterPath
                                                                     .toString(),
-                                                    width: width * 0.15,
-                                                    height: width * 0.15),
+                                                    width: width * 0.2,
+                                                    height: width * 0.2),
                                                 title: CustomText(
                                                   maxline: 2,
                                                   text: controller.search ==

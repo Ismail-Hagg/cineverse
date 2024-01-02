@@ -60,14 +60,12 @@ class ProfilePhone extends StatelessWidget {
                               ? CupertinoIcons.settings
                               : CupertinoIcons.chat_bubble_text_fill,
                           color: Theme.of(context).colorScheme.primary),
-                      onPressed: () =>
-                          Get.to(() => const SettingsViewController()),
+                      onPressed: () => controller.settingChat(isMe: isMe),
                     )
                   : IconButton(
                       splashRadius: 15,
                       color: Theme.of(context).colorScheme.primary,
-                      onPressed: () =>
-                          Get.to(() => const SettingsViewController()),
+                      onPressed: () => controller.settingChat(isMe: isMe),
                       icon: Icon(isMe ? Icons.settings : Icons.message),
                     )
             ],
@@ -178,8 +176,11 @@ class ProfilePhone extends StatelessWidget {
                                 height: (width * 0.12) * 0.15,
                               ),
                               CustomText(
-                                text: controller.model.follwers!.length
-                                    .toString(),
+                                text: controller.model.follwers!.length == 1 &&
+                                        controller.model.follwers![0] == ''
+                                    ? '0'
+                                    : controller.model.follwers!.length
+                                        .toString(),
                                 size: 12,
                               )
                             ],
@@ -201,8 +202,11 @@ class ProfilePhone extends StatelessWidget {
                                 height: (width * 0.12) * 0.15,
                               ),
                               CustomText(
-                                text: controller.model.following!.length
-                                    .toString(),
+                                text: controller.model.following!.length == 1 &&
+                                        controller.model.following![0] == ''
+                                    ? '0'
+                                    : controller.model.following!.length
+                                        .toString(),
                                 size: 12,
                               )
                             ],

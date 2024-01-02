@@ -3,6 +3,7 @@ import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
 import 'package:cineverse/models/result_model.dart';
 import 'package:cineverse/models/user_model.dart';
+import 'package:cineverse/pages/notifications_page/notification_controller.dart';
 import 'package:cineverse/pages/profile_page/profile_controller.dart';
 import 'package:cineverse/utils/constants.dart';
 import 'package:cineverse/utils/enums.dart';
@@ -13,6 +14,7 @@ import 'package:cineverse/widgets/image_network.dart';
 import 'package:cineverse/widgets/login_input.dart';
 import 'package:cineverse/widgets/movie_widget.dart';
 import 'package:cineverse/widgets/notification_widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -75,25 +77,40 @@ class HomePhone extends StatelessWidget {
                 title: CustomText(text: 'favourite'.tr),
               ),
               SalomonBottomBarItem(
-                icon: NotificationWidget(
-                    top: 0,
-                    right: 0,
-                    mainWidget: const FaIcon(FontAwesomeIcons.tv),
-                    notificationColor: Colors.red,
-                    height: width * 0.025,
-                    width: width * 0.025,
-                    isNotify: true),
+                icon: StreamBuilder<QuerySnapshot>(
+                    stream: controller.keepingStram,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        controller.keepingNotify(list: snapshot.data!.docs);
+                      }
+                      return NotificationWidget(
+                          top: 0,
+                          right: 0,
+                          mainWidget: const FaIcon(FontAwesomeIcons.tv),
+                          notificationColor: Colors.red,
+                          height: width * 0.025,
+                          width: width * 0.025,
+                          isNotify: controller.keepingNotification);
+                    }),
                 title: CustomText(text: 'keeping'.tr),
               ),
               SalomonBottomBarItem(
-                icon: NotificationWidget(
-                    top: 0,
-                    right: 0,
-                    mainWidget: const Icon(Icons.chat),
-                    notificationColor: Colors.red,
-                    height: width * 0.025,
-                    width: width * 0.025,
-                    isNotify: true),
+                icon: StreamBuilder<QuerySnapshot>(
+                    stream: controller.straem,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        controller.chatNotification(list: snapshot.data!.docs);
+                      }
+
+                      return NotificationWidget(
+                          top: 0,
+                          right: 0,
+                          mainWidget: const Icon(Icons.chat),
+                          notificationColor: Colors.red,
+                          height: width * 0.025,
+                          width: width * 0.025,
+                          isNotify: controller.chatNotificationOn);
+                    }),
                 title: CustomText(text: 'chats'.tr),
               ),
               SalomonBottomBarItem(
@@ -170,28 +187,25 @@ class HomeTap extends StatelessWidget {
                             color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
-                        GestureDetector(
-                          onTap: () => Get.to(
-                              () => const ProfileViewController(),
-                              arguments: UserModel(
-                                  onlinePicPath:
-                                      'https://firebasestorage.googleapis.com/v0/b/cineverse-70e0b.appspot.com/o/uXUokz9wOqOwSn8Z7yCssEYzq5q1%2Fimages%2Fprofile?alt=media&token=5f8fea19-608c-4cdd-94a9-94fe49cee904',
-                                  userName: 'sam smith',
-                                  follwers: [],
-                                  following: ['ting'],
-                                  userId: 'uXUokz9wOqOwSn8Z7yCssEYzq5q1')),
-                          child: NotificationWidget(
-                            isNotify: true,
-                            mainWidget: Icon(
-                              Icons.notifications,
-                              size: width * 0.065,
-                              color: Theme.of(context).colorScheme.primary,
+                        GetBuilder<HomeController>(
+                          init: Get.find<HomeController>(),
+                          builder: (notificatinController) => GestureDetector(
+                            onTap: () => Get.to(
+                              () => const NotificationsViewController(),
                             ),
-                            notificationColor: Colors.red,
-                            top: 2,
-                            right: 2,
-                            height: width * 0.02,
-                            width: width * 0.02,
+                            child: NotificationWidget(
+                              isNotify: notificatinController.notificationOn,
+                              mainWidget: Icon(
+                                Icons.notifications,
+                                size: width * 0.065,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              notificationColor: Colors.red,
+                              top: 2,
+                              right: 2,
+                              height: width * 0.02,
+                              width: width * 0.02,
+                            ),
                           ),
                         ),
                       ],

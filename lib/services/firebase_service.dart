@@ -1,7 +1,10 @@
 import 'dart:io';
 
+import 'package:cineverse/models/chat_message_model.dart';
 import 'package:cineverse/models/comment_model.dart';
+import 'package:cineverse/models/episode_omdel.dart';
 import 'package:cineverse/models/movie_detales_model.dart';
+import 'package:cineverse/models/notification_action_model.dart';
 import 'package:cineverse/utils/enums.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -12,8 +15,12 @@ class FirebaseServices {
   final CollectionReference _ref = FirebaseFirestore.instance.collection(
       '${FirebaseMainPaths.users.name[0].toUpperCase()}${FirebaseMainPaths.users.name.substring(1)}');
 
+  CollectionReference get ref => _ref;
+
   final CollectionReference _refOther =
       FirebaseFirestore.instance.collection(FirebaseMainPaths.other.name);
+
+  CollectionReference get refOther => _refOther;
 
   // get the current user's data
   Future<DocumentSnapshot> getCurrentUser({required String userId}) async {
@@ -28,7 +35,7 @@ class FirebaseServices {
   // update user data
   Future<void> userUpdate(
       {required String userId, required Map<String, dynamic> map}) async {
-    _ref.doc(userId).update(map);
+    await _ref.doc(userId).update(map);
   }
 
   // uploading image to firebase storage
@@ -71,6 +78,50 @@ class FirebaseServices {
                 .collection(path.name)
                 .doc(comment != null ? comment.commentId : model.id.toString())
                 .delete();
+  }
+
+  // upload and or update notification
+  Future<void> uploadNotification(
+      {required String userId,
+      required String collection,
+      required NotificationAction action}) async {
+    await _ref.doc(userId).collection(collection).doc().set(action.toMap());
+  }
+
+  // update notification
+  Future<void> updateNotification(
+      {required String userId,
+      required String collection,
+      required String id,
+      required NotificationAction action}) async {
+    try {
+      await _ref
+          .doc(userId)
+          .collection(collection)
+          .doc(id)
+          .update({'open': true});
+    } catch (e) {
+      print('===== $e ');
+    }
+  }
+
+  // stream a specific chats
+  Stream<QuerySnapshot> getUserChat(
+      {required String userId, required String otherId}) {
+    return _ref
+        .doc(userId)
+        .collection(FirebaseUserPaths.chat.name)
+        .where('userId', isEqualTo: otherId)
+        .snapshots();
+  }
+
+  // stream all chats
+  Stream<QuerySnapshot> getAllChats(
+      {required String userId, String? otherStream}) {
+    return _ref
+        .doc(userId)
+        .collection(otherStream ?? FirebaseUserPaths.chat.name)
+        .snapshots();
   }
 
   // read , upoload , update comments
@@ -148,6 +199,15 @@ class FirebaseServices {
     }
   }
 
+  // send chat message to firebase
+  Future<void> sendMessage({required ChatMessageModel model}) async {
+    await _ref
+        .doc(model.userId)
+        .collection('chat')
+        .doc(model.otherId)
+        .set(model.toMap());
+  }
+
   // get favorites or watchlist or watching now
   Future<QuerySnapshot> userCollections(
       {required String uid,
@@ -163,5 +223,62 @@ class FirebaseServices {
                 descending: ascend == false ? true : false)
             .get()
         : _ref.doc(uid).collection(collection).get();
+  }
+
+  // get document from a collection
+  Future<DocumentSnapshot> userDocument(
+      {required String uid,
+      required String collection,
+      required String docId}) async {
+    return await _ref.doc(uid).collection(collection).doc(docId).get();
+  }
+
+  // add to episode keeping
+  Future<void> addEpisodeMe(
+      {required String uid, required EpisodeModeL model, bool? update}) async {
+    update == null
+        ? await _ref
+            .doc(uid)
+            .collection(FirebaseUserPaths.keeping.name)
+            .doc(model.id.toString())
+            .set(model.toMap())
+        : await _ref
+            .doc(uid)
+            .collection(FirebaseUserPaths.keeping.name)
+            .doc(model.id.toString())
+            .update(model.toMap());
+  }
+
+  // get the show data from the 'other' collection
+  Future<DocumentSnapshot> getShowData({required String showId}) async {
+    return await _refOther.doc(showId).get();
+  }
+
+  // add show data to the 'other' collection
+  Future<void> addShowData({required EpisodeModeL model}) async {
+    return await _refOther.doc(model.id.toString()).set(model.toMap());
+  }
+
+  // update show data from the 'other' collection
+  Future<void> updateShowData(
+      {required String showId, required Map<String, dynamic> map}) async {
+    await _refOther.doc(showId).update(map);
+  }
+
+  Future<void> delDoc(
+      {required String uid,
+      required String collection,
+      required String docId}) async {
+    await _ref.doc(uid).collection(collection).doc(docId).delete();
+  }
+
+  // chear isUpdated
+  Future<void> clearIsUpdates(
+      {required String userId, required String chatId}) {
+    return _ref
+        .doc(userId)
+        .collection(FirebaseUserPaths.chat.name)
+        .doc(chatId)
+        .update({'isUpdated': false});
   }
 }

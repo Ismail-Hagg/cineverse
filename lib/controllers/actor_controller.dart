@@ -97,7 +97,6 @@ class ActorController extends GetxController
   void actorData() async {
     _loading = true;
     update();
-
     await ActorService()
         .getHomeInfo(
             link:

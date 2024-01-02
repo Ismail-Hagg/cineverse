@@ -103,6 +103,7 @@ class CommentWidget extends StatelessWidget {
                           ),
                           SizedBox(
                             height: width * 0.12,
+                            width: (width * 0.72) - 30,
                             child: Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 8.0),

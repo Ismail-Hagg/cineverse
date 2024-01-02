@@ -12,6 +12,7 @@ import 'package:cineverse/models/cast_model.dart';
 import 'package:cineverse/models/collection_model.dart';
 import 'package:cineverse/models/move_model.dart';
 import 'package:cineverse/models/movie_detales_model.dart';
+import 'package:cineverse/models/notification_action_model.dart';
 import 'package:cineverse/models/result_details_model.dart';
 import 'package:cineverse/models/result_model.dart';
 import 'package:cineverse/models/season_model.dart';
@@ -26,9 +27,11 @@ import 'package:cineverse/pages/home_page/home_phone.dart';
 import 'package:cineverse/pages/profile_page/profile_controller.dart';
 import 'package:cineverse/pages/search_page/search_controller.dart';
 import 'package:cineverse/pages/watchlist_page/watchlist_controller.dart';
+import 'package:cineverse/services/firebase_messaging_service.dart';
 import 'package:cineverse/services/firebase_service.dart';
 import 'package:cineverse/services/home_page_service.dart';
 import 'package:cineverse/utils/enums.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../utils/constants.dart';
@@ -44,8 +47,26 @@ class HomeController extends GetxController {
   int _loading = 0;
   int get loading => _loading;
 
+  bool _loadingNotification = false;
+  bool get loadingNotification => _loadingNotification;
+
+  bool _notificationOn = false;
+  bool get notificationOn => _notificationOn;
+
+  bool _chatNotificationOn = false;
+  bool get chatNotificationOn => _chatNotificationOn;
+
+  bool _keepingNotification = false;
+  bool get keepingNotification => _keepingNotification;
+
   final List<String> _links = [];
   List<String> get links => _links;
+
+  late Stream<QuerySnapshot> _chatStream;
+  Stream<QuerySnapshot> get straem => _chatStream;
+
+  late Stream<QuerySnapshot> _keepingStram;
+  Stream<QuerySnapshot> get keepingStram => _keepingStram;
 
   final List<Widget> _pages = [
     const HomeTap(),
@@ -87,11 +108,18 @@ class HomeController extends GetxController {
   List<String> get translations => _translation;
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
     _userModel = Get.find<AuthController>().userModel;
 
     apiCall();
+    _chatStream = FirebaseServices().getAllChats(
+      userId: _userModel.userId.toString(),
+    );
+
+    _keepingStram = FirebaseServices().getAllChats(
+        userId: _userModel.userId.toString(),
+        otherStream: FirebaseUserPaths.keeping.name);
   }
 
   // change page index
@@ -101,6 +129,7 @@ class HomeController extends GetxController {
       update();
       switch (index) {
         case 0:
+          getNotifications();
           if (Get.isRegistered<FavoritesController>()) {
             Get.delete<FavoritesController>();
           }
@@ -286,7 +315,83 @@ class HomeController extends GetxController {
     }
     _loading = 0;
     update();
-    imageUplad();
+    getToken();
+    getNotifications();
+  }
+
+  // get notifications from backend
+  void getNotifications() async {
+    _loadingNotification = true;
+    _notificationOn = false;
+    update();
+    await FirebaseServices()
+        .userCollections(
+            uid: _userModel.userId.toString(),
+            collection: FirebaseUserPaths.notifications.name,
+            order: false)
+        .then((value) {
+      if (value.docs.isNotEmpty) {
+        for (var i = 0; i < value.docs.length; i++) {
+          NotificationAction action = NotificationAction.fromMap(
+              value.docs[i].data() as Map<String, dynamic>);
+          if (action.open == false) {
+            _notificationOn = true;
+            update();
+          }
+        }
+      }
+    });
+    _loadingNotification = false;
+    update();
+  }
+
+  // chat notification on or off
+  void chatNotification({required List<QueryDocumentSnapshot> list}) {
+    if (list.isNotEmpty) {
+      _chatNotificationOn = false;
+      for (var i = 0; i < list.length; i++) {
+        if ((list[i].data() as Map<String, dynamic>)['isUpdated'] == true) {
+          _chatNotificationOn = true;
+        }
+      }
+    }
+  }
+
+  // chat notification on or off
+  void keepingNotify({required List<QueryDocumentSnapshot> list}) {
+    if (list.isNotEmpty) {
+      _keepingNotification = false;
+      for (var i = 0; i < list.length; i++) {
+        if ((list[i].data() as Map<String, dynamic>)['isUpdated'] == true) {
+          _keepingNotification = true;
+        }
+      }
+    }
+  }
+
+  // get the messaging token
+  void getToken() async {
+    await MessagingService().initMessaging().then(
+      (token) async {
+        if (token != _userModel.messagingToken.toString() && token != '') {
+          _userModel.messagingToken = token;
+          await Get.find<AuthController>()
+              .saveUserDataLocally(model: _userModel)
+              .then(
+            (value) {
+              Get.find<AuthController>().userUpdate(
+                userId: _userModel.userId.toString(),
+                map: {
+                  'messagingToken': _userModel.messagingToken.toString(),
+                },
+              );
+            },
+          );
+        }
+
+        imageUplad();
+      },
+    );
   }
 
   // navigate to the detale page
