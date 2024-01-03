@@ -1,7 +1,6 @@
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
 import 'package:cineverse/models/result_details_model.dart';
-import 'package:cineverse/pages/settings_page/settings_view_controller.dart';
 import 'package:cineverse/utils/constants.dart';
 import 'package:cineverse/utils/enums.dart';
 import 'package:cineverse/widgets/avatar_widget.dart';
@@ -84,22 +83,25 @@ class ProfilePhone extends StatelessWidget {
                         width: width * 0.3,
                         height: width * 0.3,
                         isBorder: true,
-                        type: AvatarType.online,
+                        type: controller.model.avatarType == AvatarType.local &&
+                                controller.checkPic == true
+                            ? AvatarType.local
+                            : AvatarType.online,
                         boxFit: BoxFit.cover,
                         shadow: true,
-                        link: controller.model.onlinePicPath.toString(),
+                        link: controller.model.avatarType == AvatarType.local &&
+                                controller.checkPic == true
+                            ? controller.model.localPicPath.toString()
+                            : controller.model.onlinePicPath.toString(),
                         borderColor: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                   ),
-                  Hero(
-                    tag: controller.model.userName.toString(),
-                    child: CustomText(
-                      text: controller.model.userName.toString(),
-                      size: width * 0.05,
-                      maxline: 2,
-                      flow: TextOverflow.ellipsis,
-                    ),
+                  CustomText(
+                    text: controller.model.userName.toString(),
+                    size: width * 0.05,
+                    maxline: 2,
+                    flow: TextOverflow.ellipsis,
                   ),
                   if (!isMe) ...[
                     isIos
@@ -282,36 +284,54 @@ class ProfilePhone extends StatelessWidget {
                                           (index) => GestureDetector(
                                             onTap: () => Get.find<HomeController>().navToDetale(
                                                 res: ResultsDetail(
-                                                    posterPath: controller
-                                                        .lst[controller.tab - 1]
-                                                            [index]
-                                                        .posterPath,
-                                                    id: controller
-                                                        .lst[controller.tab - 1]
-                                                            [index]
-                                                        .id,
-                                                    overview: controller
-                                                        .lst[controller.tab - 1]
-                                                            [index]
-                                                        .overview,
-                                                    releaseDate: controller
-                                                        .lst[controller.tab - 1]
-                                                            [index]
-                                                        .releaseDate,
-                                                    title: controller
-                                                        .lst[controller.tab - 1]
-                                                            [index]
-                                                        .title,
-                                                    voteAverage: controller.lst[controller.tab - 1][index].voteAverage,
-                                                    isShow: controller.lst[controller.tab - 1][index].isShow)),
+                                                    posterPath: controller.tab == 3
+                                                        ? controller
+                                                            .lst[controller.tab - 1]
+                                                                [index]
+                                                            .$2
+                                                            .pic
+                                                        : controller
+                                                            .lst[controller.tab - 1]
+                                                                [index]
+                                                            .$1
+                                                            .posterPath,
+                                                    id: controller.tab == 3
+                                                        ? controller
+                                                            .lst[controller.tab - 1]
+                                                                [index]
+                                                            .$2
+                                                            .id
+                                                        : controller
+                                                            .lst[controller.tab - 1]
+                                                                [index]
+                                                            .$1
+                                                            .id,
+                                                    overview: controller.tab == 3
+                                                        ? controller.lst[controller.tab - 1][index].$2.overView
+                                                        : controller.lst[controller.tab - 1][index].$1.overview,
+                                                    releaseDate: controller.tab == 3 ? controller.lst[controller.tab - 1][index].$2.releaseDate.toString().substring(0, 4) : controller.lst[controller.tab - 1][index].$1.releaseDate,
+                                                    title: controller.tab == 3 ? controller.lst[controller.tab - 1][index].$2.name : controller.lst[controller.tab - 1][index].$1.title,
+                                                    voteAverage: controller.tab == 3 ? controller.lst[controller.tab - 1][index].$2.voteAverage : controller.lst[controller.tab - 1][index].$1.voteAverage,
+                                                    isShow: controller.tab == 3 ? true : controller.lst[controller.tab - 1][index].$1.isShow)),
                                             child: ImageNetWork(
                                                 shadow: false,
-                                                link: imagebase +
-                                                    controller
-                                                        .lst[controller.tab - 1]
-                                                            [index]
-                                                        .posterPath
-                                                        .toString(),
+                                                link: controller.tab == 3
+                                                    ? imagebase +
+                                                        controller
+                                                            .lst[
+                                                                controller.tab -
+                                                                    1][index]
+                                                            .$2
+                                                            .pic
+                                                            .toString()
+                                                    : imagebase +
+                                                        controller
+                                                            .lst[
+                                                                controller.tab -
+                                                                    1][index]
+                                                            .$1
+                                                            .posterPath
+                                                            .toString(),
                                                 width: width * 0.32,
                                                 height: width * 0.47),
                                           ),

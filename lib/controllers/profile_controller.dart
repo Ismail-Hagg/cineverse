@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
+import 'package:cineverse/models/episode_omdel.dart';
 import 'package:cineverse/models/movie_detales_model.dart';
 import 'package:cineverse/models/user_model.dart';
 import 'package:cineverse/pages/chat/chat_page_controller.dart';
@@ -18,11 +21,14 @@ class ProfilePageController extends GetxController {
   bool _loading = false;
   bool get loading => _loading;
 
+  bool _checkPic = false;
+  bool get checkPic => _checkPic;
+
   bool _isMe = false;
   bool get isMe => _isMe;
 
-  List<List<MovieDetaleModel>> _lst = [];
-  List<List<MovieDetaleModel>> get lst => _lst;
+  List<List<(MovieDetaleModel, EpisodeModeL)>> _lst = [];
+  List<List<(MovieDetaleModel, EpisodeModeL)>> get lst => _lst;
 
   int _commentCount = 0;
   int get commentCount => _commentCount;
@@ -34,10 +40,35 @@ class ProfilePageController extends GetxController {
     _model = Get.arguments ?? Get.find<HomeController>().userModel;
     _isMe =
         _model.userId == Get.find<AuthController>().userModel.userId.toString();
-    _lst = [<MovieDetaleModel>[], <MovieDetaleModel>[], <MovieDetaleModel>[]];
-
+    _lst = [
+      <(MovieDetaleModel, EpisodeModeL)>[],
+      <(MovieDetaleModel, EpisodeModeL)>[],
+      <(MovieDetaleModel, EpisodeModeL)>[]
+    ];
+    getUserData();
     fireMovie(collection: FirebaseUserPaths.favorites);
     comments();
+    checking(pic: _model.localPicPath.toString());
+  }
+
+  // check if the profile pic is in the phone
+  void checking({required String pic}) async {
+    await File(pic).exists().then((value) {
+      _checkPic = value;
+      update();
+    });
+  }
+
+  // get user data
+  void getUserData() async {
+    if (Get.arguments != null) {
+      await FirebaseServices()
+          .getCurrentUser(userId: _model.userId.toString())
+          .then((value) {
+        _model = UserModel.fromMap(value.data() as Map<String, dynamic>);
+        update();
+      });
+    }
   }
 
   // change tabs
@@ -107,9 +138,17 @@ class ProfilePageController extends GetxController {
           if (value.docs.isNotEmpty) {
             for (var i = 0; i < value.docs.length; i++) {
               try {
-                _lst[_tab - 1].add(MovieDetaleModel.fromMap(
-                    value.docs[i].data() as Map<String, dynamic>,
-                    fire: true));
+                _lst[_tab - 1].add((
+                  _tab == 3
+                      ? MovieDetaleModel()
+                      : MovieDetaleModel.fromMap(
+                          value.docs[i].data() as Map<String, dynamic>,
+                          fire: true),
+                  _tab == 3
+                      ? EpisodeModeL.fromMap(
+                          value.docs[i].data() as Map<String, dynamic>, true)
+                      : EpisodeModeL()
+                ));
                 _loading = false;
                 update();
               } catch (e) {

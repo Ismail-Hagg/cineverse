@@ -7,6 +7,7 @@ import 'package:cineverse/models/movie_detales_model.dart';
 import 'package:cineverse/models/notification_action_model.dart';
 import 'package:cineverse/utils/enums.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 import '../models/user_model.dart';
@@ -206,6 +207,20 @@ class FirebaseServices {
         .collection('chat')
         .doc(model.otherId)
         .set(model.toMap());
+  }
+
+  // change username or profile pic
+  Future<bool> userChanging({required Map<String, dynamic> map}) async {
+    HttpsCallable callable =
+        FirebaseFunctions.instance.httpsCallable('userChanging');
+    try {
+      final response = await callable.call(map);
+
+      return response.data == null ? false : true;
+    } catch (e) {
+      print('==> Error: $e');
+      return false;
+    }
   }
 
   // get favorites or watchlist or watching now

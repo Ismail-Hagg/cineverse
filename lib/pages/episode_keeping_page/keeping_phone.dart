@@ -98,6 +98,7 @@ class KeepingPhone extends StatelessWidget {
                                     },
                                   )),
                               child: EpisodeKeeping(
+                                isUpdated: model.isUpdated as bool,
                                 even: model.myEpisode == model.episode &&
                                     model.mySeason == model.season,
                                 episode: model.myEpisode as int,
@@ -124,21 +125,3 @@ class KeepingPhone extends StatelessWidget {
     );
   }
 }
-
-
-// EpisodeKeeping(
-//                     open: () {},
-//                     even: true,
-//                     episode: 3,
-//                     season: 2,
-//                     homeNav: () {},
-//                     isEnglish: controller.userModel.language
-//                             .toString()
-//                             .substring(0, 2) ==
-//                         'en',
-//                     nextDate: 'dome Date',
-//                     title: 'عنوان',
-//                     width: width,
-//                     link:
-//                         'https://i.pinimg.com/originals/79/51/00/7951008b6b4042cfefc9030571113195.jpg',
-//                   )

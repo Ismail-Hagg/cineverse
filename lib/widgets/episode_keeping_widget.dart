@@ -14,11 +14,13 @@ class EpisodeKeeping extends StatelessWidget {
   final bool even;
   final int episode;
   final int season;
+  final bool isUpdated;
   final Function() homeNav;
   const EpisodeKeeping({
     super.key,
     required this.width,
     required this.link,
+    required this.isUpdated,
     required this.title,
     required this.nextDate,
     required this.isEnglish,
@@ -57,7 +59,9 @@ class EpisodeKeeping extends StatelessWidget {
                   link: link,
                   width: width * 0.23,
                   height: width * 0.23,
-                  border: Theme.of(context).colorScheme.primary,
+                  border: isUpdated
+                      ? Colors.red
+                      : Theme.of(context).colorScheme.primary,
                   fit: BoxFit.cover,
                 ),
               ),

@@ -124,7 +124,9 @@ class Translation extends Translations {
           'status': 'Status',
           'return': 'Returning Series',
           'ended': 'Ended',
-          'edit': 'Edit'
+          'edit': 'Edit',
+          'newname': "Enter New Name",
+          'can': 'cancel'
         },
         'ar_SA': {
           'email': 'العنوان الالكتروني',
@@ -247,7 +249,9 @@ class Translation extends Translations {
           'status': 'الحاله',
           'return': 'مستمر',
           'ended': 'منتهي',
-          'edit': 'تعديل'
+          'edit': 'تعديل',
+          'newname': 'ادخل الاسم الجديد',
+          'can': 'الغاء'
         }
       };
 }

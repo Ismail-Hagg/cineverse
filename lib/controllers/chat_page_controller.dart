@@ -131,7 +131,7 @@ class ChatPageController extends GetxController {
                     .ref
                     .doc(_otherUser.userId)
                     .collection(FirebaseUserPaths.chat.name)
-                    .doc(_userModel.userId),
+                    .doc(_userModel.userId.toString()),
                 isUpdated: false))
         .then((_) async {
       await FirebaseServices().sendMessage(
@@ -148,7 +148,7 @@ class ChatPageController extends GetxController {
                   .ref
                   .doc(_userModel.userId)
                   .collection(FirebaseUserPaths.chat.name)
-                  .doc(_otherUser.toString()),
+                  .doc(_otherUser.userId.toString()),
               isUpdated: true));
     }).then(
       (_) async {

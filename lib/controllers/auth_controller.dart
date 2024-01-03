@@ -834,17 +834,6 @@ class AuthController extends GetxController {
               update();
               Get.offAll(() => const ViewController());
               await uploadUser(model: _userModel);
-
-              // else {
-              //   _loading = false;
-              //   update();
-              //   // ignore: use_build_context_synchronously
-              //   await showOkAlertDialog(
-              //     context: context,
-              //     title: 'error'.tr,
-              //     message: 'firelogin'.tr,
-              //   );
-              // }
             }).onError((error, stackTrace) async {
               _loading = false;
               update();

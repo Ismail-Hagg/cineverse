@@ -299,9 +299,8 @@ exports.whenChanged = functions.firestore
   });
 
 exports.updateKeeping = functions.pubsub
-  .schedule("0 */8 * * *")
+  .schedule("0 */2 * * *")
   .onRun(async (context) => {
-    console.log("starting ====");
     let nextEpisodeDate;
     let nextSeason;
     let nextEpisode;
@@ -312,85 +311,149 @@ exports.updateKeeping = functions.pubsub
       .then((items) => {
         items.forEach((snap) => {
           const data = snap.data();
-          console.log(data["name"]);
-          console.log(data["id"]);
-          if (typeof data["id"] === "undefined") {
-            console.log(snap.id);
-            console.log("we aint got no data");
+          if (typeof data["id"] !== "undefined") {
+            const url = `https://api.themoviedb.org/3/tv/${data["id"]}?api_key=e11cff04b1fcf50079f6918e5199d691&language=en-US`;
+            axios
+              .get(url)
+              .then(function (response) {
+                const resData = response.data;
+                const episode =
+                  resData["last_episode_to_air"]["episode_number"];
+                const season = resData["last_episode_to_air"]["season_number"];
+                const status = resData["status"];
+                const name = resData["name"];
+
+                if (resData["next_episode_to_air"] === null) {
+                  nextEpisodeDate = "";
+                  nextEpisode = 0;
+                  nextSeason = 0;
+                } else {
+                  nextEpisodeDate = resData["next_episode_to_air"]["air_date"];
+                  nextEpisode =
+                    resData["next_episode_to_air"]["episode_number"];
+                  nextSeason = resData["next_episode_to_air"]["season_number"];
+                }
+
+                if (
+                  data["episode"] !== episode ||
+                  data["nextEpisodeDate"] !== nextEpisodeDate ||
+                  data["nextSeason"] !== nextSeason ||
+                  data["nextepisode"] !== nextEpisode ||
+                  data["season"] !== season ||
+                  data["status"] !== status
+                ) {
+                  data["refList"].forEach((ref) => {
+                    ref.update({
+                      episode: episode,
+                      nextEpisodeDate: nextEpisodeDate,
+                      nextSeason: nextSeason,
+                      nextepisode: nextEpisode,
+                      season: season,
+                      isUpdated: true,
+                      change: admin.firestore.Timestamp.now(),
+                    });
+                  });
+                  snap.ref.update({
+                    episode: episode,
+                    nextEpisodeDate: nextEpisodeDate,
+                    nextSeason: nextSeason,
+                    nextepisode: nextEpisode,
+                    season: season,
+                    isUpdated: true,
+                    change: admin.firestore.Timestamp.now(),
+                  });
+                }
+              })
+              .catch(function (err) {
+                console.log(err);
+              });
           }
-          // const url = `https://api.themoviedb.org/3/tv/${data["id"]}?api_key=e11cff04b1fcf50079f6918e5199d691&language=en-US`;
-          // axios
-          //   .get(url)
-          //   .then(function (response) {
-          //     console.log("api called");
-          //     const resData = response.data;
-          //     const episode = resData["last_episode_to_air"]["episode_number"];
-          //     const season = resData["last_episode_to_air"]["season_number"];
-          //     const status = resData["status"];
-
-          //     if (resData["next_episode_to_air"] === null) {
-          //       nextEpisodeDate = "";
-          //       nextEpisode = 0;
-          //       nextSeason = 0;
-          //     } else {
-          //       nextEpisodeDate = resData["next_episode_to_air"]["air_date"];
-          //       nextEpisode = resData["next_episode_to_air"]["episode_number"];
-          //       nextSeason = resData["next_episode_to_air"]["season_number"];
-          //     }
-
-          //     if (
-          //       data["episode"] !== episode ||
-          //       data["nextEpisodeDate"] !== nextEpisodeDate ||
-          //       data["nextSeason"] !== nextSeason ||
-          //       data["nextepisode"] !== nextEpisode ||
-          //       data["season"] !== season ||
-          //       data["status"] !== status
-          //     ) {
-          //       console.log(`name => ${data["name"]}`);
-          //       console.log(`episode => old ${data["episode"]} new ${episode}`);
-          //       console.log(
-          //         `next ep date => old ${data["nextEpisodeDate"]} new ${nextEpisodeDate}`
-          //       );
-          //       console.log(
-          //         `next season => old ${data["nextSeason"]} new ${nextSeason}`
-          //       );
-          //       console.log(
-          //         `next ep => old ${data["nextepisode"]} new ${nextEpisode}`
-          //       );
-          //       console.log(`season => old ${data["season"]} new ${season}`);
-          //       console.log(`status => old ${data["status"]} new ${status}`);
-          //       data["refList"].forEach((ref) => {
-          //         ref.update({
-          //           episode: episode,
-          //           nextEpisodeDate: nextEpisodeDate,
-          //           nextSeason: nextSeason,
-          //           nextepisode: nextEpisode,
-          //           season: season,
-          //           isUpdated: true,
-          //           change: admin.firestore.Timestamp.now(),
-          //         });
-          //       });
-          //       snap.ref.update({
-          //         episode: episode,
-          //         nextEpisodeDate: nextEpisodeDate,
-          //         nextSeason: nextSeason,
-          //         nextepisode: nextEpisode,
-          //         season: season,
-          //         isUpdated: true,
-          //         change: admin.firestore.Timestamp.now(),
-          //       });
-          //     } else {
-          //       console.log(`${data["name"]}`);
-          //       console.log("nothing changed");
-          //     }
-          //   })
-          //   .catch(function (err) {
-          //     console.log(err);
-          //   });
         });
       });
   });
 
-exports.userChange = functions.https.onCall(async (data, context) => {
-  const { action, link, local, userId } = data;
+exports.userChanging = functions.https.onCall(async (data, context) => {
+  const { userName, link, local, userId, avatarType } = data;
+  try {
+    await db
+      .collection("Users")
+      .doc(userId)
+      .update({
+        avatarType: avatarType,
+        localPicPath: local,
+        onlinePicPath: link,
+        userName: userName,
+      })
+      .then(async (response) => {
+        await db
+          .collection("Users")
+          .doc(userId)
+          .collection("comments")
+          .get()
+          .then((items) => {
+            if (items.empty === false) {
+              items.forEach(async (snap) => {
+                const comment = snap.data();
+                const movieId = comment["movieId"];
+                const commentId = comment["commentId"];
+                const ref = db
+                  .collection("other")
+                  .doc(movieId)
+                  .collection("comments")
+                  .doc(commentId);
+                await ref
+                  .update({
+                    userLink: link,
+                    userName: userName,
+                  })
+                  .then((res) => {
+                    ref.get().then(async (docu) => {
+                      if (docu.data()["hasMore"] === true) {
+                        await ref
+                          .collection("replies")
+                          .get()
+                          .then((reps) => {
+                            reps.forEach(async (rep) => {
+                              const oneRep = rep.data();
+                              const repId = oneRep["userId"];
+                              if (repId === userId) {
+                                await ref
+                                  .collection("replies")
+                                  .doc(oneRep["commentId"])
+                                  .update({
+                                    userLink: link,
+                                    userName: userName,
+                                  });
+                              }
+                            });
+                          });
+                      }
+                    });
+                  });
+              });
+            }
+          });
+      })
+      .then(async (_) => {
+        await db
+          .collection("Users")
+          .doc(userId)
+          .collection("chat")
+          .get()
+          .then((items) => {
+            if (items.empty === false) {
+              items.forEach(async (item) => {
+                const chatData = item.data();
+                const ref = chatData["ref"];
+                await ref.update({
+                  onlinePath: link,
+                  userNsme: userName,
+                });
+              });
+            }
+          });
+      });
+  } catch (error) {
+    throw new functions.https.HttpsError("invalid-argument", "error" + error);
+  }
 });

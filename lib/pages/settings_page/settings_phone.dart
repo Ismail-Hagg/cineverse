@@ -16,6 +16,7 @@ class SettingsPhone extends StatelessWidget {
   Widget build(BuildContext context) {
     bool isIos = Get.find<AuthController>().platform == TargetPlatform.iOS;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.background,
@@ -52,10 +53,16 @@ class SettingsPhone extends StatelessWidget {
                               width: width * 0.25,
                               height: width * 0.25,
                               isBorder: true,
-                              type: AvatarType.online,
+                              type: controller.model.avatarType ==
+                                      AvatarType.local
+                                  ? AvatarType.local
+                                  : AvatarType.online,
                               boxFit: BoxFit.cover,
                               shadow: true,
-                              link: controller.model.onlinePicPath.toString(),
+                              link: controller.model.avatarType ==
+                                      AvatarType.local
+                                  ? controller.model.localPicPath.toString()
+                                  : controller.model.onlinePicPath.toString(),
                               borderColor:
                                   Theme.of(context).colorScheme.primary,
                             ),
@@ -180,7 +187,47 @@ class SettingsPhone extends StatelessWidget {
                                             .primary,
                                         text: 'changeuser'.tr,
                                       ),
-                                      onTap: () {},
+                                      onTap: () => controller.changeUserName(
+                                          context: context,
+                                          content: CupertinoAlertDialog(
+                                            title: CustomText(
+                                              text: 'newname'.tr,
+                                              size: 16,
+                                            ),
+                                            actions: [
+                                              CupertinoDialogAction(
+                                                onPressed: () =>
+                                                    controller.clearCancel(),
+                                                child: CustomText(
+                                                  text: 'can'.tr,
+                                                ),
+                                              ),
+                                              CupertinoDialogAction(
+                                                onPressed: () =>
+                                                    controller.okChange(),
+                                                child: CustomText(
+                                                  text: 'answer'.tr,
+                                                ),
+                                              ),
+                                            ],
+                                            content: Column(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(vertical: 8.0),
+                                                  child: CupertinoTextField(
+                                                    controller:
+                                                        controller.controller,
+                                                    autofocus: true,
+                                                    style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .primary),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          )),
                                     ),
                                   ),
                                   Padding(
@@ -408,7 +455,32 @@ class SettingsPhone extends StatelessWidget {
                                             .primary,
                                         text: 'changeuser'.tr,
                                       ),
-                                      onTap: () {},
+                                      onTap: () => controller.changeUserName(
+                                        context: context,
+                                        content: AlertDialog(
+                                          content: TextField(
+                                            controller: controller.controller,
+                                            autofocus: true,
+                                          ),
+                                          title: CustomText(text: 'newname'.tr),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  controller.clearCancel(),
+                                              child: CustomText(
+                                                text: 'can'.tr,
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed: () =>
+                                                  controller.okChange(),
+                                              child: CustomText(
+                                                text: 'answer'.tr,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
                                     ),
                                   ),
                                   Padding(

@@ -31,6 +31,12 @@ class KeepingController extends GetxController {
     getKeepint();
   }
 
+  @override
+  void onClose() {
+    super.onClose();
+    opened();
+  }
+
   // get the keeping
   void getKeepint() async {
     _loading = true;
@@ -59,7 +65,6 @@ class KeepingController extends GetxController {
       }
       _loading = false;
       update();
-      opened();
     });
   }
 

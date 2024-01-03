@@ -1,12 +1,17 @@
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
+import 'package:cineverse/controllers/profile_controller.dart';
+import 'package:cineverse/local_storage/user_data.dart';
+import 'package:cineverse/models/user_change_model.dart';
 import 'package:cineverse/models/user_model.dart';
 import 'package:cineverse/pages/view_controller.dart';
 import 'package:cineverse/services/firebase_service.dart';
 import 'package:cineverse/utils/enums.dart';
 import 'package:cineverse/utils/functions.dart';
+import 'package:cineverse/widgets/custom_text.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,10 +20,22 @@ class SettingsController extends GetxController {
   UserModel _model = UserModel();
   UserModel get model => _model;
 
+  final bool _isIos = Get.find<AuthController>().platform == TargetPlatform.iOS;
+  bool get isIos => _isIos;
+
+  final TextEditingController _controller = TextEditingController();
+  TextEditingController get controller => _controller;
+
   @override
   void onInit() {
     super.onInit();
     _model = Get.find<HomeController>().userModel;
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+    _controller.dispose();
   }
 
   // change app's theme
@@ -131,8 +148,87 @@ class SettingsController extends GetxController {
     await FilePicker.platform.pickFiles(
         allowMultiple: false,
         type: FileType.custom,
-        allowedExtensions: ['png', 'jpg', 'jpeg']).then((value) {
-      if (value != null) {}
+        allowedExtensions: ['png', 'jpg', 'jpeg']).then(
+      (value) async {
+        if (value != null) {
+          // change data locally
+          _model.avatarType = AvatarType.local;
+          _model.localPicPath = value.files.single.path.toString();
+          update();
+          await DataPref().setUser(_model).then((value) async {
+            // uploda new image to storage
+            Get.find<HomeController>().update();
+            Get.find<ProfilePageController>()
+                .checking(pic: _model.localPicPath.toString());
+            await FirebaseServices()
+                .uploadUserImage(
+                    userId: _model.userId.toString(),
+                    file: _model.localPicPath.toString())
+                .then(
+              (link) async {
+                update();
+                if (link != '' && link != _model.localPicPath.toString()) {
+                  // uploaded
+                  _model.onlinePicPath = link;
+                  await DataPref().setUser(_model).then(
+                    (value) async {
+                      // trigger firebase functtion to change user date and data in comments and replies and chats and notifications
+                      UserChange change = UserChange(
+                          avatarType: _model.avatarType.toString(),
+                          userName: _model.userName.toString(),
+                          link: link,
+                          local: _model.localPicPath.toString(),
+                          userId: _model.userId.toString());
+                      await FirebaseServices()
+                          .userChanging(map: change.toMap());
+                    },
+                  );
+                }
+              },
+            );
+          });
+        }
+      },
+    );
+  }
+
+  // change user name
+  void changeUserName({
+    required BuildContext context,
+    required Widget content,
+  }) async {
+    _isIos
+        ? showCupertinoDialog(context: context, builder: (context) => content)
+        // ignore: unused_result
+        : showAlertDialog(
+            context: context,
+            builder: (context, child) => content,
+          );
+  }
+
+  // cancel and clear text controller
+  void clearCancel() {
+    Get.back();
+    _controller.clear();
+  }
+
+  // ok , start changing the username
+  void okChange() async {
+    String newName = _controller.text;
+    Get.back();
+    _controller.clear();
+
+    _model.userName = newName;
+    update();
+    Get.find<ProfilePageController>().update();
+    await DataPref().setUser(_model).then((value) async {
+      UserChange change = UserChange(
+          avatarType: _model.avatarType.toString(),
+          userName: _model.userName.toString(),
+          link: _model.onlinePicPath.toString(),
+          local: _model.localPicPath.toString(),
+          userId: _model.userId.toString());
+      await FirebaseServices().userChanging(map: change.toMap());
     });
   }
 }
