@@ -287,6 +287,11 @@ class FirebaseServices {
     await _ref.doc(uid).collection(collection).doc(docId).delete();
   }
 
+  // get comments from the other ref
+  Future<QuerySnapshot> getOtherComments({required String movieId}) async {
+    return _refOther.doc(movieId).collection('comments').get();
+  }
+
   // chear isUpdated
   Future<void> clearIsUpdates(
       {required String userId, required String chatId}) {

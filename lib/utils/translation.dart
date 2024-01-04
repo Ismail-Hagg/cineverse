@@ -126,7 +126,9 @@ class Translation extends Translations {
           'ended': 'Ended',
           'edit': 'Edit',
           'newname': "Enter New Name",
-          'can': 'cancel'
+          'can': 'cancel',
+          'mycom': 'My Comments',
+          'comby': 'Comments By'
         },
         'ar_SA': {
           'email': 'العنوان الالكتروني',
@@ -251,7 +253,9 @@ class Translation extends Translations {
           'ended': 'منتهي',
           'edit': 'تعديل',
           'newname': 'ادخل الاسم الجديد',
-          'can': 'الغاء'
+          'can': 'الغاء',
+          'mycom': 'تعليقاتي',
+          'comby': 'تعليقات'
         }
       };
 }

@@ -140,78 +140,90 @@ class ProfilePhone extends StatelessWidget {
                     padding: EdgeInsets.symmetric(vertical: !isMe ? 24 : 18.0),
                     child: Row(
                       children: [
-                        SizedBox(
-                          width: width / 3,
-                          height: width * 0.14,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              CustomText(
-                                color: Theme.of(context).colorScheme.primary,
-                                text: 'comments'.tr,
-                                size: 16,
-                              ),
-                              SizedBox(
-                                height: (width * 0.12) * 0.15,
-                              ),
-                              CustomText(
-                                text: controller.commentCount.toString(),
-                                size: 12,
-                              )
-                            ],
+                        GestureDetector(
+                          onTap: () => controller.touchNav(tab: 0),
+                          child: SizedBox(
+                            width: width / 3,
+                            height: width * 0.14,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                CustomText(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  text: 'comments'.tr,
+                                  size: 16,
+                                ),
+                                SizedBox(
+                                  height: (width * 0.12) * 0.15,
+                                ),
+                                CustomText(
+                                  text:
+                                      controller.commentsList.length.toString(),
+                                  size: 12,
+                                )
+                              ],
+                            ),
                           ),
                         ),
-                        SizedBox(
-                          width: width / 3,
-                          height: width * 0.14,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              CustomText(
-                                color: Theme.of(context).colorScheme.primary,
-                                text: 'followers'.tr,
-                                size: 16,
-                              ),
-                              SizedBox(
-                                height: (width * 0.12) * 0.15,
-                              ),
-                              CustomText(
-                                text: controller.model.follwers!.length == 1 &&
-                                        controller.model.follwers![0] == ''
-                                    ? '0'
-                                    : controller.model.follwers!.length
-                                        .toString(),
-                                size: 12,
-                              )
-                            ],
+                        GestureDetector(
+                          onTap: () => controller.touchNav(tab: 1),
+                          child: SizedBox(
+                            width: width / 3,
+                            height: width * 0.14,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                CustomText(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  text: 'followers'.tr,
+                                  size: 16,
+                                ),
+                                SizedBox(
+                                  height: (width * 0.12) * 0.15,
+                                ),
+                                CustomText(
+                                  text: controller.model.follwers!.length ==
+                                              1 &&
+                                          controller.model.follwers![0] == ''
+                                      ? '0'
+                                      : controller.model.follwers!.length
+                                          .toString(),
+                                  size: 12,
+                                )
+                              ],
+                            ),
                           ),
                         ),
-                        SizedBox(
-                          width: width / 3,
-                          height: width * 0.14,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              CustomText(
-                                color: Theme.of(context).colorScheme.primary,
-                                text: 'following'.tr,
-                                size: 16,
-                              ),
-                              SizedBox(
-                                height: (width * 0.12) * 0.15,
-                              ),
-                              CustomText(
-                                text: controller.model.following!.length == 1 &&
-                                        controller.model.following![0] == ''
-                                    ? '0'
-                                    : controller.model.following!.length
-                                        .toString(),
-                                size: 12,
-                              )
-                            ],
+                        GestureDetector(
+                          onTap: () => controller.touchNav(tab: 2),
+                          child: SizedBox(
+                            width: width / 3,
+                            height: width * 0.14,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                CustomText(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  text: 'following'.tr,
+                                  size: 16,
+                                ),
+                                SizedBox(
+                                  height: (width * 0.12) * 0.15,
+                                ),
+                                CustomText(
+                                  text: controller.model.following!.length ==
+                                              1 &&
+                                          controller.model.following![0] == ''
+                                      ? '0'
+                                      : controller.model.following!.length
+                                          .toString(),
+                                  size: 12,
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ],

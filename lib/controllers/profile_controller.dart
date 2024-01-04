@@ -2,10 +2,13 @@ import 'dart:io';
 
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
+import 'package:cineverse/models/comment_model.dart';
 import 'package:cineverse/models/episode_omdel.dart';
 import 'package:cineverse/models/movie_detales_model.dart';
+import 'package:cineverse/models/profile_to_comment.dart';
 import 'package:cineverse/models/user_model.dart';
 import 'package:cineverse/pages/chat/chat_page_controller.dart';
+import 'package:cineverse/pages/comments_page/comments_page_View_controller.dart';
 import 'package:cineverse/pages/settings_page/settings_view_controller.dart';
 import 'package:cineverse/services/firebase_service.dart';
 import 'package:cineverse/utils/enums.dart';
@@ -30,8 +33,14 @@ class ProfilePageController extends GetxController {
   List<List<(MovieDetaleModel, EpisodeModeL)>> _lst = [];
   List<List<(MovieDetaleModel, EpisodeModeL)>> get lst => _lst;
 
+  final List<CommentModel> _commentsList = [];
+  List<CommentModel> get commentsList => _commentsList;
+
   int _commentCount = 0;
   int get commentCount => _commentCount;
+
+  final Map<String, List<String>> _laterComments = {};
+  Map<String, List<String>> get laterComments => _laterComments;
 
   @override
   void onInit() {
@@ -68,6 +77,21 @@ class ProfilePageController extends GetxController {
         _model = UserModel.fromMap(value.data() as Map<String, dynamic>);
         update();
       });
+    }
+  }
+
+  // nav to comments page
+  void touchNav({required int tab}) {
+    switch (tab) {
+      case 0:
+        Get.to(() => const CommentsPageViewController(),
+            arguments: ProfileToComment(
+                isMe: _isMe,
+                user: _model,
+                map: _laterComments,
+                fromProfile: true));
+        break;
+      default:
     }
   }
 
@@ -117,10 +141,35 @@ class ProfilePageController extends GetxController {
       (value) {
         if (value.docs.isNotEmpty) {
           _commentCount = value.docs.length;
+          for (var i = 0; i < value.docs.length; i++) {
+            try {
+              _commentsList.add(
+                CommentModel.fromMap(
+                    value.docs[i].data() as Map<String, dynamic>),
+              );
+              commentLater(map: value.docs[i].data() as Map<String, dynamic>);
+            } catch (e) {
+              print('== error => $e');
+            }
+          }
           update();
         }
       },
     );
+  }
+
+  // set the latercommens object
+  void commentLater({required Map<String, dynamic> map}) {
+    String movieId = map['movieId'];
+    String commentId = map['commentId'];
+
+    if (_laterComments.containsKey(movieId)) {
+      List<String> lstTemp = _laterComments[movieId] as List<String>;
+      lstTemp.add(commentId);
+      _laterComments[movieId] = lstTemp;
+    } else {
+      _laterComments[movieId] = [commentId];
+    }
   }
 
   // get movies and shows from firebase
