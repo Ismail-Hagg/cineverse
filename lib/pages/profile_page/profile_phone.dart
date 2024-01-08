@@ -115,10 +115,10 @@ class ProfilePhone extends StatelessWidget {
                                   : 'follow'.tr,
                               size: 18,
                             ),
-                            onPressed: () => controller.follow(),
+                            onPressed: () => controller.controllFollow(),
                           )
                         : TextButton(
-                            onPressed: () => controller.follow(),
+                            onPressed: () => controller.controllFollow(),
                             child: CustomText(
                               text: Get.find<AuthController>()
                                       .userModel
@@ -142,7 +142,8 @@ class ProfilePhone extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () => controller.touchNav(tab: 0),
-                          child: SizedBox(
+                          child: Container(
+                            color: Colors.transparent,
                             width: width / 3,
                             height: width * 0.14,
                             child: Column(
@@ -168,7 +169,8 @@ class ProfilePhone extends StatelessWidget {
                         ),
                         GestureDetector(
                           onTap: () => controller.touchNav(tab: 1),
-                          child: SizedBox(
+                          child: Container(
+                            color: Colors.transparent,
                             width: width / 3,
                             height: width * 0.14,
                             child: Column(
@@ -198,7 +200,8 @@ class ProfilePhone extends StatelessWidget {
                         ),
                         GestureDetector(
                           onTap: () => controller.touchNav(tab: 2),
-                          child: SizedBox(
+                          child: Container(
+                            color: Colors.transparent,
                             width: width / 3,
                             height: width * 0.14,
                             child: Column(

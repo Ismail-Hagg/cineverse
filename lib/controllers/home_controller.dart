@@ -345,6 +345,12 @@ class HomeController extends GetxController {
     update();
   }
 
+  // turn off notifications
+  void notifiyOff() {
+    _notificationOn = false;
+    update();
+  }
+
   // chat notification on or off
   void chatNotification({required List<QueryDocumentSnapshot> list}) {
     if (list.isNotEmpty) {

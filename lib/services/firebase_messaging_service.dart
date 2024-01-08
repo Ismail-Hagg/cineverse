@@ -1,14 +1,16 @@
 import 'dart:convert';
 
+import 'package:cineverse/controllers/comments_page_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
 import 'package:cineverse/models/notification_action_model.dart';
+import 'package:cineverse/models/profile_to_comment.dart';
 import 'package:cineverse/models/result_details_model.dart';
 import 'package:cineverse/models/user_model.dart';
 import 'package:cineverse/pages/chat/chat_page_controller.dart';
+import 'package:cineverse/pages/comments_page/comments_page_View_controller.dart';
 import 'package:cineverse/pages/episode_keeping_page/keeping_controller.dart';
 import 'package:cineverse/utils/constants.dart';
 import 'package:cineverse/utils/enums.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -111,20 +113,19 @@ class MessagingService extends GetxController {
       NotificationAction action =
           NotificationAction.fromMap(jsonDecode(message.data['action']));
       switch (action.type) {
-        case NotificationType.comment ||
-              NotificationType.releaseDate ||
-              NotificationType.showEnded:
+        case NotificationType.releaseDate || NotificationType.showEnded:
           Get.find<HomeController>().navToDetale(
-              res: ResultsDetail(
-                  id: int.parse(action.movieId),
-                  voteAverage: 0,
-                  backdropPath: '',
-                  overview: action.movieOverView.toString(),
-                  posterPath: imagebase + action.posterPath.toString(),
-                  releaseDate: '',
-                  title: action.title.toString(),
-                  isShow: action.isShow,
-                  mediaType: action.isShow ? 'tv' : 'movie'));
+            res: ResultsDetail(
+                id: int.parse(action.movieId),
+                voteAverage: 0,
+                backdropPath: '',
+                overview: action.movieOverView.toString(),
+                posterPath: imagebase + action.posterPath.toString(),
+                releaseDate: '',
+                title: action.title.toString(),
+                isShow: action.isShow,
+                mediaType: action.isShow ? 'tv' : 'movie'),
+          );
           break;
         case NotificationType.chatMessage:
           Get.to(() => const ChatPageViewController(),
@@ -134,6 +135,22 @@ class MessagingService extends GetxController {
           Get.to(
             () => const KeepingViewController(),
           );
+          break;
+        case NotificationType.comment:
+          Get.create(() => CommentsPageController());
+          Get.to(() => const CommentsPageViewController(),
+              arguments: ProfileToComment(
+                  isMe: false,
+                  user: UserModel(
+                      userId: action.userId,
+                      commentLike: [],
+                      commentDislike: [],
+                      userName: action.userName),
+                  map: {
+                    action.movieId: [action.movieOverView]
+                  },
+                  fromProfile: false),
+              preventDuplicates: false);
           break;
         default:
       }
@@ -165,6 +182,16 @@ class MessagingService extends GetxController {
     } catch (e) {
       return false;
     }
+  }
+
+  // subscribe to topic
+  void topicSub({required String userId}) async {
+    await _messagingInstance.subscribeToTopic(userId);
+  }
+
+  // unsubscribe from topic
+  void topicUnSubscribe({required String userId}) async {
+    await _messagingInstance.unsubscribeFromTopic(userId);
   }
 }
 

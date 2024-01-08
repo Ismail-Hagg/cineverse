@@ -54,10 +54,8 @@ exports.whenChanged = functions.firestore
         const lang = user.data()["language"];
         const messageToken = user.data()["messagingToken"];
         if (
-          (before["episode"] !== after["episode"] ||
-            before["season"] !== after["season"]) &&
-          before["nextEpisodeDate"] === after["nextEpisodeDate"] &&
-          before["status"] === after["status"]
+          before["episode"] !== after["episode"] ||
+          before["season"] !== after["season"]
         ) {
           const message = {
             token: messageToken,
@@ -117,12 +115,7 @@ exports.whenChanged = functions.firestore
             .catch((error) => {
               console.log("notification wans not added because => " + error);
             });
-        } else if (
-          before["status"] !== after["status"] &&
-          before["episode"] === after["episode"] &&
-          before["season"] === after["season"] &&
-          before["nextEpisodeDate"] === after["nextEpisodeDate"]
-        ) {
+        } else if (before["status"] !== after["status"]) {
           const message = {
             token: messageToken,
             notification: {
@@ -216,12 +209,7 @@ exports.whenChanged = functions.firestore
             .catch((error) => {
               console.log("notification wans not added because => " + error);
             });
-        } else if (
-          before["status"] === after["status"] &&
-          before["episode"] === after["episode"] &&
-          before["season"] === after["season"] &&
-          before["nextEpisodeDate"] !== after["nextEpisodeDate"]
-        ) {
+        } else if (before["nextEpisodeDate"] !== after["nextEpisodeDate"]) {
           const message = {
             token: messageToken,
             notification: {

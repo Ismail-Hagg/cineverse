@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cineverse/controllers/auth_controller.dart';
+import 'package:cineverse/controllers/comments_page_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
 import 'package:cineverse/models/comment_model.dart';
 import 'package:cineverse/models/episode_omdel.dart';
@@ -84,12 +85,14 @@ class ProfilePageController extends GetxController {
   void touchNav({required int tab}) {
     switch (tab) {
       case 0:
+        Get.create(() => CommentsPageController());
         Get.to(() => const CommentsPageViewController(),
             arguments: ProfileToComment(
                 isMe: _isMe,
                 user: _model,
                 map: _laterComments,
-                fromProfile: true));
+                fromProfile: true),
+            preventDuplicates: false);
         break;
       default:
     }
@@ -214,14 +217,29 @@ class ProfilePageController extends GetxController {
     }
   }
 
+  // following process controller
+  void controllFollow() {
+    UserModel myModel = Get.find<HomeController>().userModel;
+    if (myModel.following!.contains(_model.userId.toString())) {
+      follow();
+    } else {
+      unfollow();
+    }
+  }
+
   // following someone
   void follow() {
-    // save their id locally and save
+    // update the one youre following object
 
-    // update user data in firebase
+    // update local opbeect and save it locally
 
-    // add the adder's id to the person they added
+    // update both objects in firebase
 
-    // notify the person they added
+    // subscribe to topic
+
+    // notify other person
   }
+
+  // unfollowing someone
+  void unfollow() {}
 }

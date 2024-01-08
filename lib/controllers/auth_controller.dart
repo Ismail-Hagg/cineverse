@@ -364,7 +364,7 @@ class AuthController extends GetxController {
                 follwers: [],
                 favs: [],
                 watching: [],
-                theme: ChosenTheme.system,
+                theme: ChosenTheme.dark,
                 commentDislike: [],
                 commentLike: []);
             await saveUserDataLocally(model: _userModel).then((saved) async {
@@ -514,7 +514,7 @@ class AuthController extends GetxController {
                           follwers: [],
                           favs: [],
                           watching: [],
-                          theme: ChosenTheme.system,
+                          theme: ChosenTheme.dark,
                           commentDislike: [],
                           commentLike: []);
                       await saveUserDataLocally(model: _userModel)
@@ -826,7 +826,7 @@ class AuthController extends GetxController {
                 following: [],
                 follwers: [],
                 watching: [],
-                theme: ChosenTheme.system,
+                theme: ChosenTheme.dark,
                 commentDislike: [],
                 commentLike: []);
             await saveUserDataLocally(model: _userModel).then((saved) async {

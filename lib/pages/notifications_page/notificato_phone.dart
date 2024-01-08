@@ -2,8 +2,10 @@ import 'package:cineverse/controllers/notifications_controller.dart';
 import 'package:cineverse/utils/functions.dart';
 import 'package:cineverse/widgets/custom_text.dart';
 import 'package:cineverse/widgets/image_network.dart';
+import 'package:cineverse/widgets/menu_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
 class NotificationsPhone extends StatelessWidget {
@@ -22,6 +24,19 @@ class NotificationsPhone extends StatelessWidget {
           color: Theme.of(context).colorScheme.primary,
         ),
         iconTheme: IconThemeData(color: Theme.of(context).colorScheme.primary),
+        actions: [
+          Padding(
+            padding: EdgeInsets.all(
+                Get.find<NotificationsController>().isIos ? 0 : 14.0),
+            child: Menu(
+                ios: Get.find<NotificationsController>().isIos,
+                titles: ['asread'.tr],
+                funcs: [
+                  () => Get.find<NotificationsController>().readAll(),
+                ],
+                child: const FaIcon(FontAwesomeIcons.ellipsisVertical)),
+          )
+        ],
       ),
       body: GetBuilder<NotificationsController>(
         init: Get.find<NotificationsController>(),

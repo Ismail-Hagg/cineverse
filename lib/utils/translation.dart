@@ -128,7 +128,8 @@ class Translation extends Translations {
           'newname': "Enter New Name",
           'can': 'cancel',
           'mycom': 'My Comments',
-          'comby': 'Comments By'
+          'comby': 'Comments By',
+          'asread': "Mark As Read"
         },
         'ar_SA': {
           'email': 'العنوان الالكتروني',
@@ -255,7 +256,8 @@ class Translation extends Translations {
           'newname': 'ادخل الاسم الجديد',
           'can': 'الغاء',
           'mycom': 'تعليقاتي',
-          'comby': 'تعليقات'
+          'comby': 'تعليقات',
+          'asread': 'جعل كل التنبيهات مقروءه'
         }
       };
 }

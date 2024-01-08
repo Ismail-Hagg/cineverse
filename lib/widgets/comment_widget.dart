@@ -29,6 +29,8 @@ class CommentWidget extends StatelessWidget {
   final bool showRep;
   final bool repBox;
   final Color? paper;
+  final bool? shift;
+  final Widget? shifty;
   final Function(String rep)? repChange;
   final Function() profileNav;
   final Function() delete;
@@ -70,7 +72,9 @@ class CommentWidget extends StatelessWidget {
       required this.repBox,
       this.repChange,
       this.paper,
-      this.sendRep});
+      this.sendRep,
+      this.shift,
+      this.shifty});
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +140,7 @@ class CommentWidget extends StatelessWidget {
                           )
                         ],
                       ),
-                      if (isMe) ...[
+                      if (isMe && shift == null) ...[
                         isIos
                             ? CupertinoButton(
                                 onPressed: delete,
@@ -186,46 +190,53 @@ class CommentWidget extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0, vertical: 8),
-                                child: GestureDetector(
-                                  onTap: like,
-                                  child: Icon(Icons.thumb_up,
-                                      color: isLiked
+                          shifty ?? Container(),
+                          if (shift == null) ...[
+                            Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0, vertical: 8),
+                                  child: GestureDetector(
+                                    onTap: like,
+                                    child: Icon(Icons.thumb_up,
+                                        color: isLiked
+                                            ? Theme.of(context)
+                                                .colorScheme
+                                                .primary
+                                            : Theme.of(context)
+                                                .colorScheme
+                                                .secondary),
+                                  ),
+                                ),
+                                CustomText(text: likes.toString())
+                              ],
+                            ),
+                          ],
+                          if (shift == null) ...[
+                            Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0, vertical: 8),
+                                  child: GestureDetector(
+                                    onTap: dislike,
+                                    child: Icon(
+                                      Icons.thumb_down,
+                                      color: isDisLiked
                                           ? Theme.of(context)
                                               .colorScheme
                                               .primary
                                           : Theme.of(context)
                                               .colorScheme
-                                              .secondary),
-                                ),
-                              ),
-                              CustomText(text: likes.toString())
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0, vertical: 8),
-                                child: GestureDetector(
-                                  onTap: dislike,
-                                  child: Icon(
-                                    Icons.thumb_down,
-                                    color: isDisLiked
-                                        ? Theme.of(context).colorScheme.primary
-                                        : Theme.of(context)
-                                            .colorScheme
-                                            .secondary,
+                                              .secondary,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              CustomText(text: dislikes.toString())
-                            ],
-                          )
+                                CustomText(text: dislikes.toString())
+                              ],
+                            )
+                          ]
                         ],
                       ),
                       Row(
@@ -388,7 +399,7 @@ class CommentWidget extends StatelessWidget {
                         )
                       ],
                     ),
-                    if (isMe) ...[
+                    if (isMe && shift == null) ...[
                       isIos
                           ? CupertinoButton(
                               onPressed: delete,
@@ -438,42 +449,50 @@ class CommentWidget extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0, vertical: 8),
-                              child: GestureDetector(
-                                onTap: like,
-                                child: Icon(Icons.thumb_up,
-                                    color: isLiked
+                        if (shift == null) ...[
+                          Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0, vertical: 8),
+                                child: GestureDetector(
+                                  onTap: like,
+                                  child: Icon(Icons.thumb_up,
+                                      color: isLiked
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .primary
+                                          : Theme.of(context)
+                                              .colorScheme
+                                              .secondary),
+                                ),
+                              ),
+                              CustomText(text: likes.toString())
+                            ],
+                          )
+                        ],
+                        if (shift == null) ...[
+                          Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0, vertical: 8),
+                                child: GestureDetector(
+                                  onTap: dislike,
+                                  child: Icon(
+                                    Icons.thumb_down,
+                                    color: isDisLiked
                                         ? Theme.of(context).colorScheme.primary
                                         : Theme.of(context)
                                             .colorScheme
-                                            .secondary),
-                              ),
-                            ),
-                            CustomText(text: likes.toString())
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0, vertical: 8),
-                              child: GestureDetector(
-                                onTap: dislike,
-                                child: Icon(
-                                  Icons.thumb_down,
-                                  color: isDisLiked
-                                      ? Theme.of(context).colorScheme.primary
-                                      : Theme.of(context).colorScheme.secondary,
+                                            .secondary,
+                                  ),
                                 ),
                               ),
-                            ),
-                            CustomText(text: dislikes.toString())
-                          ],
-                        )
+                              CustomText(text: dislikes.toString())
+                            ],
+                          )
+                        ]
                       ],
                     ),
                     Row(

@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:cineverse/controllers/comments_page_controller.dart';
 import 'package:cineverse/pages/comments_page/comments_desktop.dart';
 import 'package:cineverse/pages/comments_page/comments_phone.dart';
@@ -11,7 +13,7 @@ class CommentsPageViewController extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    CommentsPageController controller = Get.put(CommentsPageController());
+    //CommentsPageController controller = Get.put(CommentsPageController());
     double width = MediaQuery.of(context).size.width;
     return width <= phoneSize
         ? const CommentsPagePhone()

@@ -971,7 +971,6 @@ class DetalePagePhone extends StatelessWidget {
                                       return Padding(
                                         padding: const EdgeInsets.all(4.0),
                                         child: ExpansionTile(
-                                          //onTap: () {},
                                           leading: ImageNetWork(
                                             link: imagebase +
                                                 controller

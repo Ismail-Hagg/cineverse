@@ -1,10 +1,14 @@
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:cineverse/controllers/auth_controller.dart';
+import 'package:cineverse/controllers/comments_page_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
 import 'package:cineverse/controllers/profile_controller.dart';
 import 'package:cineverse/models/notification_action_model.dart';
+import 'package:cineverse/models/profile_to_comment.dart';
 import 'package:cineverse/models/result_details_model.dart';
 import 'package:cineverse/models/user_model.dart';
 import 'package:cineverse/pages/chat/chat_page_controller.dart';
+import 'package:cineverse/pages/comments_page/comments_page_View_controller.dart';
 import 'package:cineverse/pages/episode_keeping_page/keeping_controller.dart';
 import 'package:cineverse/pages/profile_page/profile_controller.dart';
 import 'package:cineverse/services/firebase_service.dart';
@@ -29,7 +33,6 @@ class NotificationsController extends GetxController {
 
   @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
     getNotifications();
   }
@@ -112,9 +115,7 @@ class NotificationsController extends GetxController {
   void clicked({required int index}) {
     NotificationAction action = _notifications[index];
     switch (action.type) {
-      case NotificationType.comment ||
-            NotificationType.releaseDate ||
-            NotificationType.showEnded:
+      case NotificationType.releaseDate || NotificationType.showEnded:
         Get.find<HomeController>().navToDetale(
             res: ResultsDetail(
                 id: int.parse(action.movieId),
@@ -138,9 +139,41 @@ class NotificationsController extends GetxController {
           () => const KeepingViewController(),
         );
         break;
+      case NotificationType.comment:
+        Get.create(() => CommentsPageController());
+        Get.to(() => const CommentsPageViewController(),
+            arguments: ProfileToComment(
+                isMe: false,
+                user: UserModel(
+                    userId: action.userId,
+                    commentLike: [],
+                    commentDislike: [],
+                    userName: action.userName),
+                map: {
+                  action.movieId: [action.movieOverView]
+                },
+                fromProfile: false),
+            preventDuplicates: false);
+        break;
       default:
     }
     notificationUpdate(index: index);
+  }
+
+  // mark all notifications as read
+  void readAll() {
+    Get.find<HomeController>().notifiyOff();
+    bool track = false;
+    if (isIos) {
+      Get.back();
+    }
+    for (var i = 0; i < _notifications.length; i++) {
+      if (_notifications[i].open == false) {
+        track = true;
+        notificationUpdate(index: i);
+      }
+    }
+    print(track ? 'done with it' : 'nothing to read');
   }
 
   // update notification
