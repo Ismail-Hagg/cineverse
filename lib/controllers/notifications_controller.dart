@@ -1,4 +1,3 @@
-import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/comments_page_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
@@ -163,17 +162,14 @@ class NotificationsController extends GetxController {
   // mark all notifications as read
   void readAll() {
     Get.find<HomeController>().notifiyOff();
-    bool track = false;
     if (isIos) {
       Get.back();
     }
     for (var i = 0; i < _notifications.length; i++) {
       if (_notifications[i].open == false) {
-        track = true;
         notificationUpdate(index: i);
       }
     }
-    print(track ? 'done with it' : 'nothing to read');
   }
 
   // update notification

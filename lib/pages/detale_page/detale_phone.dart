@@ -989,7 +989,7 @@ class DetalePagePhone extends StatelessWidget {
                                           ),
                                           subtitle: CustomText(
                                             text:
-                                                '${'epnum'.tr} ${controller.detales.seaosn!.episodes![index].episodeNumber}  -  ${controller.detales.seaosn!.episodes![index].voteAverage.toStringAsFixed(1)}  -  ${controller.detales.seaosn!.episodes![index].runTime} m',
+                                                '${'epnum'.tr} ${controller.detales.seaosn!.episodes![index].episodeNumber} - ${controller.detales.seaosn!.episodes![index].voteAverage.toStringAsFixed(1)} - ${controller.detales.seaosn!.episodes![index].runTime} m - ${controller.detales.seaosn!.episodes![index].airDate}',
                                           ),
                                           trailing: controller.detales.seaosn!
                                                   .episodes![index].loading

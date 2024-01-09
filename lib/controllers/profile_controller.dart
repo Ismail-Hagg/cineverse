@@ -1,16 +1,22 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/comments_page_controller.dart';
+import 'package:cineverse/controllers/follow_controllere.dart';
 import 'package:cineverse/controllers/home_controller.dart';
+import 'package:cineverse/local_storage/user_data.dart';
 import 'package:cineverse/models/comment_model.dart';
 import 'package:cineverse/models/episode_omdel.dart';
 import 'package:cineverse/models/movie_detales_model.dart';
+import 'package:cineverse/models/notification_action_model.dart';
 import 'package:cineverse/models/profile_to_comment.dart';
 import 'package:cineverse/models/user_model.dart';
 import 'package:cineverse/pages/chat/chat_page_controller.dart';
 import 'package:cineverse/pages/comments_page/comments_page_View_controller.dart';
+import 'package:cineverse/pages/follow_page/follow_view_controller.dart';
 import 'package:cineverse/pages/settings_page/settings_view_controller.dart';
+import 'package:cineverse/services/firebase_messaging_service.dart';
 import 'package:cineverse/services/firebase_service.dart';
 import 'package:cineverse/utils/enums.dart';
 import 'package:get/get.dart';
@@ -71,18 +77,17 @@ class ProfilePageController extends GetxController {
 
   // get user data
   void getUserData() async {
-    if (Get.arguments != null) {
-      await FirebaseServices()
-          .getCurrentUser(userId: _model.userId.toString())
-          .then((value) {
-        _model = UserModel.fromMap(value.data() as Map<String, dynamic>);
-        update();
-      });
-    }
+    await FirebaseServices()
+        .getCurrentUser(userId: _model.userId.toString())
+        .then((value) {
+      _model = UserModel.fromMap(value.data() as Map<String, dynamic>);
+      update();
+    });
   }
 
   // nav to comments page
-  void touchNav({required int tab}) {
+  void touchNav(
+      {required int tab, required List<String> ids, required String title}) {
     switch (tab) {
       case 0:
         Get.create(() => CommentsPageController());
@@ -94,6 +99,8 @@ class ProfilePageController extends GetxController {
                 fromProfile: true),
             preventDuplicates: false);
         break;
+      case 1 || 2:
+        followNav(ids: ids, title: title);
       default:
     }
   }
@@ -221,25 +228,115 @@ class ProfilePageController extends GetxController {
   void controllFollow() {
     UserModel myModel = Get.find<HomeController>().userModel;
     if (myModel.following!.contains(_model.userId.toString())) {
-      follow();
+      unfollow(myModel: myModel);
     } else {
-      unfollow();
+      follow(myModel: myModel);
     }
   }
 
   // following someone
-  void follow() {
+  void follow({required UserModel myModel}) async {
     // update the one youre following object
-
+    _model.follwers!.add(myModel.userId.toString());
+    update();
     // update local opbeect and save it locally
+    myModel.following!.add(_model.userId.toString());
+    await DataPref().setUser(myModel).then(
+      (value) async {
+        // update both objects in firebase
+        await FirebaseServices()
+            .userUpdate(userId: myModel.userId.toString(), map: myModel.toMap())
+            .then(
+          (_) async {
+            await pushPull(
+                    id: _model.userId.toString(),
+                    otherId: _model.userId.toString(),
+                    add: true)
+                .then(
+              (_) async {
+                // subscribe to topic
+                MessagingService().topicSub(userId: _model.userId.toString());
+                // notify other person
+                String commentBody =
+                    _model.language.toString().substring(0, 2) == 'en'
+                        ? 'Followed You'
+                        : ' قام بمتابعتك';
+                NotificationAction action = NotificationAction(
+                    userName: myModel.userName.toString(),
+                    userImage: myModel.onlinePicPath.toString(),
+                    notificationBody: commentBody,
+                    posterPath: myModel.onlinePicPath.toString(),
+                    title: '',
+                    isShow: true,
+                    movieOverView: '',
+                    type: NotificationType.followed,
+                    userId: myModel.userId.toString(),
+                    movieId: '');
 
-    // update both objects in firebase
+                await MessagingService().sendMessage(
+                  title: myModel.userName.toString(),
+                  body: commentBody,
+                  token: _model.messagingToken.toString(),
+                  action: jsonEncode(
+                    action.toMap(),
+                  ),
+                );
 
-    // subscribe to topic
-
-    // notify other person
+                await FirebaseServices().uploadNotification(
+                    userId: _model.userId.toString(),
+                    collection: FirebaseUserPaths.notifications.name,
+                    action: action);
+              },
+            );
+          },
+        );
+      },
+    );
   }
 
   // unfollowing someone
-  void unfollow() {}
+  void unfollow({required UserModel myModel}) async {
+    _model.follwers!.remove(myModel.userId.toString());
+    update();
+    myModel.following!.remove(_model.userId.toString());
+    await DataPref().setUser(myModel).then(
+      (value) async {
+        await FirebaseServices()
+            .userUpdate(userId: myModel.userId.toString(), map: myModel.toMap())
+            .then(
+          (_) async {
+            await pushPull(
+                    id: _model.userId.toString(),
+                    otherId: _model.userId.toString(),
+                    add: false)
+                .then(
+              (_) async {
+                MessagingService()
+                    .topicUnSubscribe(userId: _model.userId.toString());
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // get useer data before updating firebase
+  Future<void> pushPull(
+      {required String id, required String otherId, required bool add}) async {
+    await FirebaseServices().getCurrentUser(userId: id).then((value) async {
+      UserModel model = UserModel.fromMap(value.data() as Map<String, dynamic>);
+      add ? model.follwers!.add(otherId) : model.follwers!.remove(otherId);
+      _model = model;
+      update();
+      await FirebaseServices().userUpdate(userId: id, map: model.toMap());
+    });
+  }
+
+  // nav to following or followers page
+  void followNav({required List<String> ids, required String title}) {
+    Get.create(() => FollowController());
+    Get.to(() => const FollowViewControll(),
+        arguments: {'ids': ids, 'title': title}, preventDuplicates: false);
+  }
 }

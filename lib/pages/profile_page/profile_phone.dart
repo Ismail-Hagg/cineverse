@@ -109,7 +109,7 @@ class ProfilePhone extends StatelessWidget {
                             child: CustomText(
                               text: Get.find<AuthController>()
                                       .userModel
-                                      .follwers!
+                                      .following!
                                       .contains(controller.model.userId)
                                   ? 'unfollow'.tr
                                   : 'follow'.tr,
@@ -122,7 +122,7 @@ class ProfilePhone extends StatelessWidget {
                             child: CustomText(
                               text: Get.find<AuthController>()
                                       .userModel
-                                      .follwers!
+                                      .following!
                                       .contains(controller.model.userId)
                                   ? 'unfollow'.tr
                                   : 'follow'.tr,
@@ -141,7 +141,8 @@ class ProfilePhone extends StatelessWidget {
                     child: Row(
                       children: [
                         GestureDetector(
-                          onTap: () => controller.touchNav(tab: 0),
+                          onTap: () =>
+                              controller.touchNav(tab: 0, ids: [], title: ''),
                           child: Container(
                             color: Colors.transparent,
                             width: width / 3,
@@ -168,7 +169,11 @@ class ProfilePhone extends StatelessWidget {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () => controller.touchNav(tab: 1),
+                          onTap: () => controller.touchNav(
+                            tab: 1,
+                            ids: controller.model.follwers!,
+                            title: 'followers'.tr,
+                          ),
                           child: Container(
                             color: Colors.transparent,
                             width: width / 3,
@@ -186,12 +191,14 @@ class ProfilePhone extends StatelessWidget {
                                   height: (width * 0.12) * 0.15,
                                 ),
                                 CustomText(
-                                  text: controller.model.follwers!.length ==
-                                              1 &&
-                                          controller.model.follwers![0] == ''
-                                      ? '0'
-                                      : controller.model.follwers!.length
-                                          .toString(),
+                                  text: controller.model.follwers != null
+                                      ? controller.model.follwers!.isNotEmpty &&
+                                              controller.model.follwers![0] ==
+                                                  ''
+                                          ? '${controller.model.follwers!.length - 1}'
+                                          : controller.model.follwers!.length
+                                              .toString()
+                                      : '0',
                                   size: 12,
                                 )
                               ],
@@ -199,7 +206,10 @@ class ProfilePhone extends StatelessWidget {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () => controller.touchNav(tab: 2),
+                          onTap: () => controller.touchNav(
+                              tab: 2,
+                              ids: controller.model.following!,
+                              title: 'following'.tr),
                           child: Container(
                             color: Colors.transparent,
                             width: width / 3,
@@ -217,12 +227,15 @@ class ProfilePhone extends StatelessWidget {
                                   height: (width * 0.12) * 0.15,
                                 ),
                                 CustomText(
-                                  text: controller.model.following!.length ==
-                                              1 &&
-                                          controller.model.following![0] == ''
-                                      ? '0'
-                                      : controller.model.following!.length
-                                          .toString(),
+                                  text: controller.model.following != null
+                                      ? controller.model.following!
+                                                  .isNotEmpty &&
+                                              controller.model.following![0] ==
+                                                  ''
+                                          ? '${controller.model.following!.length - 1}'
+                                          : controller.model.following!.length
+                                              .toString()
+                                      : '0',
                                   size: 12,
                                 )
                               ],

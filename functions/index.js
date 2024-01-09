@@ -123,9 +123,7 @@ exports.whenChanged = functions.firestore
               body:
                 lang === "en_US"
                   ? `Change in Status  ${
-                      after["status"] === "Ended"
-                        ? "Ended"
-                        : "Returning Seeries"
+                      after["status"] === "Ended" ? "Ended" : "Returning Series"
                     }`
                   : `تغيير في حالة المسلسل : ${
                       after["status"] === "Ended" ? "منتهي" : "مستمر"
@@ -311,6 +309,11 @@ exports.updateKeeping = functions.pubsub
                 const status = resData["status"];
                 const name = resData["name"];
 
+                console.log("--------------------");
+                console.log(name + " => " + data["name"]);
+                console.log(status + " => " + data["status"]);
+                console.log(data["status"] === status);
+
                 if (resData["next_episode_to_air"] === null) {
                   nextEpisodeDate = "";
                   nextEpisode = 0;
@@ -337,6 +340,7 @@ exports.updateKeeping = functions.pubsub
                       nextSeason: nextSeason,
                       nextepisode: nextEpisode,
                       season: season,
+                      status: status,
                       isUpdated: true,
                       change: admin.firestore.Timestamp.now(),
                     });
@@ -347,6 +351,7 @@ exports.updateKeeping = functions.pubsub
                     nextSeason: nextSeason,
                     nextepisode: nextEpisode,
                     season: season,
+                    status: status,
                     isUpdated: true,
                     change: admin.firestore.Timestamp.now(),
                   });
