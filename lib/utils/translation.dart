@@ -77,8 +77,8 @@ class Translation extends Translations {
           'followers': 'Followers',
           'following': 'Following',
           'watching': 'Watching',
-          'follow': 'follow',
-          'unfollow': 'unfollow',
+          'follow': 'Follow',
+          'unfollow': 'Unfollow',
           'settings': 'Settings',
           'changepic': 'Change Photo',
           'changelanguage': 'Change Language',
@@ -129,7 +129,8 @@ class Translation extends Translations {
           'can': 'cancel',
           'mycom': 'My Comments',
           'comby': 'Comments By',
-          'asread': "Mark As Read"
+          'asread': "Mark As Read",
+          'followback': "Follow Back",
         },
         'ar_SA': {
           'email': 'العنوان الالكتروني',
@@ -257,7 +258,8 @@ class Translation extends Translations {
           'can': 'الغاء',
           'mycom': 'تعليقاتي',
           'comby': 'تعليقات',
-          'asread': 'جعل كل التنبيهات مقروءه'
+          'asread': 'جعل كل التنبيهات مقروءه',
+          'followback': 'رد المتابعة'
         }
       };
 }

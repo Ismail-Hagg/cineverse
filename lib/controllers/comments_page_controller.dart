@@ -57,7 +57,9 @@ class CommentsPageController extends GetxController {
     _model = Get.arguments;
     if (_model.fromProfile == true) {
       _userModel = _model.user;
-      getComments();
+      if (_model.map.isNotEmpty) {
+        getComments();
+      }
     } else {
       await FirebaseServices()
           .getCurrentUser(userId: _model.user.userId.toString())
@@ -68,7 +70,9 @@ class CommentsPageController extends GetxController {
         _userModel = _model.user;
         _model.isMe = _model.user.userId.toString() ==
             Get.find<HomeController>().userModel.userId.toString();
-        getComments();
+        if (_model.map.isNotEmpty) {
+          getComments();
+        }
       });
     }
   }

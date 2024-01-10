@@ -112,7 +112,13 @@ class ProfilePhone extends StatelessWidget {
                                       .following!
                                       .contains(controller.model.userId)
                                   ? 'unfollow'.tr
-                                  : 'follow'.tr,
+                                  : controller.model.following!.contains(
+                                          Get.find<HomeController>()
+                                              .userModel
+                                              .userId
+                                              .toString())
+                                      ? 'followback'.tr
+                                      : 'follow'.tr,
                               size: 18,
                             ),
                             onPressed: () => controller.controllFollow(),
@@ -125,7 +131,13 @@ class ProfilePhone extends StatelessWidget {
                                       .following!
                                       .contains(controller.model.userId)
                                   ? 'unfollow'.tr
-                                  : 'follow'.tr,
+                                  : controller.model.following!.contains(
+                                          Get.find<HomeController>()
+                                              .userModel
+                                              .userId
+                                              .toString())
+                                      ? 'followback'.tr
+                                      : 'follow'.tr,
                               size: 18,
                             ),
                           ),

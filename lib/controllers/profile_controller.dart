@@ -244,13 +244,17 @@ class ProfilePageController extends GetxController {
     await DataPref().setUser(myModel).then(
       (value) async {
         // update both objects in firebase
-        await FirebaseServices()
-            .userUpdate(userId: myModel.userId.toString(), map: myModel.toMap())
+        await pushPull(
+                isMe: true,
+                id: myModel.userId.toString(),
+                otherId: _model.userId.toString(),
+                add: true)
             .then(
           (_) async {
             await pushPull(
+                    isMe: false,
                     id: _model.userId.toString(),
-                    otherId: _model.userId.toString(),
+                    otherId: myModel.userId.toString(),
                     add: true)
                 .then(
               (_) async {
@@ -301,13 +305,17 @@ class ProfilePageController extends GetxController {
     myModel.following!.remove(_model.userId.toString());
     await DataPref().setUser(myModel).then(
       (value) async {
-        await FirebaseServices()
-            .userUpdate(userId: myModel.userId.toString(), map: myModel.toMap())
+        await pushPull(
+                id: myModel.userId.toString(),
+                otherId: _model.userId.toString(),
+                add: false,
+                isMe: true)
             .then(
           (_) async {
             await pushPull(
+                    isMe: false,
                     id: _model.userId.toString(),
-                    otherId: _model.userId.toString(),
+                    otherId: myModel.userId.toString(),
                     add: false)
                 .then(
               (_) async {
@@ -323,14 +331,24 @@ class ProfilePageController extends GetxController {
 
   // get useer data before updating firebase
   Future<void> pushPull(
-      {required String id, required String otherId, required bool add}) async {
-    await FirebaseServices().getCurrentUser(userId: id).then((value) async {
-      UserModel model = UserModel.fromMap(value.data() as Map<String, dynamic>);
-      add ? model.follwers!.add(otherId) : model.follwers!.remove(otherId);
-      _model = model;
-      update();
-      await FirebaseServices().userUpdate(userId: id, map: model.toMap());
-    });
+      {required String id,
+      required String otherId,
+      required bool add,
+      required bool isMe}) async {
+    await FirebaseServices().getCurrentUser(userId: id).then(
+      (value) async {
+        UserModel model =
+            UserModel.fromMap(value.data() as Map<String, dynamic>);
+        isMe
+            ? add
+                ? model.following!.add(otherId)
+                : model.following!.remove(otherId)
+            : add
+                ? model.follwers!.add(otherId)
+                : model.follwers!.remove(otherId);
+        await FirebaseServices().userUpdate(userId: id, map: model.toMap());
+      },
+    );
   }
 
   // nav to following or followers page

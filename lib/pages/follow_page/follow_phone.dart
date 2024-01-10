@@ -56,7 +56,8 @@ class FollowPhone extends StatelessWidget {
                                   child: CupertinoListTile(
                                     backgroundColorActivated:
                                         Colors.grey.withOpacity(0.3),
-                                    onTap: () {},
+                                    onTap: () =>
+                                        controller.navProfile(index: index),
                                     leadingSize: width * 0.15,
                                     leading: ImageNetWork(
                                         circle: true,
@@ -80,7 +81,8 @@ class FollowPhone extends StatelessWidget {
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 8.0),
                                   child: ListTile(
-                                    onTap: () {},
+                                    onTap: () =>
+                                        controller.navProfile(index: index),
                                     leading: ImageNetWork(
                                         circle: true,
                                         border: null,

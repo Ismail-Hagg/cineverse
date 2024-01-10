@@ -9,7 +9,6 @@ import 'package:cineverse/pages/view_controller.dart';
 import 'package:cineverse/services/firebase_service.dart';
 import 'package:cineverse/utils/enums.dart';
 import 'package:cineverse/utils/functions.dart';
-import 'package:cineverse/widgets/custom_text.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

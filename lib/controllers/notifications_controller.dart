@@ -154,6 +154,16 @@ class NotificationsController extends GetxController {
                 fromProfile: false),
             preventDuplicates: false);
         break;
+
+      case NotificationType.followed:
+        profileNav(
+            userName: action.userName,
+            userId: action.userId,
+            link: action.userImage,
+            index: index,
+            type: NotificationType.followed);
+        break;
+
       default:
     }
     notificationUpdate(index: index);

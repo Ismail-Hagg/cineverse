@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cineverse/controllers/comments_page_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
+import 'package:cineverse/controllers/profile_controller.dart';
 import 'package:cineverse/models/notification_action_model.dart';
 import 'package:cineverse/models/profile_to_comment.dart';
 import 'package:cineverse/models/result_details_model.dart';
@@ -9,6 +10,7 @@ import 'package:cineverse/models/user_model.dart';
 import 'package:cineverse/pages/chat/chat_page_controller.dart';
 import 'package:cineverse/pages/comments_page/comments_page_View_controller.dart';
 import 'package:cineverse/pages/episode_keeping_page/keeping_controller.dart';
+import 'package:cineverse/pages/profile_page/profile_controller.dart';
 import 'package:cineverse/utils/constants.dart';
 import 'package:cineverse/utils/enums.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -152,10 +154,30 @@ class MessagingService extends GetxController {
                   fromProfile: false),
               preventDuplicates: false);
           break;
+
+        case NotificationType.followed:
+          Get.create(() => ProfilePageController());
+          Get.to((const ProfileViewController()),
+              arguments: UserModel(
+                  isError: false,
+                  avatarType: AvatarType.online,
+                  movieWatchList: [],
+                  favs: [],
+                  showWatchList: [],
+                  watching: [],
+                  following: [],
+                  follwers: [],
+                  commentDislike: [],
+                  commentLike: [],
+                  email: '',
+                  language: 'en_US',
+                  userName: action.userName,
+                  userId: action.userId,
+                  onlinePicPath: action.userImage),
+              preventDuplicates: false);
         default:
       }
     } catch (e) {
-      //print(jsonDecode(message.data));
       print('===>> $e');
     }
   }
