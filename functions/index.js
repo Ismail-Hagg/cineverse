@@ -6,6 +6,89 @@ admin.initializeApp();
 const fcm = admin.messaging();
 const db = admin.firestore();
 
+exports.topicMessage = functions.https.onCall(async (data, context) => {
+  const { userId, otherId, otherUserName } = data;
+
+  await db
+    .collection("Users")
+    .doc(userId)
+    .get()
+    .then(async (user) => {
+      const userData = user.data();
+      var messageBody =
+        userData["language"] === "en_US"
+          ? `Followed ${otherUserName}`
+          : `قام بمتابعة ${otherUserName} `;
+      const message = {
+        notification: {
+          title: userData["userName"],
+          body: messageBody,
+          image: userData["onlinePicPath"],
+        },
+        data: {
+          body: messageBody,
+          action: JSON.stringify({
+            type: "NotificationType.followerAction",
+            userId: userId,
+            movieId: otherId,
+            movieOverView: otherUserName,
+            posterPath: userData["onlinePicPath"],
+            title: userData["userName"],
+            isShow: "true",
+            open: "false",
+            notificationBody: messageBody,
+            userImage: userData["onlinePicPath"],
+            userName: userData["userName"],
+            time: admin.firestore.Timestamp.now(),
+          }),
+        },
+      };
+      try {
+        if (userData["follwers"] !== "") {
+          console.log(userData["follwers"]);
+          userData["follwers"].split(",").forEach(async (item) => {
+            if (item !== "" && item !== ",") {
+              await db
+                .collection("Users")
+                .doc(item)
+                .collection("notifications")
+                .add({
+                  type: "NotificationType.followerAction",
+                  userId: userId,
+                  movieId: otherId,
+                  movieOverView: otherId,
+                  posterPath: userData["onlinePicPath"],
+                  title: userData["userName"],
+                  isShow: "true",
+                  open: "false",
+                  notificationBody: messageBody,
+                  userImage: userData["onlinePicPath"],
+                  userName: userData["userName"],
+                  time: admin.firestore.Timestamp.now(),
+                });
+            }
+          });
+        }
+
+        return fcm
+          .sendToTopic(userId, message)
+          .then((response) => {
+            return { success: true, response: "Success" + response };
+          })
+          .catch((error) => {
+            console.log("error => " + error);
+            return { error: error };
+          });
+      } catch (error) {
+        console.log("error => " + error);
+        throw new functions.https.HttpsError(
+          "invalid-argument",
+          "error" + error
+        );
+      }
+    });
+});
+
 exports.targetMessage = functions.https.onCall(async (data, context) => {
   const { token, body, image, title, action } = data;
   try {

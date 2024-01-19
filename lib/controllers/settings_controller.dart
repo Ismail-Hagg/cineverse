@@ -28,7 +28,7 @@ class SettingsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _model = Get.find<HomeController>().userModel;
+    _model = Get.find<AuthController>().userModel;
   }
 
   @override

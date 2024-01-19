@@ -164,6 +164,15 @@ class NotificationsController extends GetxController {
             type: NotificationType.followed);
         break;
 
+      case NotificationType.followerAction:
+        profileNav(
+            userName: action.movieOverView,
+            userId: action.movieOverView,
+            link: action.userImage,
+            index: index,
+            type: NotificationType.followed);
+        break;
+
       default:
     }
     notificationUpdate(index: index);

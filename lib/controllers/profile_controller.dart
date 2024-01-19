@@ -290,6 +290,11 @@ class ProfilePageController extends GetxController {
                     userId: _model.userId.toString(),
                     collection: FirebaseUserPaths.notifications.name,
                     action: action);
+
+                await MessagingService().sendMessageTopic(
+                    userId: myModel.userId.toString(),
+                    otherId: _model.userId.toString(),
+                    otherUserName: _model.userName.toString());
               },
             );
           },

@@ -175,6 +175,29 @@ class MessagingService extends GetxController {
                   userId: action.userId,
                   onlinePicPath: action.userImage),
               preventDuplicates: false);
+          break;
+
+        case NotificationType.followerAction:
+          Get.create(() => ProfilePageController());
+          Get.to((const ProfileViewController()),
+              arguments: UserModel(
+                  isError: false,
+                  avatarType: AvatarType.online,
+                  movieWatchList: [],
+                  favs: [],
+                  showWatchList: [],
+                  watching: [],
+                  following: [],
+                  follwers: [],
+                  commentDislike: [],
+                  commentLike: [],
+                  email: '',
+                  language: 'en_US',
+                  userName: action.movieOverView,
+                  userId: action.movieId,
+                  onlinePicPath: action.userImage),
+              preventDuplicates: false);
+          break;
         default:
       }
     } catch (e) {
@@ -198,6 +221,28 @@ class MessagingService extends GetxController {
         'token': token,
         'image': image,
         'action': action
+      });
+
+      return response.data == null ? false : true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // send message to topic
+  Future<bool> sendMessageTopic(
+      {required String userId,
+      required String otherId,
+      required String otherUserName,
+      String? image}) async {
+    HttpsCallable callable =
+        FirebaseFunctions.instance.httpsCallable('topicMessage');
+    try {
+      final response = await callable.call(<String, dynamic>{
+        'userId': userId,
+        'otherId': otherId,
+        'otherUserName': otherUserName,
+        'image': image,
       });
 
       return response.data == null ? false : true;

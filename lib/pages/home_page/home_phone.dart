@@ -116,7 +116,7 @@ class HomePhone extends StatelessWidget {
                   width: width * 0.08,
                   height: width * 0.08,
                   isBorder: false,
-                  type: controller.userModel.avatarType as AvatarType,
+                  type: controller.userModel.avatarType ?? AvatarType.online,
                   boxFit: BoxFit.cover,
                   shadow: false,
                   borderColor:
