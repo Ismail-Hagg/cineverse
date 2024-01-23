@@ -1,4 +1,4 @@
-# filmmer
+# Cineverse
 
 a movie app made using flutter and the movie database api (tmdb) and firebase in the backend.
 

@@ -50,6 +50,12 @@
       "request": "launch",
       "type": "dart",
       "deviceId": "D8ED3B08-A779-4DFC-A977-8E610AE72582"
+    },
+    {
+      "name": "ipad",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "28AD7615-BF25-4E6E-B982-B3AB5FFD0FF3"
     }
   ],
   "compounds": [

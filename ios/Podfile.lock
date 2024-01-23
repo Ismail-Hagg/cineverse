@@ -700,7 +700,7 @@ PODS:
   - Firebase/Storage (10.18.0):
     - Firebase/CoreOnly
     - FirebaseStorage (~> 10.18.0)
-  - firebase_auth (4.12.0):
+  - firebase_auth (4.16.0):
     - Firebase/Auth (= 10.18.0)
     - firebase_core
     - Flutter
@@ -1034,7 +1034,7 @@ SPEC CHECKSUMS:
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
   file_picker: 15fd9539e4eb735dc54bae8c0534a7a9511a03de
   Firebase: 414ad272f8d02dfbf12662a9d43f4bba9bec2a06
-  firebase_auth: 27ecba4a84abdda86abdfcb5e71632eb57f8075f
+  firebase_auth: 8e9ec02991ca4659111cc671c84d0c010b6bfb26
   firebase_core: 0af4a2b24f62071f9bf283691c0ee41556dcb3f5
   firebase_messaging: d4e4603f091c7b716b3f6c55550b2fa5dbf62ffd
   firebase_storage: 0dbc58296cff8477f1e6cf4e490a52bcd205bf8f
@@ -1081,4 +1081,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 9c033f19fffd985a0b8593f92d865a12027b924f
 
-COCOAPODS: 1.13.0
+COCOAPODS: 1.14.3
