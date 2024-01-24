@@ -371,12 +371,12 @@ class DetalePagePhone extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12.0, vertical: 8),
+                          horizontal: 0.0, vertical: 8),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           SizedBox(
-                            width: (width - 32) * 0.2,
+                            width: (width - 20) * 0.16,
                             child: Column(
                               children: [
                                 CustomText(
@@ -397,7 +397,7 @@ class DetalePagePhone extends StatelessWidget {
                             ),
                           ),
                           SizedBox(
-                            width: (width - 32) * 0.6,
+                            width: (width - 20) * 0.39,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -424,7 +424,7 @@ class DetalePagePhone extends StatelessWidget {
                             ),
                           ),
                           SizedBox(
-                            width: (width - 32) * 0.2,
+                            width: (width - 20) * 0.15,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -453,12 +453,35 @@ class DetalePagePhone extends StatelessWidget {
                               ],
                             ),
                           ),
+                          SizedBox(
+                            width: (width - 20) * 0.3,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CustomText(
+                                  text: 'status'.tr,
+                                  size: width * 0.035,
+                                  flow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 3),
+                                CustomText(
+                                  align: TextAlign.center,
+                                  text:
+                                      controller.detales.status ?? 'status'.tr,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  size: width * 0.04,
+                                  weight: FontWeight.bold,
+                                  flow: TextOverflow.ellipsis,
+                                )
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
                     Divider(
-                      indent: width * 0.05,
-                      endIndent: width * 0.05,
+                      indent: width * 0.035,
+                      endIndent: width * 0.035,
                       thickness: 1.5,
                     ),
                     Padding(

@@ -60,9 +60,11 @@ class MovieDetaleModel {
 
     if (json['genres'] != null) {
       genres = <String>[];
-      json['genres'].forEach((v) {
-        genres!.add(fire == true ? v : v['name']);
-      });
+      json['genres'].forEach(
+        (v) {
+          genres!.add(fire == true ? v : v['name']);
+        },
+      );
     }
     collectionId = json['belongs_to_collection'] != null
         ? json['belongs_to_collection']['id'].toString()
@@ -86,7 +88,9 @@ class MovieDetaleModel {
     voteAverage = double.parse(voteAve.toStringAsFixed(1));
     isShow = json['isShow'] ?? json['first_air_date'] != null;
     originCountry = json['origin_country'] == null
-        ? json['production_countries'][0]['name']
+        ? json['production_countries'].length == 0
+            ? ''
+            : json['production_countries'][0]['name']
         : countries[json['origin_country'][0]];
     isError = false;
     errorMessage = '';
