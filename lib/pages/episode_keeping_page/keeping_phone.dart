@@ -57,6 +57,8 @@ class KeepingPhone extends StatelessWidget {
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: GestureDetector(
+                              onLongPress: () =>
+                                  controller.keepDelete(index: index),
                               onTap: () => controller.openBottom(
                                   index: index,
                                   context: context,
@@ -64,6 +66,10 @@ class KeepingPhone extends StatelessWidget {
                                     init: Get.find<KeepingController>(),
                                     builder: (_) {
                                       return KeepingBottom(
+                                        catchup: () =>
+                                            controller.fastCatch(index: index),
+                                        delete: () =>
+                                            controller.keepDelete(index: index),
                                         edit: () => controller.afterEdit(
                                           index: index,
                                         ),

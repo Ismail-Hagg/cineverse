@@ -28,6 +28,17 @@ class FirebaseServices {
     return await _ref.doc(userId).get();
   }
 
+  // get show keeping details from the other collection
+  Future<DocumentSnapshot> getKeepingDetale({required String movieId}) async {
+    return await _refOther.doc(movieId).get();
+  }
+
+  // update show keeping details in the other collection
+  Future<void> updateKeepingDetale(
+      {required String movieId, required Map<String, dynamic> map}) async {
+    await _refOther.doc(movieId).update(map);
+  }
+
   // add user data to firebase
   Future<void> addUsers(UserModel model) async {
     return await _ref.doc(model.userId).set(model.toMap());

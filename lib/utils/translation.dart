@@ -131,6 +131,15 @@ class Translation extends Translations {
           'comby': 'Comments By',
           'asread': "Mark As Read",
           'followback': "Follow Back",
+          'options': 'Options',
+          'catchup': 'Catchup',
+          'explore': 'Explore',
+          'people': 'People',
+          'addname': 'Search for Actor',
+          'genre': 'Genres',
+          'type': 'Type',
+          'movy': 'Movie',
+          'shoe': 'Show'
         },
         'ar_SA': {
           'email': 'العنوان الالكتروني',
@@ -259,7 +268,16 @@ class Translation extends Translations {
           'mycom': 'تعليقاتي',
           'comby': 'تعليقات',
           'asread': 'جعل كل التنبيهات مقروءه',
-          'followback': 'رد المتابعة'
+          'followback': 'رد المتابعة',
+          'options': 'خيارات',
+          'catchup': 'لحاق',
+          'explore': 'استكشف',
+          'people': 'اشخاص',
+          'addname': 'ابحث عن ممثل',
+          'genre': 'التصنيف',
+          'type': 'النوع',
+          'movy': 'فلم',
+          'shoe': 'مسلسل'
         }
       };
 }

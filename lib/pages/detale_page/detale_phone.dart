@@ -376,7 +376,7 @@ class DetalePagePhone extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           SizedBox(
-                            width: (width - 20) * 0.16,
+                            width: (width - 20) * 0.2,
                             child: Column(
                               children: [
                                 CustomText(
@@ -397,7 +397,7 @@ class DetalePagePhone extends StatelessWidget {
                             ),
                           ),
                           SizedBox(
-                            width: (width - 20) * 0.39,
+                            width: (width - 20) * 0.37,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -424,7 +424,7 @@ class DetalePagePhone extends StatelessWidget {
                             ),
                           ),
                           SizedBox(
-                            width: (width - 20) * 0.15,
+                            width: (width - 20) * 0.13,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [

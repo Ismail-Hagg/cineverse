@@ -2,16 +2,11 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
 import 'package:cineverse/models/result_model.dart';
+import 'package:cineverse/pages/explore_page/explore.dart';
 import 'package:cineverse/pages/notifications_page/notification_controller.dart';
 import 'package:cineverse/utils/constants.dart';
 import 'package:cineverse/utils/enums.dart';
-import 'package:cineverse/widgets/avatar_widget.dart';
-import 'package:cineverse/widgets/content_scrolling.dart';
-import 'package:cineverse/widgets/custom_text.dart';
-import 'package:cineverse/widgets/image_network.dart';
-import 'package:cineverse/widgets/login_input.dart';
-import 'package:cineverse/widgets/movie_widget.dart';
-import 'package:cineverse/widgets/notification_widget.dart';
+import 'package:cineverse/widgets/exporter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -160,50 +155,94 @@ class HomeTap extends StatelessWidget {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 24.0, horizontal: 6),
+                    padding: const EdgeInsets.symmetric(vertical: 24.0),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        LoginInput(
-                          isSearch: true,
-                          textSize: 15,
-                          onTap: () => Get.find<HomeController>().navToSearch(
-                              model:
-                                  ResultModel(isError: true, errorMessage: ''),
-                              isSearch: true,
-                              title: 'title',
-                              link: 'link'),
+                        SizedBox(
                           height: width * 0.115,
-                          width: width * 0.82,
-                          obscure: false,
-                          isSelected: false,
-                          readOnly: true,
-                          hintNoLable: 'search'.tr,
-                          leadingIcon: Icon(
-                            FontAwesomeIcons.magnifyingGlass,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        ),
-                        GetBuilder<HomeController>(
-                          init: Get.find<HomeController>(),
-                          builder: (notificatinController) => GestureDetector(
-                            onTap: () => Get.to(
-                              () => const NotificationsViewController(),
-                            ),
-                            child: NotificationWidget(
-                              isNotify: notificatinController.notificationOn,
-                              mainWidget: Icon(
-                                Icons.notifications,
-                                size: width * 0.065,
+                          width: width * 0.78,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: LoginInput(
+                              isSearch: true,
+                              textSize: 15,
+                              onTap: () => Get.find<HomeController>()
+                                  .navToSearch(
+                                      model: ResultModel(
+                                          isError: true, errorMessage: ''),
+                                      isSearch: true,
+                                      title: 'title',
+                                      link: 'link'),
+                              height: width * 0.115,
+                              width: width * 0.7,
+                              obscure: false,
+                              isSelected: false,
+                              readOnly: true,
+                              hintNoLable: 'search'.tr,
+                              leadingIcon: Icon(
+                                FontAwesomeIcons.magnifyingGlass,
                                 color: Theme.of(context).colorScheme.primary,
                               ),
-                              notificationColor: Colors.red,
-                              top: 2,
-                              right: 2,
-                              height: width * 0.02,
-                              width: width * 0.02,
                             ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: width * 0.115,
+                          width: width * 0.11,
+                          child: Center(
+                            child: GetBuilder<HomeController>(
+                              init: Get.find<HomeController>(),
+                              builder: (notificatinController) =>
+                                  GestureDetector(
+                                onTap: () => Get.to(
+                                  () => const NotificationsViewController(),
+                                ),
+                                child: NotificationWidget(
+                                  isNotify:
+                                      notificatinController.notificationOn,
+                                  mainWidget: Icon(
+                                    Icons.notifications,
+                                    size: width * 0.07,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                                  notificationColor: Colors.red,
+                                  top: 2,
+                                  right: 2,
+                                  height: width * 0.02,
+                                  width: width * 0.02,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: width * 0.115,
+                          width: width * 0.11,
+                          child: Center(
+                            child: authController.platform == TargetPlatform.iOS
+                                ? CupertinoButton(
+                                    padding: EdgeInsets.zero,
+                                    child: FaIcon(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      FontAwesomeIcons.filter,
+                                      size: width * 0.065,
+                                    ),
+                                    onPressed: () =>
+                                        Get.to(() => const ExplorePage()),
+                                  )
+                                : IconButton(
+                                    splashRadius: 15,
+                                    onPressed: () =>
+                                        Get.to(() => const ExplorePage()),
+                                    icon: FaIcon(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      FontAwesomeIcons.filter,
+                                      size: width * 0.065,
+                                    ),
+                                  ),
                           ),
                         ),
                       ],

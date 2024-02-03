@@ -33,6 +33,8 @@ enum NotificationType {
   chatMessage
 }
 
+enum FilterChoice { movie, tv, none }
+
 enum CommentOrder {
   replies,
   mostLikes,

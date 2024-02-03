@@ -91,7 +91,9 @@ class MovieDetaleModel {
         ? json['production_countries'].length == 0
             ? ''
             : json['production_countries'][0]['name']
-        : countries[json['origin_country'][0]];
+        : fire == true
+            ? countries[json['origin_country']]
+            : countries[json['origin_country'][0]];
     isError = false;
     errorMessage = '';
     timestamp = json['timestamp'] ?? Timestamp.now();

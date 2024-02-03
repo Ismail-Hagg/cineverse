@@ -1,11 +1,13 @@
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
+import 'package:cineverse/local_storage/user_data.dart';
 import 'package:cineverse/models/episode_omdel.dart';
 import 'package:cineverse/models/result_details_model.dart';
 import 'package:cineverse/models/user_model.dart';
 import 'package:cineverse/services/firebase_service.dart';
 import 'package:cineverse/utils/enums.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -101,12 +103,8 @@ class KeepingController extends GetxController {
   void editing({required int index, required bool add, required bool episode}) {
     if (add) {
       episode
-          ? _list[index].myEpisode == _list[index].episode
-              ? null
-              : _list[index].myEpisode = _list[index].myEpisode! + 1
-          : _list[index].mySeason == _list[index].season
-              ? null
-              : _list[index].mySeason = _list[index].mySeason! + 1;
+          ? _list[index].myEpisode = _list[index].myEpisode! + 1
+          : _list[index].mySeason = _list[index].mySeason! + 1;
       update();
     } else {
       episode
@@ -118,6 +116,64 @@ class KeepingController extends GetxController {
               : _list[index].mySeason = _list[index].mySeason! - 1;
       update();
     }
+  }
+
+  // catching up fase
+  void fastCatch({required int index}) {
+    _list[index].myEpisode = _list[index].episode;
+    _list[index].mySeason = _list[index].season;
+    update();
+  }
+
+  // delete from keeping
+  void keepDelete({required int index}) async {
+    Get.back();
+    EpisodeModeL tempOne = _list[index];
+
+    // delete from the list and update ui
+    _list.remove(tempOne);
+    update();
+
+    // delete from local storage and update user data locally and in firebase
+    _userModel.watching!.remove(tempOne.id.toString());
+    await DataPref().setUser(_userModel).then(
+      (value) async {
+        await FirebaseServices()
+            .userUpdate(
+                userId: _userModel.userId.toString(), map: _userModel.toMap())
+            .then(
+          (_) async {
+            // delete from keeping in firebase
+            await FirebaseServices()
+                .delDoc(
+                    uid: _userModel.userId.toString(),
+                    collection: FirebaseUserPaths.keeping.name,
+                    docId: tempOne.id.toString())
+                .then(
+              (_) async {
+                // delete from other collection in order not to get notification on the show
+                await FirebaseServices()
+                    .getKeepingDetale(movieId: tempOne.id.toString())
+                    .then((value) async {
+                  Map<String, dynamic> newOp =
+                      value.data() as Map<String, dynamic>;
+                  DocumentReference myRef = FirebaseServices()
+                      .ref
+                      .doc(_userModel.userId.toString())
+                      .collection(FirebaseUserPaths.keeping.name)
+                      .doc(tempOne.id.toString());
+                  List<dynamic> refList = newOp['refList'];
+                  refList.remove(myRef);
+                  newOp['refList'] = refList;
+                  await FirebaseServices().updateKeepingDetale(
+                      movieId: tempOne.id.toString(), map: newOp);
+                });
+              },
+            );
+          },
+        );
+      },
+    );
   }
 
   // after editing

@@ -20,6 +20,8 @@ class KeepingBottom extends StatelessWidget {
   final Function() seAdd;
   final Function() seMin;
   final Function() edit;
+  final Function()? catchup;
+  final Function()? delete;
   const KeepingBottom(
       {super.key,
       required this.isIos,
@@ -36,7 +38,9 @@ class KeepingBottom extends StatelessWidget {
       required this.epMin,
       required this.seAdd,
       required this.seMin,
-      required this.edit});
+      required this.edit,
+      this.catchup,
+      this.delete});
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +127,7 @@ class KeepingBottom extends StatelessWidget {
             ],
           ),
           SizedBox(
-            height: width * 0.07,
+            height: width * 0.03,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -204,7 +208,85 @@ class KeepingBottom extends StatelessWidget {
             ],
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12.0),
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Divider(
+              color: Theme.of(context).colorScheme.secondary,
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CustomText(
+                text: 'options'.tr,
+                color: Theme.of(context).colorScheme.primary,
+                size: width * 0.05,
+              ),
+              Row(
+                children: [
+                  SizedBox(
+                    height: width * 0.09,
+                    width: width * 0.15,
+                    child: isIos
+                        ? CupertinoButton(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(width * 0.1)),
+                            padding: EdgeInsets.zero,
+                            color: Theme.of(context).colorScheme.primary,
+                            onPressed: catchup,
+                            child: CustomText(
+                              text: 'catchup'.tr,
+                              color: Theme.of(context).colorScheme.background,
+                              size: width * 0.03,
+                            ),
+                          )
+                        : MaterialButton(
+                            padding: EdgeInsets.zero,
+                            color: Theme.of(context).colorScheme.primary,
+                            onPressed: catchup,
+                            child: CustomText(
+                              text: 'catchup'.tr,
+                              color: Theme.of(context).colorScheme.background,
+                              size: width * 0.03,
+                            ),
+                          ),
+                  ),
+                  SizedBox(
+                    width: width * 0.22,
+                  ),
+                  SizedBox(
+                    height: width * 0.09,
+                    width: width * 0.09,
+                    child: isIos
+                        ? CupertinoButton(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(width * 0.1)),
+                            padding: EdgeInsets.zero,
+                            color: Theme.of(context).colorScheme.primary,
+                            onPressed: delete,
+                            child: FaIcon(
+                              FontAwesomeIcons.trash,
+                              color: Theme.of(context).colorScheme.background,
+                              size: width * 0.05,
+                            ),
+                          )
+                        : MaterialButton(
+                            padding: EdgeInsets.zero,
+                            shape: const CircleBorder(),
+                            color: Theme.of(context).colorScheme.primary,
+                            onPressed: delete,
+                            child: FaIcon(
+                              FontAwesomeIcons.trash,
+                              color: Theme.of(context).colorScheme.background,
+                              size: width * 0.05,
+                            ),
+                          ),
+                  )
+                ],
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
             child: Divider(
               color: Theme.of(context).colorScheme.secondary,
             ),
@@ -309,7 +391,7 @@ class KeepingBottom extends StatelessWidget {
           ),
           const Spacer(),
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(8.0),
             child: SizedBox(
               width: width,
               child: isIos
@@ -327,7 +409,7 @@ class KeepingBottom extends StatelessWidget {
                           color: Theme.of(context).colorScheme.background),
                     ),
             ),
-          )
+          ),
         ],
       ),
     );

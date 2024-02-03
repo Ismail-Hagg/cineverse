@@ -56,6 +56,12 @@
       "request": "launch",
       "type": "dart",
       "deviceId": "28AD7615-BF25-4E6E-B982-B3AB5FFD0FF3"
+    },
+    {
+      "name": "pro max",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "DF25501D-3812-42D1-A5D1-C59AD660ADC7"
     }
   ],
   "compounds": [
