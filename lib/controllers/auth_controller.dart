@@ -1,4 +1,3 @@
-import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:cineverse/local_storage/user_data.dart';
 import 'package:cineverse/models/user_model.dart';
 import 'package:cineverse/pages/info_page/info_controller.dart';
@@ -41,6 +40,9 @@ class AuthController extends GetxController {
   bool _passOb = true;
   bool get passOb => _passOb;
 
+  late bool _isIos;
+  bool get isIos => _isIos;
+
   bool _loading = false;
   bool get loading => _loading;
 
@@ -80,6 +82,7 @@ class AuthController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _isIos = platform == TargetPlatform.iOS;
     _user.bindStream(_auth.authStateChanges());
     _userModel = _userModelStart;
     setListeners();
@@ -238,30 +241,49 @@ class AuthController extends GetxController {
     if (_userModel.phoneNumber == '' || _userModel.phoneNumber == null) {
       _loading = false;
       update();
-      await showOkAlertDialog(
-        context: context,
+
+      platforMulti(
+        isIos: _isIos,
         title: 'error'.tr,
-        message: 'enterphone'.tr,
+        buttonTitle: ["ok".tr],
+        body: 'enterphone'.tr,
+        func: [
+          () {
+            Get.back();
+          }
+        ],
+        context: context,
       );
     } else {
       await phoneValid(
               phone: _userModel.phoneNumber.toString(), country: _phoneCountry)
-          .then((value) async {
-        if (value) {
-          // start the phone authentication
-          phoneAuth(
-              phoneNumber: _userModel.phoneNumber.toString(), context: context);
-        } else {
-          // phone number is invalid
-          _loading = false;
-          update();
-          await showOkAlertDialog(
-            context: context,
-            title: 'error'.tr,
-            message: 'badphone'.tr,
-          );
-        }
-      });
+          .then(
+        (value) async {
+          if (value) {
+            // start the phone authentication
+            phoneAuth(
+                phoneNumber: _userModel.phoneNumber.toString(),
+                context: context);
+          } else {
+            // phone number is invalid
+            _loading = false;
+            update();
+
+            platforMulti(
+              isIos: _isIos,
+              title: 'error'.tr,
+              buttonTitle: ["ok".tr],
+              body: 'badphone'.tr,
+              func: [
+                () {
+                  Get.back();
+                }
+              ],
+              context: context,
+            );
+          }
+        },
+      );
     }
   }
 
@@ -277,10 +299,19 @@ class AuthController extends GetxController {
         verificationFailed: (e) async {
           _loading = false;
           update();
-          await showOkAlertDialog(
-              context: context,
-              title: 'error'.tr,
-              message: getMessageFromErrorCode(errorMessage: e.code));
+
+          platforMulti(
+            isIos: _isIos,
+            title: 'error'.tr,
+            buttonTitle: ["ok".tr],
+            body: getMessageFromErrorCode(errorMessage: e.code),
+            func: [
+              () {
+                Get.back();
+              }
+            ],
+            context: context,
+          );
         },
         codeSent: (verificationId, resendToken) async {
           _loading = false;
@@ -291,10 +322,17 @@ class AuthController extends GetxController {
       );
     } on FirebaseAuthException catch (e) {
       // ignore: use_build_context_synchronously
-      await showOkAlertDialog(
-        context: context,
+      platforMulti(
+        isIos: _isIos,
         title: 'error'.tr,
-        message: getMessageFromErrorCode(errorMessage: e.code),
+        buttonTitle: ["ok".tr],
+        body: getMessageFromErrorCode(errorMessage: e.code),
+        func: [
+          () {
+            Get.back();
+          }
+        ],
+        context: context,
       );
     }
   }
@@ -320,24 +358,34 @@ class AuthController extends GetxController {
               (value) async {
                 _userModel =
                     UserModel.fromMap(value.data() as Map<String, dynamic>);
-                await saveUserDataLocally(model: _userModel)
-                    .then((saved) async {
-                  if (saved) {
-                    _loading = false;
-                    // update the theme
-                    themeDecide(theme: _userModel.theme as ChosenTheme);
-                    Get.offAll(() => const ViewController());
-                  } else {
-                    _loading = false;
-                    update();
-                    await showOkAlertDialog(
-                      context: context,
-                      title: 'error'.tr,
-                      message: 'firelogin'.tr,
-                    );
-                    Get.back();
-                  }
-                });
+                await saveUserDataLocally(model: _userModel).then(
+                  (saved) async {
+                    if (saved) {
+                      _loading = false;
+                      // update the theme
+                      themeDecide(theme: _userModel.theme as ChosenTheme);
+                      Get.offAll(() => const ViewController());
+                    } else {
+                      _loading = false;
+                      update();
+
+                      platforMulti(
+                        isIos: _isIos,
+                        title: 'error'.tr,
+                        buttonTitle: ["ok".tr],
+                        body: 'firelogin'.tr,
+                        func: [
+                          () {
+                            Get.back();
+                          }
+                        ],
+                        context: context,
+                      );
+
+                      Get.back();
+                    }
+                  },
+                );
               },
             );
           } else {
@@ -375,32 +423,57 @@ class AuthController extends GetxController {
                 _loading = false;
                 update();
                 // ignore: use_build_context_synchronously
-                await showOkAlertDialog(
-                  context: context,
+                platforMulti(
+                  isIos: _isIos,
                   title: 'error'.tr,
-                  message: 'firelogin'.tr,
+                  buttonTitle: ["ok".tr],
+                  body: 'firelogin'.tr,
+                  func: [
+                    () {
+                      Get.back();
+                    }
+                  ],
+                  context: context,
                 );
                 Get.back();
               }
-            }).onError((error, stackTrace) async {
-              _loading = false;
-              update();
-              Get.back();
-              await showOkAlertDialog(
-                context: context,
-                title: 'error'.tr,
-                message: 'firelogin'.tr,
-              );
-            });
+            }).onError(
+              (error, stackTrace) {
+                _loading = false;
+                update();
+                Get.back();
+
+                platforMulti(
+                  isIos: _isIos,
+                  title: 'error'.tr,
+                  buttonTitle: ["ok".tr],
+                  body: 'firelogin'.tr,
+                  func: [
+                    () {
+                      Get.back();
+                    }
+                  ],
+                  context: context,
+                );
+              },
+            );
           }
-        }).onError((error, stackTrace) async {
+        }).onError((error, stackTrace) {
           _loading = false;
           update();
           Get.back();
-          await showOkAlertDialog(
-            context: context,
+
+          platforMulti(
+            isIos: _isIos,
             title: 'error'.tr,
-            message: 'firelogin'.tr,
+            buttonTitle: ["ok".tr],
+            body: 'firelogin'.tr,
+            func: [
+              () {
+                Get.back();
+              }
+            ],
+            context: context,
           );
         });
       });
@@ -409,10 +482,17 @@ class AuthController extends GetxController {
       _loading = false;
       update();
       // ignore: use_build_context_synchronously
-      await showOkAlertDialog(
-        context: context,
+      platforMulti(
+        isIos: _isIos,
         title: 'error'.tr,
-        message: 'wrongotp'.tr,
+        buttonTitle: ["ok".tr],
+        body: 'wrongotp'.tr,
+        func: [
+          () {
+            Get.back();
+          }
+        ],
+        context: context,
       );
     }
   }
@@ -468,25 +548,35 @@ class AuthController extends GetxController {
                               _userModel.onlinePicPath != user.user!.photoURL) {
                             _userModel.onlinePicPath = user.user!.photoURL;
                           }
-                          await saveUserDataLocally(model: _userModel)
-                              .then((saved) async {
-                            if (saved) {
-                              _loading = false;
-                              // update the theme
-                              themeDecide(
-                                  theme: _userModel.theme as ChosenTheme);
-                              Get.offAll(() => const ViewController());
-                            } else {
-                              _loading = false;
-                              update();
-                              await showOkAlertDialog(
-                                context: context,
-                                title: 'error'.tr,
-                                message: 'firelogin'.tr,
-                              );
-                              Get.back();
-                            }
-                          });
+                          await saveUserDataLocally(model: _userModel).then(
+                            (saved) async {
+                              if (saved) {
+                                _loading = false;
+                                // update the theme
+                                themeDecide(
+                                    theme: _userModel.theme as ChosenTheme);
+                                Get.offAll(() => const ViewController());
+                              } else {
+                                _loading = false;
+                                update();
+
+                                platforMulti(
+                                  isIos: _isIos,
+                                  title: 'error'.tr,
+                                  buttonTitle: ["ok".tr],
+                                  body: 'firelogin'.tr,
+                                  func: [
+                                    () {
+                                      Get.back();
+                                    }
+                                  ],
+                                  context: context,
+                                );
+
+                                Get.back();
+                              }
+                            },
+                          );
                         },
                       );
                     } else {
@@ -530,21 +620,37 @@ class AuthController extends GetxController {
                           _loading = false;
                           update();
                           // ignore: use_build_context_synchronously
-                          await showOkAlertDialog(
-                            context: context,
+
+                          platforMulti(
+                            isIos: _isIos,
                             title: 'error'.tr,
-                            message: 'firelogin'.tr,
+                            buttonTitle: ["ok".tr],
+                            body: 'firelogin'.tr,
+                            func: [
+                              () {
+                                Get.back();
+                              }
+                            ],
+                            context: context,
                           );
                           Get.back();
                         }
-                      }).onError((error, stackTrace) async {
+                      }).onError((error, stackTrace) {
                         _loading = false;
                         update();
                         Get.back();
-                        await showOkAlertDialog(
-                          context: context,
+
+                        platforMulti(
+                          isIos: _isIos,
                           title: 'error'.tr,
-                          message: 'firelogin'.tr,
+                          buttonTitle: ["ok".tr],
+                          body: 'firelogin'.tr,
+                          func: [
+                            () {
+                              Get.back();
+                            }
+                          ],
+                          context: context,
                         );
                       });
                     }
@@ -556,19 +662,33 @@ class AuthController extends GetxController {
             _loading = false;
             update();
             // ignore: use_build_context_synchronously
-            await showOkAlertDialog(
-              context: context,
+            platforMulti(
+              isIos: _isIos,
               title: 'error'.tr,
-              message: getMessageFromErrorCode(errorMessage: e.code),
+              buttonTitle: ["ok".tr],
+              body: getMessageFromErrorCode(errorMessage: e.code),
+              func: [
+                () {
+                  Get.back();
+                }
+              ],
+              context: context,
             );
           } catch (e) {
             _loading = false;
             update();
             // ignore: use_build_context_synchronously
-            await showOkAlertDialog(
-              context: context,
+            platforMulti(
+              isIos: _isIos,
               title: 'error'.tr,
-              message: getMessageFromErrorCode(errorMessage: e.toString()),
+              buttonTitle: ["ok".tr],
+              body: getMessageFromErrorCode(errorMessage: e.toString()),
+              func: [
+                () {
+                  Get.back();
+                }
+              ],
+              context: context,
             );
           }
         } else {
@@ -591,48 +711,76 @@ class AuthController extends GetxController {
       try {
         await _auth
             .signInWithEmailAndPassword(email: email, password: password)
-            .then((user) async {
-          FirebaseServices()
-              .getCurrentUser(userId: user.user!.uid.toString())
-              .then((value) {
-            _userModel =
-                UserModel.fromMap(value.data() as Map<String, dynamic>);
-            saveUserDataLocally(model: _userModel).then((done) async {
-              if (done) {
-                _loading = false;
-                // update the theme
-                themeDecide(theme: _userModel.theme as ChosenTheme);
-                update();
-                Get.offAll(() => const ViewController());
-              } else {
-                _loading = false;
-                update();
-                await showOkAlertDialog(
-                  context: context,
-                  title: 'error'.tr,
-                  message: 'firelogin'.tr,
+            .then(
+          (user) async {
+            FirebaseServices()
+                .getCurrentUser(userId: user.user!.uid.toString())
+                .then(
+              (value) {
+                _userModel =
+                    UserModel.fromMap(value.data() as Map<String, dynamic>);
+                saveUserDataLocally(model: _userModel).then(
+                  (done) async {
+                    if (done) {
+                      _loading = false;
+                      // update the theme
+                      themeDecide(theme: _userModel.theme as ChosenTheme);
+                      update();
+                      Get.offAll(() => const ViewController());
+                    } else {
+                      _loading = false;
+                      update();
+
+                      platforMulti(
+                        isIos: _isIos,
+                        title: 'error'.tr,
+                        buttonTitle: ["ok".tr],
+                        body: 'firelogin'.tr,
+                        func: [
+                          () {
+                            Get.back();
+                          }
+                        ],
+                        context: context,
+                      );
+                    }
+                  },
                 );
-              }
-            });
-          });
-        });
+              },
+            );
+          },
+        );
       } on FirebaseAuthException catch (e) {
         _loading = false;
         update();
         // ignore: use_build_context_synchronously
-        await showOkAlertDialog(
-          context: context,
+        platforMulti(
+          isIos: _isIos,
           title: 'error'.tr,
-          message: getMessageFromErrorCode(errorMessage: e.code),
+          buttonTitle: ["ok".tr],
+          body: getMessageFromErrorCode(errorMessage: e.code),
+          func: [
+            () {
+              Get.back();
+            }
+          ],
+          context: context,
         );
       } catch (e) {
         _loading = false;
         update();
         // ignore: use_build_context_synchronously
-        await showOkAlertDialog(
-          context: context,
+        platforMulti(
+          isIos: _isIos,
           title: 'error'.tr,
-          message: getMessageFromErrorCode(errorMessage: e.toString()),
+          buttonTitle: ["ok".tr],
+          body: getMessageFromErrorCode(errorMessage: e.toString()),
+          func: [
+            () {
+              Get.back();
+            }
+          ],
+          context: context,
         );
       }
     }
@@ -741,10 +889,18 @@ class AuthController extends GetxController {
         } else {
           _loading = false;
           update();
-          await showOkAlertDialog(
-            context: context,
+
+          platforMulti(
+            isIos: _isIos,
             title: 'error'.tr,
-            message: 'complete'.tr,
+            buttonTitle: ["ok".tr],
+            body: 'complete'.tr,
+            func: [
+              () {
+                Get.back();
+              }
+            ],
+            context: context,
           );
         }
         break;
@@ -768,10 +924,17 @@ class AuthController extends GetxController {
           _loading = false;
           update();
           // ignore: use_build_context_synchronously
-          await showOkAlertDialog(
-            context: context,
+          platforMulti(
+            isIos: _isIos,
             title: 'error'.tr,
-            message: 'complete'.tr,
+            buttonTitle: ["ok".tr],
+            body: 'complete'.tr,
+            func: [
+              () {
+                Get.back();
+              }
+            ],
+            context: context,
           );
         }
         break;
@@ -834,45 +997,76 @@ class AuthController extends GetxController {
               update();
               Get.offAll(() => const ViewController());
               await uploadUser(model: _userModel);
-            }).onError((error, stackTrace) async {
-              _loading = false;
-              update();
-              Get.back();
-              await showOkAlertDialog(
-                context: context,
-                title: 'error'.tr,
-                message: error.toString(),
-              );
-              signOut();
-            });
+            }).onError(
+              (error, stackTrace) {
+                _loading = false;
+                update();
+                Get.back();
+
+                platforMulti(
+                  isIos: _isIos,
+                  title: 'error'.tr,
+                  buttonTitle: ["ok".tr],
+                  body: error.toString(),
+                  func: [
+                    () {
+                      Get.back();
+                    }
+                  ],
+                  context: context,
+                );
+                signOut();
+              },
+            );
           },
         );
       } on FirebaseAuthException catch (e) {
         _loading = false;
         update();
         // ignore: use_build_context_synchronously
-        await showOkAlertDialog(
-          context: context,
+        platforMulti(
+          isIos: _isIos,
           title: 'error'.tr,
-          message: getMessageFromErrorCode(errorMessage: e.code),
+          buttonTitle: ["ok".tr],
+          body: getMessageFromErrorCode(errorMessage: e.code),
+          func: [
+            () {
+              Get.back();
+            }
+          ],
+          context: context,
         );
       } catch (e) {
         _loading = false;
         update();
         // ignore: use_build_context_synchronously
-        await showOkAlertDialog(
-          context: context,
+        platforMulti(
+          isIos: _isIos,
           title: 'error'.tr,
-          message: getMessageFromErrorCode(errorMessage: e.toString()),
+          buttonTitle: ["ok".tr],
+          body: getMessageFromErrorCode(errorMessage: e.toString()),
+          func: [
+            () {
+              Get.back();
+            }
+          ],
+          context: context,
         );
       }
     } else {
       _loading = false;
       update();
-      await showOkAlertDialog(
-        context: context,
+      platforMulti(
+        isIos: _isIos,
         title: 'error'.tr,
-        message: 'complete'.tr,
+        buttonTitle: ["ok".tr],
+        body: 'complete'.tr,
+        func: [
+          () {
+            Get.back();
+          }
+        ],
+        context: context,
       );
     }
   }

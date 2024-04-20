@@ -11,7 +11,7 @@ class FavouritesViewController extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final FavoritesController controller = Get.put(FavoritesController());
+    Get.put(FavoritesController());
     double width = MediaQuery.of(context).size.width;
     return width <= phoneSize
         ? const FavouritesPhone()

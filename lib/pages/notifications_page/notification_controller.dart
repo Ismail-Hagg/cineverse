@@ -11,7 +11,7 @@ class NotificationsViewController extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    NotificationsController controller = Get.put(NotificationsController());
+    Get.put(NotificationsController());
     double width = MediaQuery.of(context).size.width;
     return width <= phoneSize
         ? const NotificationsPhone()

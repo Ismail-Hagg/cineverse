@@ -11,7 +11,7 @@ class ProfileViewController extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ProfilePageController controller = Get.put(ProfilePageController());
+    Get.put(ProfilePageController());
     double width = MediaQuery.of(context).size.width;
     return width <= phoneSize
         ? const ProfilePhone()

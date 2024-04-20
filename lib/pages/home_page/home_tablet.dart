@@ -7,7 +7,7 @@ class HomeTablet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<AuthController>();
+    Get.find<AuthController>();
     return Scaffold(
       body: Center(
         child: GestureDetector(

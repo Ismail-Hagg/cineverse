@@ -7,17 +7,7 @@ import 'package:cineverse/controllers/favorites_controller.dart';
 import 'package:cineverse/controllers/keeping_controller.dart';
 import 'package:cineverse/controllers/profile_controller.dart';
 import 'package:cineverse/controllers/wachlist_controller.dart';
-import 'package:cineverse/models/actor_model.dart';
-import 'package:cineverse/models/cast_model.dart';
-import 'package:cineverse/models/collection_model.dart';
-import 'package:cineverse/models/move_model.dart';
-import 'package:cineverse/models/movie_detales_model.dart';
-import 'package:cineverse/models/notification_action_model.dart';
-import 'package:cineverse/models/result_details_model.dart';
-import 'package:cineverse/models/result_model.dart';
-import 'package:cineverse/models/season_model.dart';
-import 'package:cineverse/models/trailer_model.dart';
-import 'package:cineverse/models/user_model.dart';
+import 'package:cineverse/models/model_exports.dart';
 import 'package:cineverse/pages/actor_page/actor_controller.dart';
 import 'package:cineverse/pages/chats_page/chat_controller.dart';
 import 'package:cineverse/pages/detale_page/detale_controller.dart';
@@ -33,6 +23,7 @@ import 'package:cineverse/services/home_page_service.dart';
 import 'package:cineverse/utils/enums.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../utils/constants.dart';
 import 'movie_detale_controller.dart';
@@ -120,6 +111,15 @@ class HomeController extends GetxController {
     _keepingStram = FirebaseServices().getAllChats(
         userId: _userModel.userId.toString(),
         otherStream: FirebaseUserPaths.keeping.name);
+  }
+
+  // back button only kill app when on home page
+  void backButton({required BuildContext context}) {
+    if (_pageIndex == 0) {
+      SystemNavigator.pop();
+    } else {
+      indexChange(index: 0);
+    }
   }
 
   // change page index

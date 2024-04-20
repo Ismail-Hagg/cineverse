@@ -23,114 +23,122 @@ class HomePhone extends StatelessWidget {
 
     final AuthController authController = Get.find<AuthController>();
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      body: GetBuilder(
-        init: Get.find<HomeController>(),
-        builder: (control) => Stack(
-          children: [
-            control.pages[control.pageIndex],
-            Positioned(
-              bottom: 0,
-              child: Container(
-                height: MediaQuery.of(context).size.height * 0.0125,
-                width: width,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [blackColor.withOpacity(0.1), Colors.transparent],
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (val) =>
+          Get.find<HomeController>().backButton(context: context),
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        body: GetBuilder(
+          init: Get.find<HomeController>(),
+          builder: (control) => Stack(
+            children: [
+              control.pages[control.pageIndex],
+              Positioned(
+                bottom: 0,
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.0125,
+                  width: width,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [blackColor.withOpacity(0.1), Colors.transparent],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: GetBuilder<HomeController>(
-        init: Get.find<HomeController>(),
-        builder: (controller) => FittedBox(
-          child: SalomonBottomBar(
-            onTap: (page) => controller.indexChange(index: page),
-            currentIndex: controller.pageIndex,
-            backgroundColor: Theme.of(context).colorScheme.background,
-            selectedItemColor: Theme.of(context).colorScheme.primary,
-            unselectedItemColor: Theme.of(context).colorScheme.secondary,
-            items: [
-              SalomonBottomBarItem(
-                icon: const FaIcon(FontAwesomeIcons.house),
-                title: CustomText(text: 'home'.tr),
-              ),
-              SalomonBottomBarItem(
-                icon: const FaIcon(FontAwesomeIcons.list),
-                title: CustomText(text: 'watchList'.tr),
-              ),
-              SalomonBottomBarItem(
-                icon: const FaIcon(FontAwesomeIcons.heart),
-                title: CustomText(text: 'favourite'.tr),
-              ),
-              SalomonBottomBarItem(
-                icon: StreamBuilder<QuerySnapshot>(
-                    stream: controller.keepingStram,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        controller.keepingNotify(list: snapshot.data!.docs);
-                      }
-                      return NotificationWidget(
-                          top: 0,
-                          right: 0,
-                          mainWidget: const FaIcon(FontAwesomeIcons.tv),
-                          notificationColor: Colors.red,
-                          height: width * 0.025,
-                          width: width * 0.025,
-                          isNotify: controller.keepingNotification);
-                    }),
-                title: CustomText(text: 'keeping'.tr),
-              ),
-              SalomonBottomBarItem(
-                icon: StreamBuilder<QuerySnapshot>(
-                    stream: controller.straem,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        controller.chatNotification(list: snapshot.data!.docs);
-                      }
-
-                      return NotificationWidget(
-                          top: 0,
-                          right: 0,
-                          mainWidget: const Icon(Icons.chat),
-                          notificationColor: Colors.red,
-                          height: width * 0.025,
-                          width: width * 0.025,
-                          isNotify: controller.chatNotificationOn);
-                    }),
-                title: CustomText(text: 'chats'.tr),
-              ),
-              SalomonBottomBarItem(
-                icon: Avatar(
-                  width: width * 0.08,
-                  height: width * 0.08,
-                  isBorder: false,
-                  type: controller.userModel.avatarType ?? AvatarType.online,
-                  boxFit: BoxFit.cover,
-                  shadow: false,
-                  borderColor:
-                      controller.pageIndex == 5 ? null : Colors.transparent,
-                  link: authController.userModel.avatarType == AvatarType.local
-                      ? authController.userModel.localPicPath
-                      : authController.userModel.avatarType == AvatarType.online
-                          ? authController.userModel.onlinePicPath
-                          : '',
-                  isIos: authController.platform == TargetPlatform.iOS,
-                  iconAndroid: FontAwesomeIcons.user,
-                  iconIos: CupertinoIcons.person,
-                  backgroundColor: Theme.of(context).colorScheme.background,
-                  iconColor: Theme.of(context).colorScheme.secondary,
-                  iconSize: width * 0.065,
-                ),
-                title: CustomText(text: 'profile'.tr),
-              ),
             ],
+          ),
+        ),
+        bottomNavigationBar: GetBuilder<HomeController>(
+          init: Get.find<HomeController>(),
+          builder: (controller) => FittedBox(
+            child: SalomonBottomBar(
+              onTap: (page) => controller.indexChange(index: page),
+              currentIndex: controller.pageIndex,
+              backgroundColor: Theme.of(context).colorScheme.background,
+              selectedItemColor: Theme.of(context).colorScheme.primary,
+              unselectedItemColor: Theme.of(context).colorScheme.secondary,
+              items: [
+                SalomonBottomBarItem(
+                  icon: const FaIcon(FontAwesomeIcons.house),
+                  title: CustomText(text: 'home'.tr),
+                ),
+                SalomonBottomBarItem(
+                  icon: const FaIcon(FontAwesomeIcons.list),
+                  title: CustomText(text: 'watchList'.tr),
+                ),
+                SalomonBottomBarItem(
+                  icon: const FaIcon(FontAwesomeIcons.heart),
+                  title: CustomText(text: 'favourite'.tr),
+                ),
+                SalomonBottomBarItem(
+                  icon: StreamBuilder<QuerySnapshot>(
+                      stream: controller.keepingStram,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          controller.keepingNotify(list: snapshot.data!.docs);
+                        }
+                        return NotificationWidget(
+                            top: 0,
+                            right: 0,
+                            mainWidget: const FaIcon(FontAwesomeIcons.tv),
+                            notificationColor: Colors.red,
+                            height: width * 0.025,
+                            width: width * 0.025,
+                            isNotify: controller.keepingNotification);
+                      }),
+                  title: CustomText(text: 'keeping'.tr),
+                ),
+                SalomonBottomBarItem(
+                  icon: StreamBuilder<QuerySnapshot>(
+                      stream: controller.straem,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          controller.chatNotification(
+                              list: snapshot.data!.docs);
+                        }
+
+                        return NotificationWidget(
+                            top: 0,
+                            right: 0,
+                            mainWidget: const Icon(Icons.chat),
+                            notificationColor: Colors.red,
+                            height: width * 0.025,
+                            width: width * 0.025,
+                            isNotify: controller.chatNotificationOn);
+                      }),
+                  title: CustomText(text: 'chats'.tr),
+                ),
+                SalomonBottomBarItem(
+                  icon: Avatar(
+                    width: width * 0.08,
+                    height: width * 0.08,
+                    isBorder: false,
+                    type: controller.userModel.avatarType ?? AvatarType.online,
+                    boxFit: BoxFit.cover,
+                    shadow: false,
+                    borderColor:
+                        controller.pageIndex == 5 ? null : Colors.transparent,
+                    link:
+                        authController.userModel.avatarType == AvatarType.local
+                            ? authController.userModel.localPicPath
+                            : authController.userModel.avatarType ==
+                                    AvatarType.online
+                                ? authController.userModel.onlinePicPath
+                                : '',
+                    isIos: authController.platform == TargetPlatform.iOS,
+                    iconAndroid: FontAwesomeIcons.user,
+                    iconIos: CupertinoIcons.person,
+                    backgroundColor: Theme.of(context).colorScheme.background,
+                    iconColor: Theme.of(context).colorScheme.secondary,
+                    iconSize: width * 0.065,
+                  ),
+                  title: CustomText(text: 'profile'.tr),
+                ),
+              ],
+            ),
           ),
         ),
       ),

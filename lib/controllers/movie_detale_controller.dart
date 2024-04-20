@@ -1,15 +1,9 @@
 import 'dart:convert';
 
-import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/profile_controller.dart';
 import 'package:cineverse/local_storage/user_data.dart';
-import 'package:cineverse/models/comment_model.dart';
-import 'package:cineverse/models/image_model.dart';
-import 'package:cineverse/models/movie_detales_model.dart';
-import 'package:cineverse/models/notification_action_model.dart';
-import 'package:cineverse/models/trailer_model.dart';
-import 'package:cineverse/models/user_model.dart';
+import 'package:cineverse/models/model_exports.dart';
 import 'package:cineverse/pages/profile_page/profile_controller.dart';
 import 'package:cineverse/services/cast_service.dart';
 import 'package:cineverse/services/collection_service.dart';
@@ -42,6 +36,9 @@ class MovieDetaleController extends GetxController
 
   ImagesModel _imageModel = ImagesModel();
   ImagesModel get imageModel => _imageModel;
+
+  final bool _isIos = Get.find<AuthController>().platform == TargetPlatform.iOS;
+  bool get isIos => _isIos;
 
   int _loading = 0;
   int get loading => _loading;
@@ -861,12 +858,19 @@ class MovieDetaleController extends GetxController
   void trailerButton(
       {required Widget content,
       required BuildContext context,
-      required TrailerModel? model}) async {
+      required TrailerModel? model}) {
     if (_loading == 0 && model!.isError == false) {
       if (model.results!.isEmpty) {
-        await showOkAlertDialog(
-          context: context,
+        platforMulti(
+          isIos: _isIos,
           title: 'trailer'.tr,
+          buttonTitle: ["ok".tr],
+          func: [
+            () {
+              Get.back();
+            }
+          ],
+          context: context,
         );
       } else if (model.results!.length == 1) {
         launcherUse(
@@ -884,8 +888,18 @@ class MovieDetaleController extends GetxController
       if (value.$1) {
         await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
       } else {
-        await showOkAlertDialog(
-            context: context, title: 'error'.tr, message: value.$2);
+        platforMulti(
+          isIos: _isIos,
+          title: 'error'.tr,
+          buttonTitle: ["ok".tr],
+          body: value.$2,
+          func: [
+            () {
+              Get.back();
+            }
+          ],
+          context: context,
+        );
       }
     });
   }
@@ -911,9 +925,7 @@ class MovieDetaleController extends GetxController
         .then((_) {
       _authController.userUpdate(
           userId: _userModel.userId.toString(), map: _userModel.toMap());
-    }).onError((error, stackTrace) {
-      print('error ==> $error');
-    });
+    }).onError((error, stackTrace) {});
   }
 
   // when favorites or watchlist button clicked
@@ -932,13 +944,20 @@ class MovieDetaleController extends GetxController
                 watchFav(path: path, upload: false);
               },
             ).onError(
-              (error, stackTrace) async {
+              (error, stackTrace) {
                 _userModel.favs!.add(id);
                 update();
-                await showOkAlertDialog(
-                  context: context,
+                platforMulti(
+                  isIos: _isIos,
                   title: 'error'.tr,
-                  message: error.toString(),
+                  buttonTitle: ["ok".tr],
+                  body: error.toString(),
+                  func: [
+                    () {
+                      Get.back();
+                    }
+                  ],
+                  context: context,
                 );
               },
             );
@@ -950,13 +969,20 @@ class MovieDetaleController extends GetxController
                 _detales.timestamp = Timestamp.now();
                 watchFav(path: path, upload: true);
               },
-            ).catchError((error, stackTrace) async {
+            ).catchError((error, stackTrace) {
               _userModel.favs!.remove(id);
               update();
-              await showOkAlertDialog(
-                context: context,
+              platforMulti(
+                isIos: _isIos,
                 title: 'error'.tr,
-                message: error.toString(),
+                buttonTitle: ["ok".tr],
+                body: error.toString(),
+                func: [
+                  () {
+                    Get.back();
+                  }
+                ],
+                context: context,
               );
             });
           }
@@ -966,10 +992,16 @@ class MovieDetaleController extends GetxController
               ? _userModel.showWatchList!.contains(id)
               : _userModel.movieWatchList!.contains(id);
           if (contain) {
-            // desplay message that sais already in watchlist
-            await showOkAlertDialog(
-              context: context,
+            platforMulti(
+              isIos: _isIos,
               title: 'watchalready'.tr,
+              buttonTitle: ["ok".tr],
+              func: [
+                () {
+                  Get.back();
+                }
+              ],
+              context: context,
             );
           } else {
             _detales.isShow == true
@@ -978,10 +1010,18 @@ class MovieDetaleController extends GetxController
             _authController
                 .saveUserDataLocally(model: _userModel)
                 .then((value) async {
-              await showOkAlertDialog(
-                context: context,
+              platforMulti(
+                isIos: _isIos,
                 title: 'watchadd'.tr,
+                buttonTitle: ["ok".tr],
+                func: [
+                  () {
+                    Get.back();
+                  }
+                ],
+                context: context,
               );
+
               _detales.timestamp = Timestamp.now();
               watchFav(path: path, upload: true);
             });
@@ -1078,9 +1118,16 @@ class MovieDetaleController extends GetxController
       }
 
       if (_userModel.watching!.contains(_detales.id.toString())) {
-        await showOkAlertDialog(
-          context: context,
+        platforMulti(
+          isIos: _isIos,
           title: 'readykeep'.tr,
+          buttonTitle: ["ok".tr],
+          func: [
+            () {
+              Get.back();
+            }
+          ],
+          context: context,
         );
       } else {
         await EpisodeKeepingService()
@@ -1089,67 +1136,91 @@ class MovieDetaleController extends GetxController
                     'https://api.themoviedb.org/3/tv/${_detales.id}?api_key=$apiKey&language=',
                 lan: _userModel.language.toString(),
                 isFire: false)
-            .then((epModel) async {
-          if (epModel.isError == false) {
-            _userModel.watching!.add(_detales.id.toString());
-            await DataPref().setUser(_userModel).then((value) async {
-              epModel.token = _userModel.messagingToken.toString();
-              await FirebaseServices()
-                  .addEpisodeMe(
-                      uid: _userModel.userId.toString(), model: epModel)
-                  .then((_) async {
-                await showOkAlertDialog(
-                  context: context,
-                  title: 'keepadd'.tr,
-                );
-                // check if the show data already exists
+            .then(
+          (epModel) async {
+            if (epModel.isError == false) {
+              _userModel.watching!.add(_detales.id.toString());
+              await DataPref().setUser(_userModel).then(
+                (value) async {
+                  epModel.token = _userModel.messagingToken.toString();
+                  await FirebaseServices()
+                      .addEpisodeMe(
+                          uid: _userModel.userId.toString(), model: epModel)
+                      .then((_) async {
+                    platforMulti(
+                      isIos: _isIos,
+                      title: 'keepadd'.tr,
+                      buttonTitle: ["ok".tr],
+                      func: [
+                        () {
+                          Get.back();
+                        }
+                      ],
+                      context: context,
+                    );
 
-                await FirebaseServices()
-                    .getShowData(showId: _detales.id.toString())
-                    .then((value) async {
-                  DocumentReference myRef = FirebaseServices()
-                      .ref
-                      .doc(_userModel.userId.toString())
-                      .collection(FirebaseMainPaths.keeping.name)
-                      .doc(_detales.id.toString());
-                  if (value.exists == false ||
-                      (value.data() as Map<String, dynamic>)['id'] == null ||
-                      value.data() == null ||
-                      value.data() == {}) {
-                    // no data on this show so add
-                    epModel.refList = [myRef];
-                    await FirebaseServices().addShowData(model: epModel);
-                  } else {
-                    // there's data so add my refrence and update
-                    List<dynamic> lst = value.get('refList');
-                    lst.add(myRef);
-                    await FirebaseServices().updateShowData(
-                        showId: _detales.id.toString(), map: {'refList': lst});
-                  }
-                });
-              });
-              // check if its in the watchlist and delete it
-              await FirebaseServices()
-                  .userDocument(
-                      uid: _userModel.userId.toString(),
-                      collection: FirebaseUserPaths.watchlist.name,
-                      docId: _detales.id.toString())
-                  .then((val) async {
-                if (val.exists) {
-                  await FirebaseServices().delDoc(
-                      uid: _userModel.userId.toString(),
-                      collection: FirebaseUserPaths.watchlist.name,
-                      docId: _detales.id.toString());
-                }
-              });
-            });
-          } else {
-            await showOkAlertDialog(
-                context: context,
+                    // check if the show data already exists
+
+                    await FirebaseServices()
+                        .getShowData(showId: _detales.id.toString())
+                        .then((value) async {
+                      DocumentReference myRef = FirebaseServices()
+                          .ref
+                          .doc(_userModel.userId.toString())
+                          .collection(FirebaseMainPaths.keeping.name)
+                          .doc(_detales.id.toString());
+                      if (value.exists == false ||
+                          (value.data() as Map<String, dynamic>)['id'] ==
+                              null ||
+                          value.data() == null ||
+                          value.data() == {}) {
+                        // no data on this show so add
+                        epModel.refList = [myRef];
+                        await FirebaseServices().addShowData(model: epModel);
+                      } else {
+                        // there's data so add my refrence and update
+                        List<dynamic> lst = value.get('refList');
+                        lst.add(myRef);
+                        await FirebaseServices().updateShowData(
+                            showId: _detales.id.toString(),
+                            map: {'refList': lst});
+                      }
+                    });
+                  });
+                  // check if its in the watchlist and delete it
+                  await FirebaseServices()
+                      .userDocument(
+                          uid: _userModel.userId.toString(),
+                          collection: FirebaseUserPaths.watchlist.name,
+                          docId: _detales.id.toString())
+                      .then(
+                    (val) async {
+                      if (val.exists) {
+                        await FirebaseServices().delDoc(
+                            uid: _userModel.userId.toString(),
+                            collection: FirebaseUserPaths.watchlist.name,
+                            docId: _detales.id.toString());
+                      }
+                    },
+                  );
+                },
+              );
+            } else {
+              platforMulti(
+                isIos: _isIos,
                 title: 'error'.tr,
-                message: epModel.errorMessage.toString());
-          }
-        });
+                body: epModel.errorMessage.toString(),
+                buttonTitle: ["ok".tr],
+                func: [
+                  () {
+                    Get.back();
+                  }
+                ],
+                context: context,
+              );
+            }
+          },
+        );
       }
     }
   }

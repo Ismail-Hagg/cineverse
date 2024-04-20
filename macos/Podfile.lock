@@ -628,8 +628,6 @@ PODS:
     - abseil/base/base_internal
     - abseil/base/config
     - abseil/meta/type_traits
-  - appkit_ui_element_colors (1.0.0):
-    - FlutterMacOS
   - BoringSSL-GRPC (0.0.24):
     - BoringSSL-GRPC/Implementation (= 0.0.24)
     - BoringSSL-GRPC/Interface (= 0.0.24)
@@ -646,8 +644,6 @@ PODS:
     - Firebase/CoreOnly (~> 10.18.0)
     - Firebase/Functions (~> 10.18.0)
     - firebase_core
-    - FlutterMacOS
-  - dynamic_color (0.0.2):
     - FlutterMacOS
   - Firebase/Auth (10.18.0):
     - Firebase/CoreOnly
@@ -840,8 +836,6 @@ PODS:
   - gRPC-Core/Interface (1.49.1)
   - GTMSessionFetcher/Core (3.2.0)
   - leveldb-library (1.22.2)
-  - macos_ui (0.1.0):
-    - FlutterMacOS
   - macos_window_utils (1.0.0):
     - FlutterMacOS
   - nanopb (2.30909.1):
@@ -863,17 +857,14 @@ PODS:
     - FlutterMacOS
 
 DEPENDENCIES:
-  - appkit_ui_element_colors (from `Flutter/ephemeral/.symlinks/plugins/appkit_ui_element_colors/macos`)
   - cloud_firestore (from `Flutter/ephemeral/.symlinks/plugins/cloud_firestore/macos`)
   - cloud_functions (from `Flutter/ephemeral/.symlinks/plugins/cloud_functions/macos`)
-  - dynamic_color (from `Flutter/ephemeral/.symlinks/plugins/dynamic_color/macos`)
   - firebase_auth (from `Flutter/ephemeral/.symlinks/plugins/firebase_auth/macos`)
   - firebase_core (from `Flutter/ephemeral/.symlinks/plugins/firebase_core/macos`)
   - firebase_messaging (from `Flutter/ephemeral/.symlinks/plugins/firebase_messaging/macos`)
   - firebase_storage (from `Flutter/ephemeral/.symlinks/plugins/firebase_storage/macos`)
   - flutter_local_notifications (from `Flutter/ephemeral/.symlinks/plugins/flutter_local_notifications/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
-  - macos_ui (from `Flutter/ephemeral/.symlinks/plugins/macos_ui/macos`)
   - macos_window_utils (from `Flutter/ephemeral/.symlinks/plugins/macos_window_utils/macos`)
   - path_provider_foundation (from `Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin`)
   - shared_preferences_foundation (from `Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/darwin`)
@@ -910,14 +901,10 @@ SPEC REPOS:
     - PromisesObjC
 
 EXTERNAL SOURCES:
-  appkit_ui_element_colors:
-    :path: Flutter/ephemeral/.symlinks/plugins/appkit_ui_element_colors/macos
   cloud_firestore:
     :path: Flutter/ephemeral/.symlinks/plugins/cloud_firestore/macos
   cloud_functions:
     :path: Flutter/ephemeral/.symlinks/plugins/cloud_functions/macos
-  dynamic_color:
-    :path: Flutter/ephemeral/.symlinks/plugins/dynamic_color/macos
   firebase_auth:
     :path: Flutter/ephemeral/.symlinks/plugins/firebase_auth/macos
   firebase_core:
@@ -930,8 +917,6 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/flutter_local_notifications/macos
   FlutterMacOS:
     :path: Flutter/ephemeral
-  macos_ui:
-    :path: Flutter/ephemeral/.symlinks/plugins/macos_ui/macos
   macos_window_utils:
     :path: Flutter/ephemeral/.symlinks/plugins/macos_window_utils/macos
   path_provider_foundation:
@@ -945,11 +930,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   abseil: 926fb7a82dc6d2b8e1f2ed7f3a718bce691d1e46
-  appkit_ui_element_colors: 39bb2d80be3f19b152ccf4c70d5bbe6cba43d74a
   BoringSSL-GRPC: 3175b25143e648463a56daeaaa499c6cb86dad33
   cloud_firestore: ef9f29552212da73556eb98dba1ae2b7ef844736
   cloud_functions: def946822e4927f0bcdfe78152fb8b2590fd74f3
-  dynamic_color: 2eaa27267de1ca20d879fbd6e01259773fb1670f
   Firebase: 414ad272f8d02dfbf12662a9d43f4bba9bec2a06
   firebase_auth: 1d5713117a5a961e90b0bfd7766a7ec89c5a709f
   firebase_core: a74ee8b3ab5f91ae6b73f4913eaca996c24458b6
@@ -978,7 +961,6 @@ SPEC CHECKSUMS:
   gRPC-Core: a21a60aefc08c68c247b439a9ef97174b0c54f96
   GTMSessionFetcher: 41b9ef0b4c08a6db4b7eb51a21ae5183ec99a2c8
   leveldb-library: f03246171cce0484482ec291f88b6d563699ee06
-  macos_ui: 6229a8922cd97bafb7d9636c8eb8dfb0744183ca
   macos_window_utils: 933f91f64805e2eb91a5bd057cf97cd097276663
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
@@ -987,6 +969,6 @@ SPEC CHECKSUMS:
   sqflite: a5789cceda41d54d23f31d6de539d65bb14100ea
   url_launcher_macos: d2691c7dd33ed713bf3544850a623080ec693d95
 
-PODFILE CHECKSUM: 236401fc2c932af29a9fcf0e97baeeb2d750d367
+PODFILE CHECKSUM: 16208599a12443d53889ba2270a4985981cfb204
 
 COCOAPODS: 1.14.3

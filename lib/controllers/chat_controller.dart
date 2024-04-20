@@ -1,7 +1,6 @@
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/profile_controller.dart';
-import 'package:cineverse/models/chat_message_model.dart';
-import 'package:cineverse/models/user_model.dart';
+import 'package:cineverse/models/model_exports.dart';
 import 'package:cineverse/pages/chat/chat_page_controller.dart';
 import 'package:cineverse/pages/profile_page/profile_controller.dart';
 import 'package:cineverse/services/firebase_service.dart';

@@ -1,7 +1,5 @@
-import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:cineverse/controllers/auth_controller.dart';
-import 'package:cineverse/models/result_model.dart';
-import 'package:cineverse/models/user_model.dart';
+import 'package:cineverse/models/model_exports.dart';
 import 'package:cineverse/services/actor_search_service.dart';
 import 'package:cineverse/services/explore_service.dart';
 import 'package:cineverse/utils/constants.dart';
@@ -113,7 +111,6 @@ class ExploreController extends GetxController {
 
     _link =
         'https://api.themoviedb.org/3/discover/$movieOrTv?language=$lan&page=$_page$year&sort_by=primary_release_date.desc$genres$count$pope$key';
-    print(link);
     await ExploreService().goExolore(link: link).then(
       (value) {
         if (pageUp == null) {
@@ -252,9 +249,9 @@ class ExploreController extends GetxController {
     _isIos
         ? showCupertinoDialog(context: context, builder: (context) => content)
         // ignore: unused_result
-        : showAlertDialog(
+        : showDialog(
             context: context,
-            builder: (context, child) => content,
+            builder: (_) => content,
           );
   }
 

@@ -57,8 +57,6 @@ class KeepingPhone extends StatelessWidget {
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: GestureDetector(
-                              onLongPress: () =>
-                                  controller.keepDelete(index: index),
                               onTap: () => controller.openBottom(
                                   index: index,
                                   context: context,

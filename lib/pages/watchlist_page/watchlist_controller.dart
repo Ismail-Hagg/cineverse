@@ -11,7 +11,7 @@ class WatchlistViewController extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WatchlistController controller = Get.put(WatchlistController());
+    Get.put(WatchlistController());
     double width = MediaQuery.of(context).size.width;
     return width <= phoneSize
         ? const WatchlistPhone()

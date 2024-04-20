@@ -13,7 +13,7 @@ class DetalePageController extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MovieDetaleController controller = Get.put(MovieDetaleController());
+    Get.put(MovieDetaleController());
     double width = MediaQuery.of(context).size.width;
     return width <= phoneSize
         ? const DetalePagePhone()

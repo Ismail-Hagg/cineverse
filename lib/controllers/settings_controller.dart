@@ -1,10 +1,8 @@
-import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
 import 'package:cineverse/controllers/profile_controller.dart';
 import 'package:cineverse/local_storage/user_data.dart';
-import 'package:cineverse/models/user_change_model.dart';
-import 'package:cineverse/models/user_model.dart';
+import 'package:cineverse/models/model_exports.dart';
 import 'package:cineverse/pages/view_controller.dart';
 import 'package:cineverse/services/firebase_service.dart';
 import 'package:cineverse/utils/enums.dart';
@@ -57,14 +55,26 @@ class SettingsController extends GetxController {
 
   // use uri launcher
   void launcherUse({required String url, required BuildContext context}) async {
-    await launcherUrl(url: url).then((value) async {
-      if (value.$1) {
-        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-      } else {
-        await showOkAlertDialog(
-            context: context, title: 'error'.tr, message: value.$2);
-      }
-    });
+    await launcherUrl(url: url).then(
+      (value) async {
+        if (value.$1) {
+          await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+        } else {
+          platforMulti(
+            isIos: _isIos,
+            title: 'error'.tr,
+            buttonTitle: ["ok".tr],
+            body: value.$2,
+            func: [
+              () {
+                Get.back();
+              }
+            ],
+            context: context,
+          );
+        }
+      },
+    );
   }
 
   // uri launcher
@@ -199,9 +209,9 @@ class SettingsController extends GetxController {
     _isIos
         ? showCupertinoDialog(context: context, builder: (context) => content)
         // ignore: unused_result
-        : showAlertDialog(
+        : showDialog(
             context: context,
-            builder: (context, child) => content,
+            builder: (_) => content,
           );
   }
 
@@ -213,21 +223,23 @@ class SettingsController extends GetxController {
 
   // ok , start changing the username
   void okChange() async {
-    String newName = _controller.text;
     Get.back();
-    _controller.clear();
+    if (_controller.text.trim() != '') {
+      String newName = _controller.text.trim();
+      _controller.clear();
 
-    _model.userName = newName;
-    update();
-    Get.find<ProfilePageController>().update();
-    await DataPref().setUser(_model).then((value) async {
-      UserChange change = UserChange(
-          avatarType: _model.avatarType.toString(),
-          userName: _model.userName.toString(),
-          link: _model.onlinePicPath.toString(),
-          local: _model.localPicPath.toString(),
-          userId: _model.userId.toString());
-      await FirebaseServices().userChanging(map: change.toMap());
-    });
+      _model.userName = newName;
+      update();
+      Get.find<ProfilePageController>().update();
+      await DataPref().setUser(_model).then((value) async {
+        UserChange change = UserChange(
+            avatarType: _model.avatarType.toString(),
+            userName: _model.userName.toString(),
+            link: _model.onlinePicPath.toString(),
+            local: _model.localPicPath.toString(),
+            userId: _model.userId.toString());
+        await FirebaseServices().userChanging(map: change.toMap());
+      });
+    }
   }
 }

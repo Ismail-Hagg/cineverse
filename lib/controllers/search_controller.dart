@@ -1,8 +1,6 @@
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
-import 'package:cineverse/models/move_model.dart';
-import 'package:cineverse/models/result_details_model.dart';
-import 'package:cineverse/models/result_model.dart';
+import 'package:cineverse/models/model_exports.dart';
 import 'package:cineverse/services/home_page_service.dart';
 import 'package:cineverse/utils/constants.dart';
 import 'package:flutter/cupertino.dart';

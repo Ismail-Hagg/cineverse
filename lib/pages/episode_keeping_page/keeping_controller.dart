@@ -11,7 +11,7 @@ class KeepingViewController extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final KeepingController controller = Get.put(KeepingController());
+    Get.put(KeepingController());
     double width = MediaQuery.of(context).size.width;
     return width <= phoneSize
         ? const KeepingPhone()

@@ -11,7 +11,7 @@ class HomePageController extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final HomeController controller = Get.put(HomeController());
+    Get.put(HomeController());
     double width = MediaQuery.of(context).size.width;
     return width <= phoneSize
         ? const HomePhone()

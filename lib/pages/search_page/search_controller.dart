@@ -13,7 +13,7 @@ class SearchViewController extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final SearchMoreController controller = Get.put(SearchMoreController());
+    Get.put(SearchMoreController());
     double width = MediaQuery.of(context).size.width;
     return width <= phoneSize
         ? const SearchPhone()

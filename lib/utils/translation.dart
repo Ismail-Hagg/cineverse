@@ -32,7 +32,7 @@ class Translation extends Translations {
           'error': 'Error',
           'enterphone': 'Enter your phone number',
           'fireverification': 'invalid verification code',
-          'ok': 'ok',
+          'ok': 'Ok',
           'hello': 'Hello',
           'wrongotp': 'Wrong Code',
           'invalidcred': 'Invalid Login Credentials',

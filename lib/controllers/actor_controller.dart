@@ -1,7 +1,5 @@
 import 'package:cineverse/controllers/home_controller.dart';
-import 'package:cineverse/models/actor_model.dart';
-import 'package:cineverse/models/image_model.dart';
-import 'package:cineverse/models/user_model.dart';
+import 'package:cineverse/models/model_exports.dart';
 import 'package:cineverse/services/actor_detales_service.dart';
 import 'package:cineverse/services/actor_service.dart';
 import 'package:cineverse/services/image_service.dart';

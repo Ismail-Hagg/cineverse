@@ -11,7 +11,7 @@ class ChatPageViewController extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ChatPageController controller = Get.put(ChatPageController());
+    Get.put(ChatPageController());
     double width = MediaQuery.of(context).size.width;
     return width <= phoneSize
         ? const ChatPagePhone()

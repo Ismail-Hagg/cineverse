@@ -1,13 +1,10 @@
 import 'package:cineverse/controllers/auth_controller.dart';
 import 'package:cineverse/controllers/home_controller.dart';
 import 'package:cineverse/local_storage/user_data.dart';
-import 'package:cineverse/models/episode_omdel.dart';
-import 'package:cineverse/models/result_details_model.dart';
-import 'package:cineverse/models/user_model.dart';
+import 'package:cineverse/models/model_exports.dart';
 import 'package:cineverse/services/firebase_service.dart';
 import 'package:cineverse/utils/enums.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

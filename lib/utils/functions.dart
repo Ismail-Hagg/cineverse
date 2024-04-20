@@ -118,7 +118,7 @@ void platforMulti(
     {required bool isIos,
     required String title,
     required List<String> buttonTitle,
-    required String body,
+    String? body,
     required List<Function()> func,
     bool? field,
     TextEditingController? controller,
@@ -127,74 +127,89 @@ void platforMulti(
     required BuildContext context}) {
   if (isIos) {
     showCupertinoDialog(
-        context: context,
-        builder: (_) => CupertinoAlertDialog(
-            title: Text(
-              title,
-            ),
-            content: field == true
-                ? child ??
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12.0),
-                      child: CupertinoTextField(
-                        placeholder: hint,
-                        autofocus: true,
-                        controller: controller,
-                        decoration: BoxDecoration(
-                            color: Colors.grey[400],
-                            borderRadius: BorderRadius.circular(8)),
-                        clearButtonMode: OverlayVisibilityMode.editing,
-                      ),
-                    )
-                : Text(
-                    body,
+      context: context,
+      builder: (_) => CupertinoAlertDialog(
+        title: Text(
+          title,
+        ),
+        content: field == true
+            ? child ??
+                Padding(
+                  padding: const EdgeInsets.only(top: 12.0),
+                  child: CupertinoTextField(
+                    placeholder: hint,
+                    autofocus: true,
+                    controller: controller,
+                    decoration: BoxDecoration(
+                        color: Colors.grey[400],
+                        borderRadius: BorderRadius.circular(8)),
+                    clearButtonMode: OverlayVisibilityMode.editing,
                   ),
-            actions: buttonTitle
-                .map((e) => CupertinoDialogAction(
-                      onPressed: func[buttonTitle.indexOf(e)],
-                      child: Text(e),
-                    ))
-                .toList()));
+                )
+            : body != null
+                ? Text(
+                    body,
+                  )
+                : Container(),
+        actions: buttonTitle
+            .map(
+              (e) => CupertinoDialogAction(
+                onPressed: func[buttonTitle.indexOf(e)],
+                child: Text(e),
+              ),
+            )
+            .toList(),
+      ),
+    );
   } else {
     showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-            title: Text(title),
-            content: field == true
-                ? child ??
-                    TextField(
-                      autofocus: true,
-                      controller: controller,
-                      cursorColor: Theme.of(context).colorScheme.primary,
-                      decoration: InputDecoration(
-                        hintText: hint,
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Theme.of(context).colorScheme.primary),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Theme.of(context).colorScheme.primary),
-                        ),
-                        fillColor: Theme.of(context).colorScheme.primary,
-                        focusColor: Theme.of(context).colorScheme.primary,
-                      ),
-                    )
-                : Text(body),
-            actions: buttonTitle
-                .map((e) => TextButton(
-                      onPressed: func[buttonTitle.indexOf(e)],
-                      style: ButtonStyle(
-                          overlayColor: MaterialStateProperty.all(
-                              Theme.of(context)
-                                  .colorScheme
-                                  .primary
-                                  .withOpacity(0.2))),
-                      child: CustomText(
-                        text: e,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ))
-                .toList()));
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(title),
+        content: field == true
+            ? child ??
+                TextField(
+                  autofocus: true,
+                  controller: controller,
+                  cursorColor: Theme.of(context).colorScheme.primary,
+                  decoration: InputDecoration(
+                    hintText: hint,
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.primary),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.primary),
+                    ),
+                    fillColor: Theme.of(context).colorScheme.primary,
+                    focusColor: Theme.of(context).colorScheme.primary,
+                  ),
+                )
+            : body != null
+                ? Text(
+                    body,
+                  )
+                : Container(
+                    height: 1,
+                  ),
+        actions: buttonTitle
+            .map(
+              (e) => TextButton(
+                onPressed: func[buttonTitle.indexOf(e)],
+                style: ButtonStyle(
+                    overlayColor: MaterialStateProperty.all(Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withOpacity(0.2))),
+                child: CustomText(
+                  text: e,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            )
+            .toList(),
+      ),
+    );
   }
 }

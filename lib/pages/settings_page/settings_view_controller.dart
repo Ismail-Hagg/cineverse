@@ -13,7 +13,7 @@ class SettingsViewController extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final SettingsController controller = Get.put(SettingsController());
+    Get.put(SettingsController());
     double width = MediaQuery.of(context).size.width;
     return width <= phoneSize
         ? const SettingsPhone()
